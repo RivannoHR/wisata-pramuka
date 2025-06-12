@@ -22,9 +22,6 @@ class Product extends Model
         'order' => 'integer'
     ];
 
-    /**
-     * Boot the model and set up event listeners
-     */
     protected static function boot()
     {
         parent::boot();
@@ -37,9 +34,7 @@ class Product extends Model
         });
     }
 
-    /**
-     * Generate unique product ID in format PD000001
-     */
+    // Generate Product ID
     private static function generateProductId()
     {
         $lastProduct = static::orderBy('id', 'desc')->first();
@@ -56,17 +51,13 @@ class Product extends Model
         return 'PD' . str_pad($newNumber, 6, '0', STR_PAD_LEFT);
     }
 
-    /**
-     * Check if product is in stock
-     */
+    // Cek apakah produk ada
     public function isInStock()
     {
         return $this->stock > 0;
     }
 
-    /**
-     * Reduce stock by given quantity
-     */
+    // Kurangi stock
     public function reduceStock($quantity)
     {
         if ($this->stock >= $quantity) {
@@ -77,9 +68,7 @@ class Product extends Model
         return false;
     }
 
-    /**
-     * Add stock by given quantity
-     */
+    // Nambah stock
     public function addStock($quantity)
     {
         $this->stock += $quantity;

@@ -18,24 +18,24 @@
             max-width: 1200px;
             margin: 0 auto;
             padding-bottom: 50px; 
-            overflow: hidden; /* Hide overflow to maintain card size */
+            overflow: hidden;
         }
 
         .carousel-track {
             display: flex;
             transition: transform 0.5s ease-in-out;
             width: 100%;
-            height: 350px; /* Adjusted height for horizontal layout */
+            height: 350px; 
         }
 
         .carousel-slide {
             min-width: 100%;
-            flex: 0 0 100%; /* Don't allow shrinking */
+            flex: 0 0 100%; 
             padding: 0 10px;
             box-sizing: border-box;
-            display: flex; /* Enable flex layout */
-            align-items: center; /* Center the cards vertically */
-            justify-content: center; /* Center the cards horizontally */
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
         }   
 
         .carousel-button {
@@ -92,9 +92,9 @@
         /* Adjust product point item for carousel */
         .product-point-item {
             margin: 10px;
-            flex: 1; /* Take up all available space */
+            flex: 1; 
             display: flex;
-            flex-direction: row; /* Changed to horizontal layout */
+            flex-direction: row;
             background-color: #f9f9f9;
             border: 1px solid #eee;
             border-radius: 8px;
@@ -105,29 +105,10 @@
             min-height: 300px;
             max-height: 300px;
             width: 100%;
-            max-width: 600px; /* Increased width for horizontal layout */
-            gap: 20px; /* Space between image and content */
-            align-items: stretch; /* Stretch items to full height */
+            max-width: 600px; 
+            gap: 20px; 
+            align-items: stretch; 
         }
-
-        /* Adjust specialty point item for carousel */
-        .specialty-point-item {
-            margin: 10px;
-            flex: 1; /* Take up all available space */
-            display: flex;
-            flex-direction: column;
-            background-color: #f9f9f9;
-            border: 1px solid #eee;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            /* Fixed size for carousel cards */
-            min-height: 400px;
-            max-height: 400px;
-            width: 100%;
-            max-width: 900px;
-        }   
 
         body {
             font-family: 'Inter', sans-serif; /* Changed to Inter */
@@ -142,12 +123,12 @@
 
         /* Header Styles */
         header {
-            background-color: #fff; /* White background for the header */
+            background-color: #fff; 
             padding: 10px 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
         }
         .header-container {
-            max-width: 1200px; /* Adjust as per your Figma's main content width */
+            max-width: 1200px; 
             margin: 0 auto;
             padding: 0 20px;
             display: flex;
@@ -165,7 +146,7 @@
             margin: 0;
             padding: 0;
             display: flex;
-            gap: 20px; /* Space between nav items */
+            gap: 20px; 
         }
         .header-nav ul li a {
             color: #333;
@@ -175,10 +156,10 @@
             transition: color 0.3s ease;
         }
         .header-nav ul li a:hover {
-            color: #007bff; /* Example hover color, adjust as needed */
+            color: #007bff; 
         }
         .header-auth-button {
-            background-color: #333; /* Dark button background */
+            background-color: #333; 
             color: #fff;
             padding: 10px 15px;
             border-radius: 5px;
