@@ -27,10 +27,19 @@
                                 <div class="product-content">
                                     <h3>{{ $product->title }}</h3>
                                     <p>{{ $product->description }}</p>
+                                    <div class="product-actions">
+                                        <button class="product-button" onclick="goToProduct('{{ $product->product_id }}')">
+                                            Button
+                                        </button>
+                                    </div>
                                 </div>
                                 @if($product->image_path)
                                     <div class="product-image">
                                         <img src="{{ asset('storage/' . $product->image_path) }}" alt="{{ $product->title }}">
+                                    </div>
+                                @else
+                                    <div class="product-image placeholder">
+                                        <div class="placeholder-text">No Image</div>
                                     </div>
                                 @endif
                             </div>
@@ -52,4 +61,14 @@
             @endif
         </div>
     </section>
+
+    <script>
+        // Function to handle product button clicks
+        function goToProduct(productId) {
+            // For now, just show an alert. Later you can navigate to the product page
+            alert('Navigate to product: ' + productId);
+            // TODO: Replace with actual navigation when product pages are created
+            // window.location.href = '/products/' + productId;
+        }
+    </script>
 @endsection

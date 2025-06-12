@@ -1,24 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <m        /* Adjust product point item for carousel */
-        .product-point-item {
-            margin: 10px;
-            flex: 1; /* Take up all available space */
-            display: flex;
-            flex-direction: column;
-            background-color: #f9f9f9;
-            border: 1px solid #eee;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            /* Fixed size for carousel cards */
-            min-height: 400px;
-            max-height: 400px;
-            width: 100%;
-            max-width: 350px;
-        }">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Pulau Pramuka Travel')</title>
 
@@ -42,7 +25,7 @@
             display: flex;
             transition: transform 0.5s ease-in-out;
             width: 100%;
-            height: 450px; /* Fixed height for carousel track */
+            height: 350px; /* Adjusted height for horizontal layout */
         }
 
         .carousel-slide {
@@ -104,6 +87,27 @@
 
         .dot.active {
             background-color: #007bff;
+        }
+
+        /* Adjust product point item for carousel */
+        .product-point-item {
+            margin: 10px;
+            flex: 1; /* Take up all available space */
+            display: flex;
+            flex-direction: row; /* Changed to horizontal layout */
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            /* Fixed size for carousel cards */
+            min-height: 300px;
+            max-height: 300px;
+            width: 100%;
+            max-width: 600px; /* Increased width for horizontal layout */
+            gap: 20px; /* Space between image and content */
+            align-items: stretch; /* Stretch items to full height */
         }
 
         /* Adjust specialty point item for carousel */
@@ -364,16 +368,6 @@
             padding: 0 20px; /* Padding for the grid inside the container */
         }
 
-        .product-point-item {
-            background-color: #f9f9f9; /* Slightly off-white background for each item */
-            border: 1px solid #eee; /* Light border */
-            border-radius: 8px;
-            padding: 20px;
-            text-align: left; /* Align text within the box */
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Subtle shadow */
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
         .product-point-item:hover {
             transform: translateY(-5px); /* Slight lift on hover */
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
@@ -402,20 +396,106 @@
             flex: 1;
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
+            min-width: 0; /* Allow content to shrink */
+        }
+
+        /* Product header with ID and stock */
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .product-id {
+            font-size: 12px;
+            font-weight: 600;
+            color: #007bff;
+            background-color: #e7f3ff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .stock-info {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .stock-info.in-stock {
+            color: #28a745;
+            background-color: #e8f5e8;
+        }
+
+        .stock-info.out-of-stock {
+            color: #dc3545;
+            background-color: #fdeaea;
+        }
+
+        /* Product actions */
+        .product-actions {
+            margin-top: auto;
+            padding-top: 15px;
+        }
+
+        .product-button {
+            background-color: #000;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: auto;
+            min-width: 80px;
+        }
+
+        .product-button:hover {
+            background-color: #333;
         }
 
         .product-image {
-            margin-top: auto; /* Push image to bottom if content is short */
-            max-height: 150px;
+            flex: 0 0 200px; /* Fixed width for image container */
+            width: 200px;
+            height: 100%; /* Full height of parent */
+            max-height: 260px; /* Adjust to fit within card height minus padding */
             overflow: hidden;
             border-radius: 6px;
+            position: relative;
         }
 
         .product-image img {
             width: 100%;
-            height: 150px;
+            height: 100%;
             object-fit: cover;
             border-radius: 6px;
+        }
+
+        /* Placeholder for missing images */
+        .product-image.placeholder {
+            background-color: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 200px;
+            width: 200px;
+            height: 100%;
+            max-height: 260px;
+        }
+
+        .placeholder-text {
+            color: #6c757d;
+            font-size: 14px;
+            font-style: italic;
         }
 
         /* Responsive adjustments for products section */
@@ -430,17 +510,39 @@
             
             /* Mobile adjustments for carousel cards */
             .carousel-track {
-                height: 380px; /* Shorter height on mobile */
+                height: 400px; /* Adjusted height for mobile */
             }
             
             .product-point-item {
-                min-height: 350px;
-                max-height: 350px;
+                flex-direction: column; /* Stack vertically on mobile */
+                min-height: 360px;
+                max-height: 360px;
                 max-width: 300px;
+                gap: 15px;
+                align-items: center;
             }
             
-            .product-image img {
-                height: 120px;
+            .product-image, .product-image.placeholder {
+                flex: 0 0 150px;
+                width: 100%;
+                max-height: 150px;
+                height: 150px;
+            }
+            
+            .product-content {
+                text-align: center;
+                width: 100%;
+            }
+            
+            .product-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .product-button {
+                font-size: 12px;
+                padding: 8px 16px;
             }
         }
 

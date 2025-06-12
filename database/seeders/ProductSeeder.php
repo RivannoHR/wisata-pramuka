@@ -14,33 +14,38 @@ class ProductSeeder extends Seeder
 
         $products = [
             [
-                'title' => 'Snorkeling Adventure',
-                'description' => 'Explore the crystal-clear waters around Pulau Pramuka with guided snorkeling tours. Discover vibrant coral reefs and tropical marine life in one of Indonesia\'s most pristine underwater environments.',
+                'title' => 'Lilin Aromatherapy',
+                'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sem neque, lobortis nec tempus non, ultrices quis urna. Nulla dignissim, urna ac luctus congue, elit.',
                 'order' => 1,
+                'stock' => 25,
                 'is_active' => true
             ],
             [
-                'title' => 'Island Hopping Tour',
-                'description' => 'Experience the beauty of Thousand Islands with our comprehensive island hopping package. Visit multiple pristine islands, enjoy white sandy beaches, and witness stunning sunset views.',
+                'title' => 'Sabun Minyak Jelantah',
+                'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sem neque, lobortis nec tempus non, ultrices quis urna. Nulla dignissim, urna ac luctus congue, elit.',
                 'order' => 2,
+                'stock' => 15,
                 'is_active' => true
             ],
             [
-                'title' => 'Turtle Conservation Program',
-                'description' => 'Join our turtle conservation efforts and learn about marine wildlife protection. Participate in turtle release programs and contribute to preserving these magnificent creatures.',
+                'title' => 'Keripik Sukun',
+                'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sem neque, lobortis nec tempus non, ultrices quis urna. Nulla dignissim, urna ac luctus congue, elit.',
                 'order' => 3,
+                'stock' => 10,
                 'is_active' => true
             ],
             [
-                'title' => 'Traditional Fishing Experience',
-                'description' => 'Learn traditional fishing techniques from local fishermen. Experience authentic island life while contributing to sustainable tourism and supporting the local community.',
+                'title' => 'Olahan Ikan',
+                'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sem neque, lobortis nec tempus non, ultrices quis urna. Nulla dignissim, urna ac luctus congue, elit.',
                 'order' => 4,
+                'stock' => 20,
                 'is_active' => true
             ],
             [
                 'title' => 'Mangrove Forest Tour',
                 'description' => 'Explore the unique mangrove ecosystem surrounding Pulau Pramuka. Discover diverse wildlife, learn about environmental conservation, and enjoy peaceful boat rides through nature.',
                 'order' => 5,
+                'stock' => 12,
                 'is_active' => true
             ]
         ];

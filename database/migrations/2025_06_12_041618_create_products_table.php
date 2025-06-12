@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
+            $table->string('product_id', 20)->unique(); // Auto-generated PD000001 format
             $table->string('title');
             $table->text('description');
             $table->string('image_path')->nullable();
             $table->integer('order')->default(0)->unique(); // Prevent duplicate order values
+            $table->integer('stock')->default(0); // Stock quantity
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
