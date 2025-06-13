@@ -28,9 +28,9 @@
                                     <h3>{{ $product->title }}</h3>
                                     <p>{{ $product->description }}</p>
                                     <div class="product-actions">
-                                        <button class="product-button" onclick="goToProduct('{{ $product->product_id }}')">
-                                            Button
-                                        </button>
+                                        <a href="{{ route('products.show', $product->product_id) }}" class="product-button">
+                                            View Details
+                                        </a>
                                     </div>
                                 </div>
                                 @if($product->image_path)
@@ -62,13 +62,4 @@
         </div>
     </section>
 
-    <script>
-        // Function to handle product button clicks
-        function goToProduct(productId) {
-            // For now, just show an alert. Later you can navigate to the product page
-            alert('Navigate to product: ' + productId);
-            // TODO: Replace with actual navigation when product pages are created
-            // window.location.href = '/products/' + productId;
-        }
-    </script>
 @endsection

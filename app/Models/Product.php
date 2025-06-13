@@ -6,72 +6,80 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
+    protected $table = 'products';
+    
     protected $fillable = [
         'product_id',
         'title',
         'description',
-        'image_path',
-        'order',
+        'price',
         'stock',
+        'image_path',
         'is_active'
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
+        'price' => 'decimal:2',
         'stock' => 'integer',
-        'order' => 'integer'
+        'is_active' => 'boolean'
     ];
 
+    /**
+     * Boot method to auto-generate product_id
+     */
     protected static function boot()
     {
         parent::boot();
 
-        // Auto-generate product_id when creating a new product
         static::creating(function ($product) {
             if (empty($product->product_id)) {
-                $product->product_id = static::generateProductId();
+                $product->product_id = self::generateProductId();
             }
         });
     }
 
-    // Generate Product ID
-    private static function generateProductId()
+    /**
+     * Generate custom product ID in format PD00001
+     */
+    public static function generateProductId()
     {
-        $lastProduct = static::orderBy('id', 'desc')->first();
+        // Get the last product ID
+        $lastProduct = self::orderBy('id', 'desc')->first();
         
-        if ($lastProduct) {
-            // Extract number from last product_id (e.g., PD000001 -> 1)
-            $lastNumber = (int) substr($lastProduct->product_id, 2);
-            $newNumber = $lastNumber + 1;
-        } else {
-            $newNumber = 1;
+        if (!$lastProduct || !$lastProduct->product_id) {
+            // First product
+            return 'PD00001';
         }
-
-        // Format as PD000001
-        return 'PD' . str_pad($newNumber, 6, '0', STR_PAD_LEFT);
+        
+        // Extract number from last product_id (e.g., PD00001 -> 1)
+        $lastNumber = (int) substr($lastProduct->product_id, 2);
+        $nextNumber = $lastNumber + 1;
+        
+        // Format with leading zeros (5 digits total)
+        return 'PD' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
     }
 
-    // Cek apakah produk ada
-    public function isInStock()
+    /**
+     * Get route key name for model binding (use product_id instead of id)
+     */
+    public function getRouteKeyName()
     {
-        return $this->stock > 0;
+        return 'product_id';
     }
 
-    // Kurangi stock
-    public function reduceStock($quantity)
+    /**
+     * Scope to filter only active products
+     */
+    public function scopeActive($query)
     {
-        if ($this->stock >= $quantity) {
-            $this->stock -= $quantity;
-            $this->save();
-            return true;
-        }
-        return false;
+        return $query->where('is_active', true);
     }
 
-    // Nambah stock
-    public function addStock($quantity)
+    /**
+     * Scope to filter featured products for carousel
+     */
+    public function scopeFeatured($query)
     {
-        $this->stock += $quantity;
-        $this->save();
+        return $query->where('is_active', true);
     }
 }

@@ -25,4 +25,28 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'is_admin' => 'boolean',
     ];
+
+    /**
+     * Check if the user is an administrator
+     */
+    public function isAdmin()
+    {
+        return $this->is_admin;
+    }
+
+    /**
+     * Scope to filter only admin users
+     */
+    public function scopeAdmins($query)
+    {
+        return $query->where('is_admin', true);
+    }
+
+    /**
+     * Scope to filter only regular users
+     */
+    public function scopeRegularUsers($query)
+    {
+        return $query->where('is_admin', false);
+    }
 }

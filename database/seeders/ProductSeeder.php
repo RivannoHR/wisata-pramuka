@@ -2,56 +2,54 @@
 
 namespace Database\Seeders;
 
-use App\Models\Product;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\Product;
 
 class ProductSeeder extends Seeder
 {
-    public function run()
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
     {
-        DB::table('products')->truncate();
-
         $products = [
             [
                 'title' => 'Lilin Aromatherapy',
-                'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sem neque, lobortis nec tempus non, ultrices quis urna. Nulla dignissim, urna ac luctus congue, elit.',
-                'order' => 1,
-                'stock' => 25,
-                'is_active' => true
+                'description' => 'Lilin aromatherapy alami dengan berbagai aroma yang menenangkan. Terbuat dari bahan-bahan berkualitas tinggi dan ramah lingkungan.',
+                'price' => 25000,
+                'stock' => 50,
+                'image_path' => 'products/Lilin-aromatherapy.png',
+                'is_active' => true // Featured in carousel
             ],
             [
                 'title' => 'Sabun Minyak Jelantah',
-                'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sem neque, lobortis nec tempus non, ultrices quis urna. Nulla dignissim, urna ac luctus congue, elit.',
-                'order' => 2,
-                'stock' => 15,
-                'is_active' => true
+                'description' => 'Sabun ramah lingkungan yang terbuat dari minyak jelantah daur ulang. Baik untuk kulit dan lingkungan.',
+                'price' => 15000,
+                'stock' => 30,
+                'image_path' => 'products/Sabun-minyak-jelantah.png',
+                'is_active' => true // Featured in carousel
             ],
             [
                 'title' => 'Keripik Sukun',
-                'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sem neque, lobortis nec tempus non, ultrices quis urna. Nulla dignissim, urna ac luctus congue, elit.',
-                'order' => 3,
-                'stock' => 10,
-                'is_active' => true
+                'description' => 'Keripik sukun renyah dan gurih, camilan sehat khas Pulau Pramuka yang terbuat dari sukun pilihan.',
+                'price' => 20000,
+                'stock' => 25,
+                'image_path' => 'products/Keripik-sukun.png',
+                'is_active' => true // featured in carousel
             ],
             [
                 'title' => 'Olahan Ikan',
-                'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sem neque, lobortis nec tempus non, ultrices quis urna. Nulla dignissim, urna ac luctus congue, elit.',
-                'order' => 4,
-                'stock' => 20,
-                'is_active' => true
-            ],
-            [
-                'title' => 'Mangrove Forest Tour',
-                'description' => 'Explore the unique mangrove ecosystem surrounding Pulau Pramuka. Discover diverse wildlife, learn about environmental conservation, and enjoy peaceful boat rides through nature.',
-                'order' => 5,
-                'stock' => 12,
-                'is_active' => true
+                'description' => 'Berbagai olahan ikan segar khas Kepulauan Seribu. Diproses dengan higienis dan cita rasa yang lezat.',
+                'price' => 35000,
+                'stock' => 15,
+                'image_path' => 'products/Olahan-ikan.png',
+                'is_active' => true // Featured in carousel
             ]
         ];
 
-        foreach ($products as $product) {
-            Product::create($product);
+        foreach ($products as $productData) {
+            Product::create($productData);
         }
     }
 }

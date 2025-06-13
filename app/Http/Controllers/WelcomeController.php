@@ -9,9 +9,9 @@ class WelcomeController extends Controller
 {
     public function index()
     {
-        $products = Product::where('is_active', true)
-            ->orderBy('order')
-            ->orderBy('id')
+        $products = Product::featured()
+            ->orderBy('created_at', 'desc')
+            ->take(6) // Show latest 6 featured products on homepage
             ->get();
             
         return view('welcome', compact('products'));
