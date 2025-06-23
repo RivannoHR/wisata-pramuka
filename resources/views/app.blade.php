@@ -1244,7 +1244,7 @@
             <nav class="header-nav">
                 <ul>
                     <li><a href="/">Home</a></li>
-                    <li><a href="/attractions">Tourist Attraction</a></li>
+                    <li><a href="/tourist-attractions">Tourist Attraction</a></li>
                     <li><a href="/accommodations">Accommodation</a></li>
                     <li><a href="/products">Products</a></li>
                 </ul>
