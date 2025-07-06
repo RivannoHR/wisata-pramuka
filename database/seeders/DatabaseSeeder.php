@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
             TouristAttractionSeeder::class,
             AccommodationSeeder::class,
+            BookingSeeder::class,
         ]);
     }
 }

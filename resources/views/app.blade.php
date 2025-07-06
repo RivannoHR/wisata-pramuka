@@ -1247,6 +1247,9 @@
                     <li><a href="/tourist-attractions">Tourist Attraction</a></li>
                     <li><a href="/accommodations">Accommodation</a></li>
                     <li><a href="/products">Products</a></li>
+                    @auth
+                        <li><a href="/transactions">Transaction</a></li>
+                    @endauth
                 </ul>
             </nav>
             @auth

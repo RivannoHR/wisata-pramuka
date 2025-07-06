@@ -271,12 +271,15 @@
 
     <!-- Reservation Form -->
     <div class="reservation-form">
-        <form id="reservationForm">
+        <form id="reservationForm" method="POST" action="{{ route('bookings.store') }}">
+            @csrf
+            <input type="hidden" name="accommodation_id" value="{{ $accommodation->id }}">
+            
             <div class="form-row">
                 <div class="form-group">
                     <label for="roomType">Room Type</label>
                     <div class="select-wrapper">
-                        <select id="roomType" name="roomType" class="form-control">
+                        <select id="roomType" name="room_type" class="form-control" required>
                             <option value="jasmin-extra">Jasmin Extra</option>
                             <option value="deluxe">Deluxe Room</option>
                             <option value="standard">Standard Room</option>
@@ -285,8 +288,8 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="dateOption">Opsi Tanggal</label>
-                    <input type="date" id="dateOption" name="dateOption" class="form-control">
+                    <label for="dateOption">Booking Date</label>
+                    <input type="date" id="dateOption" name="booking_date" class="form-control" required>
                 </div>
             </div>
 
@@ -318,14 +321,22 @@
 
     // Form submission
     document.getElementById('reservationForm').addEventListener('submit', function(e) {
-        e.preventDefault();
+        const bookingDate = document.getElementById('dateOption').value;
+        const roomType = document.getElementById('roomType').value;
         
-        const formData = new FormData(this);
-        const data = Object.fromEntries(formData);
+        if (!bookingDate) {
+            e.preventDefault();
+            alert('Please select a booking date');
+            return;
+        }
         
-        // Here you would typically send the data to your backend
-        console.log('Reservation data:', data);
-        alert('Reservation form submitted! (This is a demo - implement actual booking logic)');
+        if (!roomType) {
+            e.preventDefault();
+            alert('Please select a room type');
+            return;
+        }
+        
+        // Form will submit naturally to the backend
     });
 
     // Set default date to today
