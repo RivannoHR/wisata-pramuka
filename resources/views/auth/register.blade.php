@@ -15,6 +15,10 @@
             <div class="form-group">
                 <input type="email" name="email" placeholder="Email" required>
             </div>
+
+            <div class="form-group">
+                <input type="tel" name="phone" placeholder="Phone Number" required>
+            </div>
             
             <div class="form-group">
                 <input type="password" name="password" placeholder="Password" required>

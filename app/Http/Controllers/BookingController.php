@@ -46,8 +46,10 @@ class BookingController extends Controller
     {
         $request->validate([
             'accommodation_id' => 'required|exists:accommodations,id',
-            'room_type' => 'required|string',
-            'booking_date' => 'required|date|after_or_equal:today',
+            'checkin_date' => 'required|date|after_or_equal:today',
+            'checkout_date' => 'required|date|after:checkin_date',
+            'duration_days' => 'required|integer|min:1|max:365',
+            'special_requests' => 'nullable|string|max:1000',
         ]);
 
         $accommodation = Accommodation::findOrFail($request->accommodation_id);
@@ -55,18 +57,24 @@ class BookingController extends Controller
         // Generate unique booking ID
         $bookingId = $this->generateBookingId();
         
-        // Calculate total price (for now, use accommodation price)
-        $totalPrice = $accommodation->price_per_night ?? 500000;
+        // Calculate total price based on duration
+        $pricePerNight = $accommodation->price_per_night ?? 500000;
+        $duration = $request->duration_days;
+        $totalPrice = $pricePerNight * $duration;
 
         $booking = Booking::create([
             'booking_id' => $bookingId,
             'user_id' => auth()->id(),
             'accommodation_id' => $request->accommodation_id,
-            'room_type' => $request->room_type,
-            'booking_date' => $request->booking_date,
+            'room_type' => 'standard', // Default room type
+            'rooms_count' => 1, // Default to 1 room
+            'booking_date' => $request->checkin_date,
+            'check_in_date' => $request->checkin_date,
+            'check_out_date' => $request->checkout_date,
+            'duration_days' => $duration,
             'total_price' => $totalPrice,
             'status' => 'pending',
-            'notes' => $request->notes
+            'notes' => $request->special_requests // Use notes field for special requests
         ]);
 
         return redirect()->route('bookings.index')

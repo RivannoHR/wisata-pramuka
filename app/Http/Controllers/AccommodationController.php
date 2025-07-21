@@ -9,7 +9,7 @@ class AccommodationController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Accommodation::active();
+        $query = Accommodation::with(['images', 'featuredImage'])->active();
 
         // Filter by type
         if ($request->filled('type') && $request->type !== 'all') {
@@ -81,7 +81,7 @@ class AccommodationController extends Controller
 
     public function show($id)
     {
-        $accommodation = Accommodation::active()->findOrFail($id);
+        $accommodation = Accommodation::with(['images', 'featuredImage'])->active()->findOrFail($id);
         
         return view('accommodations.show', compact('accommodation'));
     }

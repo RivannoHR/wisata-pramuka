@@ -15,13 +15,15 @@ class Product extends Model
         'price',
         'stock',
         'image_path',
-        'is_active'
+        'is_active',
+        'is_featured'
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
         'stock' => 'integer',
-        'is_active' => 'boolean'
+        'is_active' => 'boolean',
+        'is_featured' => 'boolean'
     ];
 
     /**
@@ -80,6 +82,6 @@ class Product extends Model
      */
     public function scopeFeatured($query)
     {
-        return $query->where('is_active', true);
+        return $query->where('is_featured', true)->where('is_active', true);
     }
 }

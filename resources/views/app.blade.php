@@ -127,7 +127,10 @@
         header {
             background-color: #fff; 
             padding: 10px 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1000;
+            order: -1; /* Ensure header comes first in flexbox */
         }
         .header-container {
             max-width: 1200px; 
@@ -168,9 +171,101 @@
             text-decoration: none;
             font-size: 14px;
             transition: background-color 0.3s ease;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .header-auth-button:hover {
             background-color: #555; /* Darker hover */
+            text-decoration: none;
+            color: #fff;
+        }
+
+        /* User Dropdown Styles */
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-toggle i {
+            font-size: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown-toggle.active i {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            min-width: 200px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e5e7eb;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            margin-top: 8px;
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            color: #374151;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.2s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8fafc;
+            color: #1a1a1a;
+            text-decoration: none;
+        }
+
+        .dropdown-item i {
+            width: 16px;
+            color: #6b7280;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background-color: #e5e7eb;
+            margin: 8px 0;
+        }
+
+        .logout-btn {
+            color: #dc2626 !important;
+            font-weight: 500;
+        }
+
+        .logout-btn:hover {
+            background-color: #fef2f2 !important;
+            color: #b91c1c !important;
+        }
+
+        .logout-btn i {
+            color: #dc2626 !important;
         }
 
         .header-right {
@@ -183,6 +278,7 @@
             flex: 1; /* Takes up remaining space, pushing footer down */
             display: flex;
             flex-direction: column;
+            order: 0; /* Ensure content comes after header */
         }
 
         /* Main Content Area */
@@ -198,6 +294,7 @@
             background-color: #000; /* Black background for the footer */
             color: #fff;
             padding: 40px 0;
+            order: 1; /* Ensure footer comes last */
         }
         .footer-container {
             max-width: 1200px; /* Match header container width */
@@ -267,6 +364,16 @@
             .header-nav, .header-auth-button {
                 margin-top: 10px;
             }
+            
+            .user-dropdown {
+                margin-top: 10px;
+            }
+
+            .dropdown-menu {
+                right: 0;
+                left: auto;
+                min-width: 180px;
+            }
             .footer-company-name, .footer-social-icons {
                 text-align: center;
                 width: 100%; /* Take full width on small screens */
@@ -300,9 +407,19 @@
             font-size: 48px; 
             font-weight: bold;
             line-height: 1.2;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
             color: #fff;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        .hero-content p {
+            font-size: 20px;
+            font-weight: 300;
+            line-height: 1.5;
+            margin-bottom: 0;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            opacity: 0.95;
         }
 
         /* Responsive adjustments for Hero section */
@@ -313,6 +430,9 @@
             }
             .hero-content h1 {
                 font-size: 32px; /* Adjusted responsive font size to a fixed pixel value for mobile */
+            }
+            .hero-content p {
+                font-size: 16px;
             }
         }
 
@@ -1234,6 +1354,243 @@
                 font-size: 14px;
             }
         }
+
+        /* Homepage Accommodations and Attractions Sections */
+        .accommodations-section,
+        .attractions-section {
+            padding: 50px 0;
+            background-color: #f8f9fa;
+        }
+
+        .accommodations-section:nth-of-type(even),
+        .attractions-section:nth-of-type(even) {
+            background-color: #ffffff;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 220px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover .card-image img {
+            transform: scale(1.05);
+        }
+
+        .placeholder-image {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+        }
+
+        .card-content {
+            padding: 25px;
+        }
+
+        .card-content h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+
+        .card-location {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .card-location i {
+            color: #e74c3c;
+        }
+
+        .card-description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #7f8c8d;
+            font-size: 13px;
+        }
+
+        .meta-item i {
+            color: #3498db;
+        }
+
+        .meta-price {
+            font-weight: 600;
+            color: #27ae60;
+            font-size: 16px;
+        }
+
+        .meta-rating {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #f39c12;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .meta-rating i {
+            color: #f39c12;
+        }
+
+        .type-badge {
+            background: #ecf0f1;
+            color: #2c3e50;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+
+        .type-badge.beach {
+            background: #e8f4fd;
+            color: #2980b9;
+        }
+
+        .type-badge.cultural {
+            background: #fdf2e9;
+            color: #e67e22;
+        }
+
+        .type-badge.adventure {
+            background: #eafaf1;
+            color: #27ae60;
+        }
+
+        .type-badge.nature {
+            background: #f4e8fd;
+            color: #8e44ad;
+        }
+
+        .card-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .card-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        .view-all-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            color: #667eea;
+            text-decoration: none;
+            padding: 15px 30px;
+            border: 2px solid #667eea;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .view-all-button:hover {
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Responsive adjustments for homepage cards */
+        @media (max-width: 768px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 0 15px;
+            }
+
+            .accommodations-section,
+            .attractions-section {
+                padding: 30px 0;
+            }
+
+            .card-content {
+                padding: 20px;
+            }
+
+            .section-header h2 {
+                font-size: 24px;
+            }
+        }
     </style>
 </head>
 
@@ -1253,7 +1610,26 @@
                 </ul>
             </nav>
             @auth
-                <a href="/profile" class="header-auth-button">{{ Auth::user()->name }}</a>
+                <div class="user-dropdown">
+                    <button class="header-auth-button dropdown-toggle" onclick="toggleDropdown()">
+                        {{ Auth::user()->username ?: Auth::user()->name }}
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-menu" id="userDropdown">
+                        <a href="{{ route('profile.show') }}" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            My Profile
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                            @csrf
+                            <button type="submit" class="dropdown-item logout-btn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Logout
+                            </button>
+                        </form>
+                    </div>
+                </div>
             @else
                 <a href="/login" class="header-auth-button">Login/Register</a>
             @endauth
@@ -1321,6 +1697,26 @@
             setInterval(() => {
                 moveCarousel(1);
             }, 5000);
+        });
+
+        // User dropdown functionality
+        function toggleDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            const toggle = document.querySelector('.dropdown-toggle');
+            
+            dropdown.classList.toggle('show');
+            toggle.classList.toggle('active');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('userDropdown');
+            const toggle = document.querySelector('.dropdown-toggle');
+            
+            if (dropdown && !dropdown.contains(event.target) && !toggle.contains(event.target)) {
+                dropdown.classList.remove('show');
+                toggle.classList.remove('active');
+            }
         });
     </script>
 </body>

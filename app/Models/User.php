@@ -11,8 +11,11 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name',
+        'username',
         'email',
         'password',
+        'phone',
+        'address',
         'is_admin',
     ];
 
@@ -48,5 +51,13 @@ class User extends Authenticatable
     public function scopeRegularUsers($query)
     {
         return $query->where('is_admin', false);
+    }
+
+    /**
+     * Get the bookings for the user
+     */
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
     }
 }

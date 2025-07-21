@@ -56,6 +56,19 @@ class Accommodation extends Model
      */
     public function getMainImageAttribute(): string
     {
+        // First try to get the featured image
+        $featuredImage = $this->featuredImage;
+        if ($featuredImage) {
+            return asset('storage/' . $featuredImage->image_path);
+        }
+        
+        // If no featured image, get the first image by sort order
+        $firstImage = $this->images()->first();
+        if ($firstImage) {
+            return asset('storage/' . $firstImage->image_path);
+        }
+        
+        // Fallback to old image_path field if it exists
         if ($this->image_path) {
             return asset('storage/' . $this->image_path);
         }
@@ -89,5 +102,34 @@ class Accommodation extends Model
     public function getCapacityDisplayAttribute(): string
     {
         return $this->capacity . '-' . ($this->capacity + 2);
+    }
+
+    /**
+     * Get accommodation images
+     */
+    public function images()
+    {
+        return $this->hasMany(AccommodationImage::class)->orderBy('sort_order');
+    }
+
+    /**
+     * Get featured image
+     */
+    public function featuredImage()
+    {
+        return $this->hasOne(AccommodationImage::class)->where('is_featured', true);
+    }
+
+    /**
+     * Get first image or fallback to image_path
+     */
+    public function getFirstImageAttribute(): string
+    {
+        $firstImage = $this->images()->first();
+        if ($firstImage) {
+            return asset('storage/' . $firstImage->image_path);
+        }
+        
+        return $this->getMainImageAttribute();
     }
 }

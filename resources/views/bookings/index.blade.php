@@ -5,9 +5,9 @@
 @section('content')
 <style>
     .booking-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 40px 20px;
+        max-width: 100%;
+        margin: 0;
+        padding: 40px 40px 40px 60px;
     }
 
     .page-header {
@@ -311,13 +311,27 @@
 
                     <div class="booking-details">
                         <div class="detail-item">
-                            <div class="detail-label">Booking Date</div>
-                            <div class="detail-value">{{ $booking->booking_date->format('l, M d, Y') }}</div>
+                            <div class="detail-label">Stay Period</div>
+                            <div class="detail-value">{{ $booking->formatted_date_range }}</div>
                         </div>
                         <div class="detail-item">
-                            <div class="detail-label">Booking Price</div>
+                            <div class="detail-label">Duration</div>
+                            <div class="detail-value">{{ $booking->formatted_duration }}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Total Price</div>
                             <div class="detail-value">{{ $booking->formatted_price }}</div>
                         </div>
+                        @if($booking->status === 'active')
+                            <div class="detail-item">
+                                <div class="detail-label">Guest Name</div>
+                                <div class="detail-value">{{ $booking->user->name }}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Contact</div>
+                                <div class="detail-value">{{ $booking->user->phone ?: $booking->user->email }}</div>
+                            </div>
+                        @endif
                         <div class="detail-item">
                             <div class="detail-label">Status</div>
                             <div class="detail-value">{{ $booking->status_display }}</div>
@@ -360,10 +374,6 @@
                         Your booking history is empty.
                     @endif
                 </p>
-                <a href="{{ route('accommodations.index') }}" class="action-button primary" style="margin-top: 20px;">
-                    <i class="fas fa-search"></i>
-                    Browse Accommodations
-                </a>
             </div>
         @endif
     </div>

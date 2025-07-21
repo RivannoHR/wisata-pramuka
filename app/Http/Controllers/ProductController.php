@@ -77,7 +77,20 @@ class ProductController extends Controller
             $query->orderBy('created_at', 'desc');
         }
 
-        $products = $query->paginate(12); // 12 products per page
+        // Get page number for infinite scroll
+        $page = $request->get('page', 1);
+        $perPage = 12;
+        
+        $products = $query->paginate($perPage, ['*'], 'page', $page);
+
+        // If it's an AJAX request, return only the product cards
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('products.partials.product-cards', compact('products'))->render(),
+                'hasMore' => $products->hasMorePages(),
+                'nextPage' => $products->currentPage() + 1
+            ]);
+        }
 
         return view('products.index', compact('products'));
     }
