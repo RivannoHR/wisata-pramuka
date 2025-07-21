@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             ProductSeeder::class,
             TouristAttractionSeeder::class,
+            TouristAttractionImageSeeder::class, // Add this to seed tourist attraction images
             AccommodationSeeder::class,
             AccommodationImageSeeder::class, // Add this to seed accommodation images
             BookingSeeder::class,
