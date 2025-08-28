@@ -36,7 +36,7 @@
                     </div>
                     @if($product->image_path)
                     <div class="product-image">
-                        <img src="{{ asset('images/' . $product->image_path) }}" alt="{{ $product->title }}">
+                        <img src="{{ asset('storage/' . $product->image_path) }}" alt="{{ $product->title }}">
                     </div>
                     @else
                     <div class="product-image placeholder">
@@ -104,7 +104,7 @@
                     @endif
                 </div>
                 <a href="{{ route('accommodations.show', $accommodation->id) }}" class="card-button">
-                    View Details
+                    {{ $accommodation->formatted_type }}
                 </a>
             </div>
         </div>
@@ -114,7 +114,7 @@
         @endif
     </div>
 
-    @if($accommodations->count() > 0)
+    @if($accommodations->count() >= 3)
     <div style="text-align: center; margin-top: 40px;">
         <a href="{{ route('accommodations.index') }}" class="view-all-button">
             <i class="fas fa-th-large"></i>

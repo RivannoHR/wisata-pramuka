@@ -2,7 +2,7 @@
     <div class="product-card">
         @if($product->image_path)
             <div class="product-card-image">
-                <img src="{{ asset('storage/' . $product->image_path) }}" alt="{{ $product->title }}">
+                <img src="{{ asset('public/images' . $product->image_path) }}" alt="{{ $product->title }}">
             </div>
         @else
             <div class="product-card-image placeholder">

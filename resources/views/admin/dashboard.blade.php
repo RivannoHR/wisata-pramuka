@@ -63,6 +63,7 @@
             font-weight: 600;
             padding: 5px;
             color: inherit;
+            font-size: large;
         }
 
         .main-menu .menu-option:hover {
@@ -70,14 +71,17 @@
         }
 
         .profile-menu {
-            padding-bottom: 20px;
-            padding-left: 20px;
-            padding-right: 20px;
+            padding-bottom: 10px;
             padding-top: 10px;
-            display: flex;
-            align-items: center;
-            border-top: 2px solid #333;
+            background-color: red;
+            font-weight: 500;
+            color: white;
+            font-size: larger;
+            text-align: center;
+        }
 
+        .profile-menu:hover {
+            opacity: 60%;
         }
 
         .profile-menu .profile-name {
@@ -128,24 +132,35 @@
             <img src="{{ asset('images/logo.jpg') }}">
         </div>
         <div class="main-menu">
-
-            <a href="{{ route('admin.products')}}">
+            <a href="{{ route('admin.bookings')}}">
                 <div class="menu-option">
-                    Products
+                    Booking
                 </div>
             </a>
-            <div class="menu-option">
-                Hello sir
-            </div>
-            <div class="menu-option">
-                Hello sir
-            </div>
+            <a href="{{ route('admin.orders')}}">
+                <div class="menu-option">
+                    Pesanan
+                </div>
+            </a>
+            <a href="{{ route('admin.products')}}">
+                <div class="menu-option">
+                    Produk
+                </div>
+            </a>
+            <a href="{{ route('admin.tourist.attractions')}}">
+                <div class="menu-option">
+                    Tempat Wisata
+                </div>
+            </a>
+            <a href="{{ route('admin.accommodations')}}">
+                <div class="menu-option">
+                    Penginapan
+                </div>
+            </a>
         </div>
-        <a href="#" title="click to logout">
+        <a href="#" title="click to logout" style="text-decoration: none;">
             <div class="profile-menu">
-                <img src="{{ asset('images/House.jpg')}}">
-                <div class="profile-name">Hi4</div>
-                <i class="fa-regular fa-circle-xmark" style="width: 16px; height: 19px"></i>
+                <div>Logout</div>
             </div>
         </a>
     </div>

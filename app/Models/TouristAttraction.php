@@ -24,45 +24,32 @@ class TouristAttraction extends Model
         'is_active' => 'boolean'
     ];
 
-    /**
-     * Get the images for the tourist attraction
-     */
     public function images(): HasMany
     {
         return $this->hasMany(TouristAttractionImage::class)->ordered();
     }
 
-    /**
-     * Get the featured image for the tourist attraction
-     */
     public function featuredImage()
     {
         return $this->hasOne(TouristAttractionImage::class)->featured()->ordered();
     }
 
-    /**
-     * Get the main image (featured image or first image or fallback)
-     */
     public function getMainImageAttribute(): string
     {
-        // Try to get featured image first
         $featuredImage = $this->featuredImage;
         if ($featuredImage) {
             return $featuredImage->image_url;
         }
 
-        // Try to get first image
         $firstImage = $this->images()->first();
         if ($firstImage) {
             return $firstImage->image_url;
         }
 
-        // Fallback to single image_path if exists
         if ($this->image_path) {
             return asset('storage/' . $this->image_path);
         }
 
-        // Default fallback image
         return asset('/images/destinations/default-attraction.jpg');
     }
 

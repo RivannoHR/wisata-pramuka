@@ -14,7 +14,6 @@ class Accommodation extends Model
         'rating',
         'capacity',
         'facilities',
-        'image_path',
         'price_per_night',
         'is_active'
     ];
@@ -51,28 +50,24 @@ class Accommodation extends Model
         return ucfirst($this->type);
     }
 
-    /**
-     * Get main image URL
-     */
     public function getMainImageAttribute(): string
     {
-        // First try to get the featured image
         $featuredImage = $this->featuredImage;
         if ($featuredImage) {
             return asset('storage/' . $featuredImage->image_path);
         }
-        
+
         // If no featured image, get the first image by sort order
         $firstImage = $this->images()->first();
         if ($firstImage) {
             return asset('storage/' . $firstImage->image_path);
         }
-        
+
         // Fallback to old image_path field if it exists
         if ($this->image_path) {
             return asset('storage/' . $this->image_path);
         }
-        
+
         // Use local placeholder images based on type
         $placeholders = [
             'hotel' => '/images/accommodations/placeholder-hotel.jpg',
@@ -81,13 +76,10 @@ class Accommodation extends Model
             'homestay' => '/images/accommodations/placeholder-homestay.jpg',
             'guesthouse' => '/images/accommodations/placeholder-guesthouse.jpg'
         ];
-        
+
         return asset($placeholders[$this->type] ?? $placeholders['hotel']);
     }
 
-    /**
-     * Get formatted price
-     */
     public function getFormattedPriceAttribute(): string
     {
         if ($this->price_per_night) {
@@ -96,40 +88,41 @@ class Accommodation extends Model
         return 'Contact for pricing';
     }
 
-    /**
-     * Get capacity display
-     */
     public function getCapacityDisplayAttribute(): string
     {
         return $this->capacity . '-' . ($this->capacity + 2);
     }
 
-    /**
-     * Get accommodation images
-     */
     public function images()
     {
         return $this->hasMany(AccommodationImage::class)->orderBy('sort_order');
     }
 
-    /**
-     * Get featured image
-     */
     public function featuredImage()
     {
         return $this->hasOne(AccommodationImage::class)->where('is_featured', true);
     }
 
-    /**
-     * Get first image or fallback to image_path
-     */
     public function getFirstImageAttribute(): string
     {
         $firstImage = $this->images()->first();
         if ($firstImage) {
             return asset('storage/' . $firstImage->image_path);
         }
-        
+
         return $this->getMainImageAttribute();
+    }
+    public function roomTypes()
+    {
+        return $this->hasMany(AccommodationRoomType::class);
+    }
+    public function getLowestPriceAttribute(): string
+    {
+
+        return number_format($this->roomTypes()->min('price'));
+    }
+    public function getImgCountAttribute()
+    {
+        return $this->images()->count();
     }
 }

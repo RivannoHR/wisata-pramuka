@@ -13,13 +13,12 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->redirectGuestsTo(function (Request $request) {
-            if ($request->is('admin/*')) {
+            if ($request->is(['admin/*', 'admin'])) {
                 return route('admin.login');
             }
 
             return route('login');
         });
-        
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

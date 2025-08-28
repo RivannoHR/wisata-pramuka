@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('image_path');
             $table->string('alt_text')->nullable();
             $table->integer('sort_order')->default(0);
-            $table->boolean('is_featured')->default(false);
+            $table->boolean('is_featured')->default(false)->nullable();
             $table->timestamps();
         });
     }

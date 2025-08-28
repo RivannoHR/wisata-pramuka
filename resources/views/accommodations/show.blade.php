@@ -581,6 +581,16 @@
                             <input type="date" class="form-control" id="checkout_date" name="checkout_date" required>
                         </div>
                     </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="checkin_date">Check-in Date</label>
+                            <input type="date" class="form-control" id="checkin_date" name="checkin_date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="checkout_date">Check-out Date</label>
+                            <input type="date" class="form-control" id="checkout_date" name="checkout_date" required>
+                        </div>
+                    </div>
                     
                     <div class="form-group">
                         <label for="special_requests">Special Requests (Optional)</label>

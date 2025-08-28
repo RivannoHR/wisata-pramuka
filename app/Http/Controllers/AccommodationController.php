@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Accommodation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class AccommodationController extends Controller
 {
@@ -19,10 +20,10 @@ class AccommodationController extends Controller
         // Search functionality
         if ($request->filled('search')) {
             $search = $request->get('search');
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', '%' . $search . '%')
-                  ->orWhere('description', 'like', '%' . $search . '%')
-                  ->orWhere('location', 'like', '%' . $search . '%');
+                    ->orWhere('description', 'like', '%' . $search . '%')
+                    ->orWhere('location', 'like', '%' . $search . '%');
             });
         }
 
@@ -55,7 +56,7 @@ class AccommodationController extends Controller
         // Get page number for infinite scroll
         $page = $request->get('page', 1);
         $perPage = 10;
-        
+
         $accommodations = $query->paginate($perPage, ['*'], 'page', $page);
 
         // Get unique types for filter dropdown
@@ -82,7 +83,41 @@ class AccommodationController extends Controller
     public function show($id)
     {
         $accommodation = Accommodation::with(['images', 'featuredImage'])->active()->findOrFail($id);
-        
+
         return view('accommodations.show', compact('accommodation'));
+    }
+    public function toggleActive(Accommodation $accommodation)
+    {
+        $accommodation->is_active = !$accommodation->is_active;
+        $accommodation->save();
+        return redirect()->back();
+    }
+    public function apply(Request $request, Accommodation $accommodation)
+    {
+
+        $rules = [
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'type' => 'required|string|in:hotel,villa,guesthouse,resort',
+            'location' => 'nullable|string',
+            'rating' => 'nullable|min:0|max:5',
+            'capacity' => 'required|integer|min:1',
+            'facilities' => 'nullable|string',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+        $validatedData = $validator->validated();
+        $facilitiesArray = collect(explode(',', $validatedData['facilities'] ?? ''))
+            ->map(fn($item) => trim($item))
+            ->filter()
+            ->values()
+            ->toArray();
+        $validatedData['facilities'] = $facilitiesArray;
+        $accommodation->update($validatedData);
+        return redirect()->route('admin.accommodations');
     }
 }

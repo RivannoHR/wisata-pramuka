@@ -103,11 +103,11 @@
             <form method="POST" action="{{ route('login') }}" class="login-form">
                 @csrf
                 <div class="form-group">
-                    <input type="email" name="email" placeholder="Email" required>
+                    <input type="email" name="email" placeholder="Email" value="rumahliterasihijau@yahoo.com" required>
                 </div>
 
                 <div class="form-group">
-                    <input type="password" name="password" placeholder="Password" required>
+                    <input type="password" name="password" placeholder="Password" value="pulaupramuka" required>
                 </div>
 
                 <button type="submit" class="login-button">Log In</button>

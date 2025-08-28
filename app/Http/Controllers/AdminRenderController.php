@@ -2,9 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\ProductFilter;
 use App\Http\Controllers\Controller;
+use App\Models\Accommodation;
+use App\Models\AccommodationImage;
+use App\Models\Booking;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Http\Request as HttpRequest;
+
+use function PHPUnit\Framework\isEmpty;
+use function PHPUnit\Framework\isNull;
 
 class AdminRenderController extends Controller
 {
@@ -14,35 +22,54 @@ class AdminRenderController extends Controller
     }
     public function productRender(Request $request)
     {
-        $products = Product::all();
+        if (!$request->has('filter_yes')) {
+            $products = Product::all();
+            return view('admin.products.index', compact('products'));
+        }
+        $query = Product::query();
+        $query = ProductFilter::apply($query, $request);
+        $products = $query->get();
         return view('admin.products.index', compact('products'));
     }
     public function productCreateRender(Request $request)
     {
-        return view('admin.products.create');
+        $button = "Create Product";
+        return view('admin.products.create', compact('button'));
     }
-    public function toggleStatus(Request $request, Product $product)
+    public function productEditRender(Product $product)
     {
-        // Validate the request to ensure a valid field is being toggled
-        $request->validate([
-            'field' => 'required|in:is_shown,is_featured'
-        ]);
-
-        // Get the field name from the request
-        $field = $request->input('field');
-
-        // Toggle the boolean value
-        $product->{$field} = !$product->{$field};
-        $product->save();
-
-        // Return a JSON response with the new status
-        return response()->json([
-            'success' => true,
-            'newStatus' => $product->{$field} ? 'Yes' : 'No',
-            'is_shown' => $product->is_shown, // You might need this for frontend logic
-            'is_featured' => $product->is_featured,
-            'message' => ucfirst(str_replace('_', ' ', $field)) . ' status updated successfully.'
-        ]);
+        $button = "Apply Edit";
+        return view('admin.products.create', compact('button', 'product'));
     }
-    
+    public function bookingRender(Request $request)
+    {
+        if (!$request->has('filter_yes')) {
+            $bookings = Booking::all();
+            return view('admin.bookings.index', compact('bookings'));
+        }
+        // $query = Product::query();
+        // $query = ProductFilter::apply($query, $request);
+        // $products = $query->get();
+        return view('admin.bookings.index', compact('bookings'));
+    }
+    public function orderRender(Request $request) {}
+    public function touristattractionRender(Request $request) {}
+    public function accommodationRender(Request $request)
+    {
+        $accommodations = Accommodation::all();
+        $typesfilter = ['Hotel', 'Villa', 'Guesthouse', 'Resort'];
+        return view('admin.accommodations.index', compact('accommodations', 'typesfilter'));
+    }
+
+    public function accommodationImagesRender(Accommodation $accommodation)
+    {
+        $images = $accommodation->images;
+        return view('admin.accommodations.images.index', compact('images', 'accommodation'));
+    }
+    public function accommodationEditRender(Accommodation $accommodation)
+    {
+        $button = "Apply Edit";
+        $typesfilter = ['hotel', 'villa', 'guesthouse', 'resort'];
+        return view('admin.accommodations.create', compact('button', 'accommodation', 'typesfilter'));
+    }
 }
