@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     protected $table = 'products';
-    
+
     protected $fillable = [
         'product_id',
         'title',
@@ -47,16 +47,16 @@ class Product extends Model
     {
         // Get the last product ID
         $lastProduct = self::orderBy('id', 'desc')->first();
-        
+
         if (!$lastProduct || !$lastProduct->product_id) {
             // First product
             return 'PD00001';
         }
-        
+
         // Extract number from last product_id (e.g., PD00001 -> 1)
         $lastNumber = (int) substr($lastProduct->product_id, 2);
         $nextNumber = $lastNumber + 1;
-        
+
         // Format with leading zeros (5 digits total)
         return 'PD' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
     }

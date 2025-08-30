@@ -2,69 +2,40 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\GeneralFilter;
+use App\Http\Requests\StoreAccommodationRequest;
 use App\Models\Accommodation;
+use App\Models\AccommodationImage;
+use App\Models\AccommodationRoomType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class AccommodationController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Accommodation::with(['images', 'featuredImage'])->active();
+        $query = Accommodation::with(['images', 'featuredImage'])
+            ->active()
+            ->leftJoin('accommodation_room_types', 'accommodations.id', '=', 'accommodation_room_types.accommodation_id')
+            ->selectRaw('accommodations.*, MIN(accommodation_room_types.price) as price')
+            ->groupBy('accommodations.id');
 
-        // Filter by type
-        if ($request->filled('type') && $request->type !== 'all') {
-            $query->byType($request->type);
-        }
+        $query = GeneralFilter::accommodation($query, $request);
 
-        // Search functionality
-        if ($request->filled('search')) {
-            $search = $request->get('search');
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%')
-                  ->orWhere('description', 'like', '%' . $search . '%')
-                  ->orWhere('location', 'like', '%' . $search . '%');
-            });
-        }
 
-        // Filter by capacity
-        if ($request->filled('capacity')) {
-            $capacity = $request->get('capacity');
-            $query->where('capacity', '>=', $capacity);
-        }
-
-        // Sorting
-        $sortBy = $request->get('sort', 'name');
-        $sortOrder = $request->get('order', 'asc');
-
-        switch ($sortBy) {
-            case 'price':
-                $query->orderBy('price_per_night', $sortOrder);
-                break;
-            case 'rating':
-                $query->orderBy('rating', $sortOrder);
-                break;
-            case 'capacity':
-                $query->orderBy('capacity', $sortOrder);
-                break;
-            case 'name':
-            default:
-                $query->orderBy('name', $sortOrder);
-                break;
-        }
-
-        // Get page number for infinite scroll
         $page = $request->get('page', 1);
         $perPage = 10;
-        
         $accommodations = $query->paginate($perPage, ['*'], 'page', $page);
 
-        // Get unique types for filter dropdown
         $types = [
             'all' => 'All Types',
             'hotel' => 'Hotel',
             'villa' => 'Villa',
             'guesthouse' => 'Guesthouse',
-            'resort' => 'Resort'
+            'resort' => 'Resort',
+            'homestay' => 'Homestay'
         ];
 
         // If it's an AJAX request, return only the accommodation cards
@@ -81,8 +52,97 @@ class AccommodationController extends Controller
 
     public function show($id)
     {
-        $accommodation = Accommodation::with(['images', 'featuredImage'])->active()->findOrFail($id);
-        
+
+        $accommodation = Accommodation::with(['images', 'roomTypes'])
+            ->active()
+            ->selectRaw('accommodations.*, (SELECT MIN(price) FROM accommodation_room_types WHERE accommodation_id = accommodations.id) as lowest_price')
+            ->findOrFail($id); 
+
         return view('accommodations.show', compact('accommodation'));
+    }
+    public function toggleActive(Accommodation $accommodation)
+    {
+        $accommodation->is_active = !$accommodation->is_active;
+        $accommodation->save();
+        return redirect()->back();
+    }
+    public function apply(Request $request, Accommodation $accommodation)
+    {
+
+        $rules = [
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'type' => 'required|string|in:hotel,villa,guesthouse,resort',
+            'location' => 'nullable|string',
+            'rating' => 'nullable|min:0|max:5',
+            'capacity' => 'required|integer|min:1',
+            'facilities' => 'nullable|string',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+        $validatedData = $validator->validated();
+        $facilitiesArray = collect(explode(',', $validatedData['facilities'] ?? ''))
+            ->map(fn($item) => trim($item))
+            ->filter()
+            ->values()
+            ->toArray();
+        $validatedData['facilities'] = $facilitiesArray;
+        $accommodation->update($validatedData);
+        return redirect()->route('admin.accommodations');
+    }
+    public function store(StoreAccommodationRequest $request)
+    {
+        return DB::transaction(function () use ($request) {
+
+
+            $validated = $request->validated();
+            $facilitiesArray = collect(explode(',', $validated['facilities'] ?? ''))
+                ->map(fn($item) => trim($item))
+                ->filter()
+                ->values()
+                ->toArray();
+
+            $accommodationData = array_merge($validated, ['facilities' => $facilitiesArray]);
+            $accommodation = Accommodation::create($accommodationData);
+            $imagePath = $request->file('product_image')->store('accommodations/' . $accommodation->id, 'public');
+            $accommodationImage = new AccommodationImage([
+                'accommodation_id' => $accommodation->id,
+                'image_path' => $imagePath,
+                'alt_text' => $validated['alt_text'],
+                'sort_order' => 1,
+            ]);
+            $accommodationImage->save();
+
+            $roomImagePath = $request->file('room_image')->store('accommodations/' . $accommodation->id . '/rooms', 'public');
+
+            $accommodationRoomType = new AccommodationRoomType([
+                'accommodation_id' => $accommodation->id,
+                'name' => $validated['room_name'],
+                'image_path' => $roomImagePath,
+                'price' => $validated['room_price'],
+            ]);
+            $accommodationRoomType->save();
+
+
+            return redirect()->route('admin.accommodations');
+        });
+    }
+    public function delete(Accommodation $accommodation)
+    {
+        Storage::disk('public')->delete('accommodations/' . $accommodation->id);
+        $accommodation->delete();
+        return redirect()->back();
+    }
+
+    public function deleteAll()
+    {
+        Storage::disk('public')->deleteDirectory('accommodations');
+        Accommodation::truncate();
+        Storage::disk('public')->makeDirectory('accommodations');
+        return redirect()->back();
     }
 }

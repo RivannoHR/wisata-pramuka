@@ -239,31 +239,31 @@
         .booking-container {
             padding: 20px 15px;
         }
-        
+
         .page-header h1 {
             font-size: 2rem;
         }
-        
+
         .booking-header {
             flex-direction: column;
             gap: 12px;
             align-items: flex-start;
         }
-        
+
         .booking-details {
             grid-template-columns: 1fr;
             gap: 16px;
         }
-        
+
         .booking-actions {
             flex-direction: column;
         }
-        
+
         .tab-button {
             padding: 10px 16px;
             font-size: 0.9rem;
         }
-        
+
         .booking-tabs {
             flex-wrap: wrap;
         }
@@ -279,16 +279,16 @@
 
     <!-- Status Tabs -->
     <div class="booking-tabs">
-        <a href="{{ route('bookings.index', ['status' => 'pending']) }}" 
-           class="tab-button {{ $status === 'pending' ? 'active' : '' }}">
+        <a href="{{ route('bookings.index', ['status' => 'pending']) }}"
+            class="tab-button {{ $status === 'pending' ? 'active' : '' }}">
             Pending Booking
         </a>
-        <a href="{{ route('bookings.index', ['status' => 'active']) }}" 
-           class="tab-button {{ $status === 'active' ? 'active' : '' }}">
+        <a href="{{ route('bookings.index', ['status' => 'active']) }}"
+            class="tab-button {{ $status === 'active' ? 'active' : '' }}">
             Active
         </a>
-        <a href="{{ route('bookings.index', ['status' => 'history']) }}" 
-           class="tab-button {{ $status === 'history' ? 'active' : '' }}">
+        <a href="{{ route('bookings.index', ['status' => 'history']) }}"
+            class="tab-button {{ $status === 'history' ? 'active' : '' }}">
             History
         </a>
     </div>
@@ -296,92 +296,93 @@
     <!-- Booking List -->
     <div class="booking-list">
         @if($bookings->count() > 0)
-            @foreach($bookings as $booking)
-                <div class="booking-card">
-                    <div class="booking-header">
-                        <div class="booking-info">
-                            <div class="booking-id">Booking ID: {{ $booking->booking_id }}</div>
-                            <div class="accommodation-name">{{ $booking->accommodation->name }}</div>
-                            <div class="room-type">Room Type: {{ ucfirst($booking->room_type) }}</div>
-                        </div>
-                        <div class="status-badge status-{{ $booking->status }}">
-                            {{ $booking->status_display }}
-                        </div>
-                    </div>
-
-                    <div class="booking-details">
-                        <div class="detail-item">
-                            <div class="detail-label">Stay Period</div>
-                            <div class="detail-value">{{ $booking->formatted_date_range }}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Duration</div>
-                            <div class="detail-value">{{ $booking->formatted_duration }}</div>
-                        </div>
-                        <div class="detail-item">
-                            <div class="detail-label">Total Price</div>
-                            <div class="detail-value">{{ $booking->formatted_price }}</div>
-                        </div>
-                        @if($booking->status === 'active')
-                            <div class="detail-item">
-                                <div class="detail-label">Guest Name</div>
-                                <div class="detail-value">{{ $booking->user->name }}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">Contact</div>
-                                <div class="detail-value">{{ $booking->user->phone ?: $booking->user->email }}</div>
-                            </div>
-                        @endif
-                        <div class="detail-item">
-                            <div class="detail-label">Status</div>
-                            <div class="detail-value">{{ $booking->status_display }}</div>
-                        </div>
-                    </div>
-
-                    @if($booking->status === 'pending')
-                        <div class="booking-actions">
-                            <form method="POST" action="{{ route('bookings.updateStatus', $booking) }}" style="display: inline;">
-                                @csrf
-                                @method('PATCH')
-                                <input type="hidden" name="status" value="cancelled">
-                                <button type="submit" class="action-button danger" 
-                                        onclick="return confirm('Are you sure you want to cancel this booking?')">
-                                    <i class="fas fa-times"></i>
-                                    Cancel Booking
-                                </button>
-                            </form>
-                        </div>
-                    @endif
+        @foreach($bookings as $booking)
+        <div class="booking-card">
+            <div class="booking-header">
+                <div class="booking-info">
+                    <div class="booking-id">Booking ID: {{ $booking->booking_id }}</div>
+                    <div class="accommodation-name">{{ $booking->accommodation->name }}</div>
+                    <div class="room-type">Room Type: {{ ucfirst($booking->accommodationroomtype?->name) }}</div>
+                    <div class="room-type">Rooms Booked: {{ $booking->rooms_count }}</div>
                 </div>
-            @endforeach
-
-            <!-- Pagination -->
-            @if($bookings->hasPages())
-                <div class="pagination-wrapper" style="margin-top: 40px;">
-                    {{ $bookings->withQueryString()->links() }}
+                <div class="status-badge status-{{ $booking->status }}">
+                    {{ $booking->status_display }}
                 </div>
-            @endif
-        @else
-            <div class="no-bookings">
-                <i class="fas fa-calendar-times"></i>
-                <h3>No {{ $status }} bookings found</h3>
-                <p>
-                    @if($status === 'pending')
-                        You don't have any pending bookings at the moment.
-                    @elseif($status === 'active')
-                        You don't have any active bookings at the moment.
-                    @else
-                        Your booking history is empty.
-                    @endif
-                </p>
             </div>
+
+            <div class="booking-details">
+                <div class="detail-item">
+                    <div class="detail-label">Stay Period</div>
+                    <div class="detail-value">{{ $booking->formatted_date_range }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Duration</div>
+                    <div class="detail-value">{{ $booking->formatted_duration }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Total Price</div>
+                    <div class="detail-value">{{ $booking->formatted_price }}</div>
+                </div>
+                @if($booking->status === 'active')
+                <div class="detail-item">
+                    <div class="detail-label">Guest Name</div>
+                    <div class="detail-value">{{ $booking->user->name }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Contact</div>
+                    <div class="detail-value">{{ $booking->user->phone ?: $booking->user->email }}</div>
+                </div>
+                @endif
+                <div class="detail-item">
+                    <div class="detail-label">Status</div>
+                    <div class="detail-value">{{ $booking->status_display }}</div>
+                </div>
+            </div>
+
+            @if($booking->status === 'pending')
+            <div class="booking-actions">
+                <form method="POST" action="{{ route('bookings.updateStatus', $booking) }}" style="display: inline;">
+                    @csrf
+                    @method('PATCH')
+                    <input type="hidden" name="status" value="cancelled">
+                    <button type="submit" class="action-button danger"
+                        onclick="return confirm('Are you sure you want to cancel this booking?')">
+                        <i class="fas fa-times"></i>
+                        Cancel Booking
+                    </button>
+                </form>
+            </div>
+            @endif
+        </div>
+        @endforeach
+
+        <!-- Pagination -->
+        @if($bookings->hasPages())
+        <div class="pagination-wrapper" style="margin-top: 40px;">
+            {{ $bookings->withQueryString()->links() }}
+        </div>
+        @endif
+        @else
+        <div class="no-bookings">
+            <i class="fas fa-calendar-times"></i>
+            <h3>No {{ $status }} bookings found</h3>
+            <p>
+                @if($status === 'pending')
+                You don't have any pending bookings at the moment.
+                @elseif($status === 'active')
+                You don't have any active bookings at the moment.
+                @else
+                Your booking history is empty.
+                @endif
+            </p>
+        </div>
         @endif
     </div>
 </div>
 
 @if(session('success'))
-    <script>
-        alert('{{ session('success') }}');
-    </script>
+<script>
+    alert('{{ session('success') }}');
+</script>
 @endif
 @endsection

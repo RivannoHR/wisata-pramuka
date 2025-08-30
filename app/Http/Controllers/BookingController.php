@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\Accommodation;
+use App\Models\AccommodationRoomType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -16,11 +17,11 @@ class BookingController extends Controller
     public function index(Request $request)
     {
         $status = $request->get('status', 'pending');
-        
+
         // Get bookings for the authenticated user only
         $bookingsQuery = Booking::with(['accommodation', 'user'])
             ->where('user_id', auth()->id());
-        
+
         if ($status === 'pending') {
             $bookingsQuery->byStatus('pending');
         } elseif ($status === 'active') {
@@ -33,7 +34,7 @@ class BookingController extends Controller
             $bookingsQuery->byStatus('pending');
             $status = 'pending';
         }
-        
+
         $bookings = $bookingsQuery->orderBy('created_at', 'desc')->paginate(10);
 
         return view('bookings.index', compact('bookings', 'status'));
@@ -48,37 +49,42 @@ class BookingController extends Controller
             'accommodation_id' => 'required|exists:accommodations,id',
             'checkin_date' => 'required|date|after_or_equal:today',
             'checkout_date' => 'required|date|after:checkin_date',
-            'duration_days' => 'required|integer|min:1|max:365',
+            'accommodation_room_type_id' => 'required|exists:accommodation_room_types,id',
+            'rooms_count' => 'required|integer|min:1',
             'special_requests' => 'nullable|string|max:1000',
         ]);
 
-        $accommodation = Accommodation::findOrFail($request->accommodation_id);
-        
-        // Generate unique booking ID
+        // Retrieve the selected room type to get its price
+        $roomType = AccommodationRoomType::findOrFail($request->accommodation_room_type_id);
+
+        // Calculate the duration of the stay
+        $checkinDate = new \DateTime($request->checkin_date);
+        $checkoutDate = new \DateTime($request->checkout_date);
+        $duration = $checkinDate->diff($checkoutDate)->days;
+
+        // Calculate the total price based on the room type, duration, and number of rooms
+        $totalPrice = $roomType->price * $duration * $request->rooms_count;
+
+        // Generate a unique booking ID
         $bookingId = $this->generateBookingId();
-        
-        // Calculate total price based on duration
-        $pricePerNight = $accommodation->price_per_night ?? 500000;
-        $duration = $request->duration_days;
-        $totalPrice = $pricePerNight * $duration;
 
         $booking = Booking::create([
             'booking_id' => $bookingId,
             'user_id' => auth()->id(),
             'accommodation_id' => $request->accommodation_id,
-            'room_type' => 'standard', // Default room type
-            'rooms_count' => 1, // Default to 1 room
-            'booking_date' => $request->checkin_date,
+            'accommodation_room_type_id' => $request->accommodation_room_type_id,
+            'rooms_count' => $request->rooms_count,
+            'booking_date' => now(), // Use the current date for the booking date
             'check_in_date' => $request->checkin_date,
             'check_out_date' => $request->checkout_date,
             'duration_days' => $duration,
             'total_price' => $totalPrice,
             'status' => 'pending',
-            'notes' => $request->special_requests // Use notes field for special requests
+            'notes' => $request->special_requests
         ]);
 
         return redirect()->route('bookings.index')
-            ->with('success', 'Booking created successfully! Booking ID: ' . $bookingId);
+            ->with('success', 'Booking created successfully! ' . $bookingId);
     }
 
     /**
@@ -86,15 +92,20 @@ class BookingController extends Controller
      */
     public function updateStatus(Request $request, Booking $booking)
     {
-        // Check if booking belongs to the authenticated user
-        if ($booking->user_id !== auth()->id()) {
-            abort(403, 'Unauthorized access to this booking.');
-        }
-        
         $request->validate([
             'status' => 'required|in:pending,active,cancelled'
         ]);
+        // Check if booking belongs to the authenticated user
+        if (auth()->user()->is_admin) {
+            $booking->update([
+                'status' => $request->status
+            ]);
+            return back()->with('success', 'Booking status updated successfully!');
+        }
 
+        if ($booking->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized access to this booking.');
+        }
         // Users can only cancel their own pending bookings
         if ($request->status === 'cancelled' && $booking->status === 'pending') {
             $booking->update([
@@ -106,9 +117,6 @@ class BookingController extends Controller
         return back()->with('error', 'Unable to update booking status.');
     }
 
-    /**
-     * Generate unique booking ID
-     */
     private function generateBookingId(): string
     {
         do {

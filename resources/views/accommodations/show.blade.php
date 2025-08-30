@@ -360,16 +360,53 @@
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
     }
 
+    .room-image-container {
+        position: relative;
+        width: 100%;
+        /* The height will be determined by the image's aspect ratio */
+    }
+
+    .room-image {
+        width: 100%;
+        height: auto;
+        display: block;
+        object-fit: cover;
+        border-radius: 8px;
+        /* Assuming you want to match the form control border radius */
+    }
+
+    .room-image-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 8px;
+        background-image: linear-gradient(rgba(115, 115, 115, 0) 15%, rgba(0, 0, 0, 0.75) 100%);
+    }
+
+    .room-price-tag {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        color: white;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
     @media (max-width: 768px) {
         .accommodation-detail-container {
             padding: 20px 10px;
         }
-        
+
         .form-row {
             grid-template-columns: 1fr;
             gap: 15px;
         }
-        
+
         .accommodation-title {
             font-size: 2rem;
         }
@@ -409,22 +446,22 @@
                         Accommodation
                     </div>
                     @if($accommodation->location)
-                        <div class="meta-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            {{ $accommodation->location }}
-                        </div>
+                    <div class="meta-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        {{ $accommodation->location }}
+                    </div>
                     @endif
-                    @if($accommodation->price)
-                        <div class="meta-item">
-                            <i class="fas fa-tag"></i>
-                            Rp {{ number_format($accommodation->price, 0, ',', '.') }}/night
-                        </div>
+                    @if($accommodation->lowest_price)
+                    <div class="meta-item">
+                        <i class="fas fa-tag"></i>
+                        Rp {{ $accommodation->lowest_price }}/night
+                    </div>
                     @endif
                     @if($accommodation->capacity)
-                        <div class="meta-item">
-                            <i class="fas fa-users"></i>
-                            Up to {{ $accommodation->capacity }} guests
-                        </div>
+                    <div class="meta-item">
+                        <i class="fas fa-users"></i>
+                        Up to {{ $accommodation->capacity }} guests
+                    </div>
                     @endif
                 </div>
             </div>
@@ -434,13 +471,13 @@
     <div class="accommodation-content">
         <!-- Description Section -->
         @if($accommodation->description)
-            <div class="content-section">
-                <h2 class="section-title">
-                    <i class="fas fa-info-circle"></i>
-                    About This Place
-                </h2>
-                <p class="description-text">{{ $accommodation->description }}</p>
-            </div>
+        <div class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-info-circle"></i>
+                About This Place
+            </h2>
+            <p class="description-text">{{ $accommodation->description }}</p>
+        </div>
         @endif
 
         <!-- Image Gallery Section -->
@@ -451,46 +488,46 @@
             </h2>
             <div class="image-gallery">
                 @if($accommodation->images->count() > 0)
-                    <div class="gallery-main-image" id="mainImage" 
-                         style="background-image: url('{{ asset('storage/' . $accommodation->images->first()->image_path) }}')"
-                         onclick="openLightbox(0)">
+                <div class="gallery-main-image" id="mainImage"
+                    style="background-image: url('{{ asset('storage/' . $accommodation->images->first()->image_path) }}')"
+                    onclick="openLightbox(0)">
+                </div>
+
+                <div class="gallery-thumbnails">
+                    @foreach($accommodation->images as $index => $image)
+                    <div class="gallery-thumbnail {{ $index === 0 ? 'active' : '' }}"
+                        style="background-image: url('{{ asset('storage/' . $image->image_path) }}')"
+                        onclick="changeMainImage('{{ asset('storage/' . $image->image_path) }}', {{ $index }})">
                     </div>
-                    
-                    <div class="gallery-thumbnails">
-                        @foreach($accommodation->images as $index => $image)
-                            <div class="gallery-thumbnail {{ $index === 0 ? 'active' : '' }}" 
-                                 style="background-image: url('{{ asset('storage/' . $image->image_path) }}')"
-                                 onclick="changeMainImage('{{ asset('storage/' . $image->image_path) }}', {{ $index }})">
-                            </div>
-                        @endforeach
-                    </div>
-                    
-                    <div class="gallery-counter">
-                        <span id="imageCounter">1</span> of {{ $accommodation->images->count() }} images
-                    </div>
+                    @endforeach
+                </div>
+
+                <div class="gallery-counter">
+                    <span id="imageCounter">1</span> of {{ $accommodation->images->count() }} images
+                </div>
                 @else
-                    <!-- Fallback to main_image if no images relationship -->
-                    <div class="gallery-main-image" id="mainImage" 
-                         style="background-image: url('{{ $accommodation->main_image }}')"
-                         onclick="openLightbox(0)">
+                <!-- Fallback to main_image if no images relationship -->
+                <div class="gallery-main-image" id="mainImage"
+                    style="background-image: url('{{ $accommodation->main_image }}')"
+                    onclick="openLightbox(0)">
+                    @if(!$accommodation->main_image)
+                    No Image Available
+                    @endif
+                </div>
+
+                <div class="gallery-thumbnails">
+                    <div class="gallery-thumbnail active"
+                        style="background-image: url('{{ $accommodation->main_image }}')"
+                        onclick="changeMainImage('{{ $accommodation->main_image }}', 0)">
                         @if(!$accommodation->main_image)
-                            No Image Available
+                        Room 1
                         @endif
                     </div>
-                    
-                    <div class="gallery-thumbnails">
-                        <div class="gallery-thumbnail active" 
-                             style="background-image: url('{{ $accommodation->main_image }}')"
-                             onclick="changeMainImage('{{ $accommodation->main_image }}', 0)">
-                            @if(!$accommodation->main_image)
-                                Room 1
-                            @endif
-                        </div>
-                    </div>
-                    
-                    <div class="gallery-counter">
-                        <span id="imageCounter">1</span> of 1 image
-                    </div>
+                </div>
+
+                <div class="gallery-counter">
+                    <span id="imageCounter">1</span> of 1 image
+                </div>
                 @endif
             </div>
         </div>
@@ -503,33 +540,33 @@
             </h2>
             <div class="info-grid">
                 @if($accommodation->location)
-                    <div class="info-item">
-                        <i class="fas fa-map-marker-alt info-icon"></i>
-                        <div class="info-content">
-                            <h4>Location</h4>
-                            <p>{{ $accommodation->location }}</p>
-                        </div>
+                <div class="info-item">
+                    <i class="fas fa-map-marker-alt info-icon"></i>
+                    <div class="info-content">
+                        <h4>Location</h4>
+                        <p>{{ $accommodation->location }}</p>
                     </div>
+                </div>
                 @endif
 
-                @if($accommodation->price)
-                    <div class="info-item">
-                        <i class="fas fa-tag info-icon"></i>
-                        <div class="info-content">
-                            <h4>Price per Night</h4>
-                            <p>Rp {{ number_format($accommodation->price, 0, ',', '.') }}</p>
-                        </div>
+                @if($accommodation->lowest_price)
+                <div class="info-item">
+                    <i class="fas fa-tag info-icon"></i>
+                    <div class="info-content">
+                        <h4>Starting rate</h4>
+                        <p>Rp {{ $accommodation->lowest_price }}</p>
                     </div>
+                </div>
                 @endif
 
                 @if($accommodation->capacity)
-                    <div class="info-item">
-                        <i class="fas fa-users info-icon"></i>
-                        <div class="info-content">
-                            <h4>Capacity</h4>
-                            <p>Up to {{ $accommodation->capacity }} guests</p>
-                        </div>
+                <div class="info-item">
+                    <i class="fas fa-users info-icon"></i>
+                    <div class="info-content">
+                        <h4>Capacity</h4>
+                        <p>Up to {{ $accommodation->capacity }} guests</p>
                     </div>
+                </div>
                 @endif
 
                 <div class="info-item">
@@ -544,20 +581,20 @@
 
         <!-- Facilities Section -->
         @if($accommodation->facilities && count($accommodation->facilities) > 0)
-            <div class="content-section">
-                <h2 class="section-title">
-                    <i class="fas fa-star"></i>
-                    Facilities & Amenities
-                </h2>
-                <div class="facilities-list">
-                    @foreach($accommodation->facilities as $facility)
-                        <div class="facility-item">
-                            <i class="fas fa-check facility-icon"></i>
-                            {{ $facility }}
-                        </div>
-                    @endforeach
+        <div class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-star"></i>
+                Facilities & Amenities
+            </h2>
+            <div class="facilities-list">
+                @foreach($accommodation->facilities as $facility)
+                <div class="facility-item">
+                    <i class="fas fa-check facility-icon"></i>
+                    {{ $facility }}
                 </div>
+                @endforeach
             </div>
+        </div>
         @endif
 
         <!-- Reservation Form Section -->
@@ -570,7 +607,7 @@
                 <form id="reservationForm" method="POST" action="{{ route('bookings.store') }}">
                     @csrf
                     <input type="hidden" name="accommodation_id" value="{{ $accommodation->id }}">
-                    
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="checkin_date">Check-in Date</label>
@@ -581,12 +618,45 @@
                             <input type="date" class="form-control" id="checkout_date" name="checkout_date" required>
                         </div>
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="special_requests">Special Requests (Optional)</label>
-                        <textarea class="form-control" id="special_requests" name="special_requests" rows="3" placeholder="Any special requests or notes..."></textarea>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="room_type_select">Select Room Type:</label>
+                            <select id="room_type_select" name="accommodation_room_type_id" class="form-control">
+                                @foreach($accommodation->roomTypes as $roomType)
+                                <option value="{{ $roomType->id }}"
+                                    data-image="{{ Storage::url($roomType->image_path) }}"
+                                    data-price="{{ number_format($roomType->price, 0, ',', '.') }}">
+                                    {{ $roomType->name }} - Rp {{ number_format($roomType->price, 0, ',', '.') }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Room Preview</label>
+                            <div class="room-image-container">
+                                <!-- The src and display will be handled by the script -->
+                                <img id="room-image-preview" class="room-image" style="display: none;">
+                                <div class="room-image-overlay"></div>
+                                <div name="room-rate" class="room-price-tag">
+                                    <i class="fas fa-tag" id="room-price-tag-icon"></i>
+                                    <span id="room-price" class="price-text"></span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    
+
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="rooms_count">Number of Rooms</label>
+                            <input type="number" name="rooms_count" id="rooms_count" class="form-control" value="1" min="1" required>
+                        </div>
+                        <div class=" form-group">
+                            <label for="special_requests">Special Requests (Optional)</label>
+                            <textarea class="form-control" id="special_requests" name="special_requests" rows="3" placeholder="Any special requests or notes..."></textarea>
+                        </div>
+                    </div>
+
                     <button type="submit" class="reservation-button">
                         <i class="fas fa-calendar-check"></i>
                         Make Reservation
@@ -605,7 +675,7 @@
 
 <script>
     let currentImageIndex = 0;
-    const images = [
+const images = [
         @if($accommodation->images->count() > 0)
             @foreach($accommodation->images as $image)
                 '{{ asset('storage/' . $image->image_path) }}',
@@ -618,11 +688,11 @@
     function changeMainImage(imageUrl, index) {
         const mainImage = document.getElementById('mainImage');
         mainImage.style.backgroundImage = `url('${imageUrl}')`;
-        
+
         // Update active thumbnail
         document.querySelectorAll('.gallery-thumbnail').forEach(thumb => thumb.classList.remove('active'));
         document.querySelectorAll('.gallery-thumbnail')[index].classList.add('active');
-        
+
         // Update counter
         document.getElementById('imageCounter').textContent = index + 1;
         currentImageIndex = index;
@@ -632,7 +702,7 @@
         currentImageIndex = index;
         const lightbox = document.getElementById('lightbox');
         const lightboxImage = document.getElementById('lightboxImage');
-        
+
         lightboxImage.src = images[index];
         lightbox.style.display = 'block';
     }
@@ -645,31 +715,31 @@
     document.getElementById('reservationForm').addEventListener('submit', function(e) {
         const checkinDate = document.getElementById('checkin_date').value;
         const checkoutDate = document.getElementById('checkout_date').value;
-        
+
         if (!checkinDate || !checkoutDate) {
             e.preventDefault();
             alert('Please fill in all required fields');
             return;
         }
-        
+
         // Validate dates
         const checkin = new Date(checkinDate);
         const checkout = new Date(checkoutDate);
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        
+
         if (checkin < today) {
             e.preventDefault();
             alert('Check-in date cannot be in the past');
             return;
         }
-        
+
         if (checkout <= checkin) {
             e.preventDefault();
             alert('Check-out date must be after check-in date');
             return;
         }
-        
+
         // Calculate duration and add to form
         const duration = Math.ceil((checkout - checkin) / (1000 * 60 * 60 * 24));
         const durationInput = document.createElement('input');
@@ -683,13 +753,13 @@
     document.getElementById('checkin_date').addEventListener('change', function() {
         const checkinDate = this.value;
         const checkoutInput = document.getElementById('checkout_date');
-        
+
         if (checkinDate) {
             // Set minimum check-out date to the day after check-in
             const minCheckout = new Date(checkinDate);
             minCheckout.setDate(minCheckout.getDate() + 1);
             checkoutInput.min = minCheckout.toISOString().split('T')[0];
-            
+
             // Clear check-out if it's now invalid
             if (checkoutInput.value && new Date(checkoutInput.value) <= new Date(checkinDate)) {
                 checkoutInput.value = '';
@@ -706,6 +776,51 @@
         if (e.key === 'Escape') {
             closeLightbox();
         }
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const select = document.getElementById('room_type_select');
+        const imagePreview = document.getElementById('room-image-preview');
+        const priceDisplay = document.getElementById('room-price');
+        const priceTagDisplay = document.getElementById('room-price-tag-icon');
+        // Add an event listener to hide the image if it fails to load
+        imagePreview.onerror = function() {
+            this.style.display = 'none';
+            priceDisplay.style.display = 'none';
+            priceTagDisplay.style.display = 'none';
+        };
+
+        // Function to update the image, price, and visibility
+        function updateRoomPreview() {
+            const selectedOption = select.options[select.selectedIndex];
+            const imageUrl = selectedOption.getAttribute('data-image');
+            const price = selectedOption.getAttribute('data-price');
+
+            if (imageUrl) {
+                // Set the image src and make sure it is visible
+                imagePreview.src = imageUrl;
+                imagePreview.style.display = 'block';
+                priceDisplay.style.display = 'block';
+                priceTagDisplay.style.display = 'block';
+
+            } else {
+                // If there's no image URL, hide the image
+                imagePreview.style.display = 'none';
+                priceDisplay.style.display = 'none';
+                priceTagDisplay.style.display = 'none';
+            }
+
+            // Set the price text
+            priceDisplay.textContent = 'Rp ' + price;
+        }
+
+        // Event listener for changes on the select element
+        select.addEventListener('change', updateRoomPreview);
+
+        // Initial call to set the preview with the first selected option on page load
+        updateRoomPreview();
     });
 </script>
 @endsection

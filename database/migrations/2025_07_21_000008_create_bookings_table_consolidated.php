@@ -16,13 +16,11 @@ return new class extends Migration
             $table->string('booking_id')->unique(); // e.g., BK0001
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('accommodation_id')->constrained()->onDelete('cascade');
-            $table->string('room_type')->nullable()->default('standard');
+            $table->foreignId('accommodation_room_type_id')->constrained()->onDelete('cascade');
             $table->integer('rooms_count')->default(1);
             $table->date('booking_date');
             $table->date('check_in_date')->nullable();
             $table->date('check_out_date')->nullable();
-            $table->date('checkin_date')->nullable();
-            $table->date('checkout_date')->nullable();
             $table->integer('duration_days')->default(1);
             $table->decimal('total_price', 12, 2);
             $table->enum('status', ['pending', 'active', 'cancelled'])->default('pending');

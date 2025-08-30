@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Storage;
+use App\Filters\GeneralFilter;
+use App\Http\Requests\StoreProductRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -16,71 +19,12 @@ class ProductController extends Controller
             $query->active();
         }
 
-        // Search functionality
-        if ($request->filled('search')) {
-            $search = $request->get('search');
-            $query->where(function($q) use ($search) {
-                $q->where('title', 'like', '%' . $search . '%')
-                  ->orWhere('description', 'like', '%' . $search . '%');
-            });
-        }
-
-        // Price filtering
-        if ($request->filled('min_price')) {
-            $query->where('price', '>=', $request->get('min_price'));
-        }
-        if ($request->filled('max_price')) {
-            $query->where('price', '<=', $request->get('max_price'));
-        }
-
-        // Filter by stock availability
-        if ($request->has('stock_filter')) {
-            switch ($request->stock_filter) {
-                case 'in_stock':
-                    $query->where('stock', '>', 0);
-                    break;
-                case 'out_of_stock':
-                    $query->where('stock', '=', 0);
-                    break;
-                case 'low_stock':
-                    $query->where('stock', '>', 0)->where('stock', '<=', 5);
-                    break;
-            }
-        }
-
-        // Sorting
-        if ($request->has('sort_by')) {
-            switch ($request->sort_by) {
-                case 'name_asc':
-                    $query->orderBy('title', 'asc');
-                    break;
-                case 'name_desc':
-                    $query->orderBy('title', 'desc');
-                    break;
-                case 'price_asc':
-                    $query->orderBy('price', 'asc');
-                    break;
-                case 'price_desc':
-                    $query->orderBy('price', 'desc');
-                    break;
-                case 'stock_asc':
-                    $query->orderBy('stock', 'asc');
-                    break;
-                case 'stock_desc':
-                    $query->orderBy('stock', 'desc');
-                    break;
-                default:
-                    $query->orderBy('created_at', 'desc');
-                    break;
-            }
-        } else {
-            $query->orderBy('created_at', 'desc');
-        }
+        $query = GeneralFilter::product($query, $request);
 
         // Get page number for infinite scroll
         $page = $request->get('page', 1);
         $perPage = 12;
-        
+
         $products = $query->paginate($perPage, ['*'], 'page', $page);
 
         // If it's an AJAX request, return only the product cards
@@ -99,5 +43,79 @@ class ProductController extends Controller
     {
         $product = Product::where('product_id', $product_id)->firstOrFail();
         return view('products.show', compact('product'));
+    }
+    public function deleteAll()
+    {
+        Product::truncate();
+        return redirect()->back()->with('success', 'All products have been successfully deleted.');
+    }
+    public function toggleActive(Product $product)
+    {
+        $product->is_active = !$product->is_active;
+        $product->save();
+        return redirect()->route('admin.products');
+    }
+    public function toggleFeatured(Product $product)
+    {
+        $product->is_featured = !$product->is_featured;
+        $product->save();
+        return redirect()->route('admin.products');
+    }
+    public function store(StoreProductRequest $request)
+    {
+        // Validation has already passed if this code is reached
+        $validatedData = $request->validated();
+
+        // Handle file upload
+        if ($request->hasFile('product_image')) {
+            $path = $request->file('product_image')->store('products', 'public');
+            $validatedData['image_path'] = $path;
+        }
+
+        // Create the product
+        Product::create($validatedData);
+
+        return redirect()->route('admin.products')
+            ->with('success', 'Product created successfully!');
+    }
+    public function productEditApply(StoreProductRequest $request, Product $product)
+    {
+        // Get the validated data from the form request.
+        $validatedData = $request->validated();
+
+        // Check if a new image was uploaded.
+        if ($request->hasFile('product_image')) {
+
+            // 1. Delete the old image if it exists.
+            if ($product->image_path) {
+                Storage::disk('public')->delete($product->image_path);
+            }
+
+            // 2. Store the new image in the 'products' directory.
+            $path = $request->file('product_image')->store('products', 'public');
+
+            // 3. Update the image_path in the validated data.
+            $validatedData['image_path'] = $path;
+        }
+
+        // Update the product with the validated data (including the new image path if applicable).
+        // The `fill` method is a clean way to mass-assign attributes.
+        $product->fill($validatedData);
+        $product->save();
+
+        // Redirect the user to a product page or a success message.
+        return redirect()->route('admin.products');
+    }
+    public function productDelete(Product $product)
+    {
+        if ($product->image_path) {
+            Storage::disk('public')->delete($product->image_path);
+        }
+
+        // 2. Delete the product record from the database.
+        $product->delete();
+
+        // 3. Redirect the user back with a success message.
+        return redirect()->back()->with('success', 'Product deleted successfully!');
     }
 }

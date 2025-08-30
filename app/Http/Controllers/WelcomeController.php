@@ -27,7 +27,7 @@ class WelcomeController extends Controller
         $touristAttractions = TouristAttraction::inRandomOrder()
             ->take(3)
             ->get();
-            
+
         return view('welcome', compact('products', 'accommodations', 'touristAttractions'));
     }
 }

@@ -15,7 +15,9 @@ class DatabaseSeeder extends Seeder
             TouristAttractionImageSeeder::class, // Add this to seed tourist attraction images
             AccommodationSeeder::class,
             AccommodationImageSeeder::class, // Add this to seed accommodation images
+            AccommodationRoomTypeSeeder::class,
             BookingSeeder::class,
+
         ]);
     }
 }

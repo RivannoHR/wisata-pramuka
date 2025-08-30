@@ -8,9 +8,7 @@ use App\Models\Accommodation;
 
 class AccommodationSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+
     public function run(): void
     {
         $accommodations = [

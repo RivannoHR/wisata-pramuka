@@ -3,10 +3,10 @@
 @section('title', 'Accommodations - Pulau Pramuka')
 
 @section('hero_content')
-    <div class="hero-content">
-        <h1>Recharge Your Energy in Our Comfortable Hotels</h1>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-    </div>
+<div class="hero-content">
+    <h1>Recharge Your Energy in Our Comfortable Hotels</h1>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+</div>
 @endsection
 
 @section('content')
@@ -121,7 +121,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.1) 100%);
+        background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.1) 100%);
         z-index: 1;
     }
 
@@ -289,8 +289,13 @@
     }
 
     @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
     }
 
     .end-of-results {
@@ -312,35 +317,35 @@
             gap: 20px;
             padding: 10px 0;
         }
-        
+
         .accommodation-card {
             height: auto;
             min-height: 400px;
         }
-        
+
         .accommodation-image {
             height: 200px;
         }
-        
+
         .accommodation-content {
             padding: 20px;
         }
-        
+
         .accommodation-name {
             font-size: 1.2rem;
         }
-        
+
         .filters-row {
             flex-direction: column;
             align-items: stretch;
         }
-        
+
         .filter-input,
         .search-input {
             min-width: auto;
             width: 100%;
         }
-        
+
         .accommodations-container {
             padding: 0 15px;
         }
@@ -350,22 +355,22 @@
         .accommodations-list {
             grid-template-columns: 1fr;
         }
-        
+
         .accommodation-card {
             min-height: 380px;
         }
-        
+
         .accommodation-image {
             height: 180px;
         }
-        
+
         .rating-overlay {
             top: 10px;
             right: 10px;
             padding: 6px 10px;
             font-size: 0.8rem;
         }
-        
+
         .price-value {
             font-size: 1.1rem;
         }
@@ -379,17 +384,17 @@
             <div class="filters-row">
                 <div class="filter-group">
                     <label for="search">Search</label>
-                    <input type="text" id="search" name="search" class="filter-input search-input" 
-                           placeholder="Search hotels, locations..." value="{{ request('search') }}">
+                    <input type="text" id="search" name="search" class="filter-input search-input"
+                        placeholder="Search hotels, locations..." value="{{ request('search') }}">
                 </div>
 
                 <div class="filter-group">
                     <label for="type">Type</label>
                     <select id="type" name="type" class="filter-input">
                         @foreach($types as $value => $label)
-                            <option value="{{ $value }}" {{ request('type') == $value ? 'selected' : '' }}>
-                                {{ $label }}
-                            </option>
+                        <option value="{{ $value }}" {{ request('type') == $value ? 'selected' : '' }}>
+                            {{ $label }}
+                        </option>
                         @endforeach
                     </select>
                 </div>
@@ -423,13 +428,13 @@
     <!-- Accommodations List -->
     <div class="accommodations-list" id="accommodationsList">
         @if($accommodations->count() > 0)
-            @include('accommodations.partials.accommodation-cards', ['accommodations' => $accommodations])
+        @include('accommodations.partials.accommodation-cards', ['accommodations' => $accommodations])
         @else
-            <div class="no-accommodations">
-                <i class="fas fa-bed"></i>
-                <h3>No accommodations found</h3>
-                <p>Try adjusting your search criteria or browse all accommodations.</p>
-            </div>
+        <div class="no-accommodations">
+            <i class="fas fa-bed"></i>
+            <h3>No accommodations found</h3>
+            <p>Try adjusting your search criteria or browse all accommodations.</p>
+        </div>
         @endif
     </div>
 
@@ -449,7 +454,11 @@
 <script>
     let currentPage = 1;
     let isLoading = false;
-    let hasMorePages = {{ $accommodations->hasMorePages() ? 'true' : 'false' }};
+    let hasMorePages = {
+        {
+            $accommodations - > hasMorePages() ? 'true' : 'false'
+        }
+    };
     let currentFilters = {};
 
     // Auto-submit form when filters change and reset infinite scroll
@@ -472,7 +481,7 @@
         document.getElementById('accommodationsList').innerHTML = '';
         document.getElementById('loadingSpinner').classList.remove('show');
         document.getElementById('endOfResults').classList.remove('show');
-        
+
         // Get current filters
         currentFilters = {
             search: document.getElementById('search').value,
@@ -480,68 +489,68 @@
             sort: document.getElementById('sort').value,
             order: document.getElementById('order').value
         };
-        
+
         loadMoreAccommodations();
     }
 
     function loadMoreAccommodations() {
         if (isLoading || !hasMorePages) return;
-        
+
         isLoading = true;
         document.getElementById('loadingSpinner').classList.add('show');
-        
+
         // Prepare URL with filters
         const params = new URLSearchParams({
             page: currentPage,
             ...currentFilters
         });
-        
+
         fetch(`{{ route('accommodations.index') }}?${params.toString()}`, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('loadingSpinner').classList.remove('show');
-            
-            if (data.html.trim()) {
-                document.getElementById('accommodationsList').insertAdjacentHTML('beforeend', data.html);
-                currentPage = data.nextPage;
-                hasMorePages = data.hasMore;
-                
-                if (!hasMorePages) {
-                    document.getElementById('endOfResults').classList.add('show');
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
                 }
-            } else if (currentPage === 1) {
-                // No results at all
-                document.getElementById('accommodationsList').innerHTML = `
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loadingSpinner').classList.remove('show');
+
+                if (data.html.trim()) {
+                    document.getElementById('accommodationsList').insertAdjacentHTML('beforeend', data.html);
+                    currentPage = data.nextPage;
+                    hasMorePages = data.hasMore;
+
+                    if (!hasMorePages) {
+                        document.getElementById('endOfResults').classList.add('show');
+                    }
+                } else if (currentPage === 1) {
+                    // No results at all
+                    document.getElementById('accommodationsList').innerHTML = `
                     <div class="no-accommodations">
                         <i class="fas fa-bed"></i>
                         <h3>No accommodations found</h3>
                         <p>Try adjusting your search criteria or browse all accommodations.</p>
                     </div>
                 `;
-            }
-            
-            isLoading = false;
-        })
-        .catch(error => {
-            console.error('Error loading accommodations:', error);
-            document.getElementById('loadingSpinner').classList.remove('show');
-            isLoading = false;
-        });
+                }
+
+                isLoading = false;
+            })
+            .catch(error => {
+                console.error('Error loading accommodations:', error);
+                document.getElementById('loadingSpinner').classList.remove('show');
+                isLoading = false;
+            });
     }
 
     // Infinite scroll functionality
     function handleScroll() {
         if (isLoading || !hasMorePages) return;
-        
+
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
         const windowHeight = window.innerHeight;
         const documentHeight = document.documentElement.scrollHeight;
-        
+
         // Load more when user is 200px from bottom
         if (scrollTop + windowHeight >= documentHeight - 200) {
             loadMoreAccommodations();
@@ -565,9 +574,13 @@
             sort: document.getElementById('sort').value,
             order: document.getElementById('order').value
         };
-        
+
         // If we have accommodations but no more pages, show end message
-        if (!hasMorePages && {{ $accommodations->count() }} > 0) {
+        if (!hasMorePages && {
+                {
+                    $accommodations - > count()
+                }
+            } > 0) {
             document.getElementById('endOfResults').classList.add('show');
         }
     });

@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\TouristAttraction;
+use App\Models\TouristAttractionImage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class TouristAttractionController extends Controller
 {
@@ -19,10 +23,10 @@ class TouristAttractionController extends Controller
         // Search functionality
         if ($request->filled('search')) {
             $search = $request->get('search');
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', '%' . $search . '%')
-                  ->orWhere('description', 'like', '%' . $search . '%')
-                  ->orWhere('location', 'like', '%' . $search . '%');
+                    ->orWhere('description', 'like', '%' . $search . '%')
+                    ->orWhere('location', 'like', '%' . $search . '%');
             });
         }
 
@@ -46,7 +50,7 @@ class TouristAttractionController extends Controller
         // Get page number for infinite scroll
         $page = $request->get('page', 1);
         $perPage = 20;
-        
+
         $attractions = $query->paginate($perPage, ['*'], 'page', $page);
 
         // Get unique types for filter dropdown
@@ -72,7 +76,114 @@ class TouristAttractionController extends Controller
     public function show($id)
     {
         $attraction = TouristAttraction::with('images')->active()->findOrFail($id);
-        
+
         return view('tourist-attractions.show', compact('attraction'));
+    }
+    public function toggleActive(TouristAttraction $touristAttraction)
+    {
+        $touristAttraction->is_active = !$touristAttraction->is_active;
+        $touristAttraction->save();
+        return redirect()->back();
+    }
+    public function store(Request $request)
+    {
+
+        return DB::transaction(function () use ($request) {
+            $rules = [
+                'name' => 'required|string|max:255',
+                'description' => 'required|string',
+                'location' => 'required|string',
+                'type' => 'required|string|in:tourist_spot,restaurant,shop',
+                'rating' => 'nullable|numeric|min:0|max:5',
+                'operating_hours' => 'nullable',
+                'product_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // 2MB max
+                'alt_text' => 'required|string|max:255',
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+
+            $validatedData = $validator->validated();
+            $operatingHours = [];
+            if (!empty($validatedData['operating_hours'])) {
+                try {
+                    $operatingHours = json_decode($validatedData['operating_hours'], true);
+                } catch (\Exception $e) {
+                    return redirect()->back()->with('error', 'Invalid operating hours format.')->withInput();
+                }
+            }
+            $touristAttraction = TouristAttraction::create([
+                'name' => $validatedData['name'],
+                'description' => $validatedData['description'],
+                'location' => $validatedData['location'],
+                'type' => $validatedData['type'],
+                'rating' => $validatedData['rating'],
+                'operating_hours' => $operatingHours,
+            ]);
+
+            // Handle image upload
+            $imageFile = $request->file('product_image');
+            $imagePath = $imageFile->store('attractions/' . $touristAttraction->id, 'public');
+
+
+            // Create the main image record for the new attraction
+            TouristAttractionImage::create([
+                'tourist_attraction_id' => $touristAttraction->id,
+                'image_path' => $imagePath,
+                'alt_text' => $validatedData['alt_text'],
+                'sort_order' => 1,
+                'is_featured' => true,
+            ]);
+
+            return redirect()->route('admin.tourist-attractions')->with('success', 'Tourist attraction created successfully!');
+        });
+    }
+    public function apply(Request $request, TouristAttraction $touristAttraction)
+    {
+        $rules = [
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'location' => 'nullable|string',
+            'type' => 'required|string|in:tourist_spot,restaurant,shop',
+            'operating_hours' => 'nullable|string',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $validatedData = $validator->validated();
+
+        // Decode the JSON string for operating hours
+        try {
+            if (isset($validatedData['operating_hours'])) {
+                $validatedData['operating_hours'] = json_decode($validatedData['operating_hours'], true);
+            }
+        } catch (\Exception $e) {
+            // Handle JSON decoding errors if necessary
+            return redirect()->back()->with('error', 'Invalid operating hours format.');
+        }
+
+        $touristAttraction->update($validatedData);
+
+        return redirect()->route('admin.tourist-attractions')->with('success', 'Tourist attraction updated successfully.');
+    }
+    public function delete(TouristAttraction $touristAttraction)
+    {
+        Storage::disk('public')->delete('tourist-attraction/' . $touristAttraction->id);
+        $touristAttraction->delete();
+        return redirect()->back();
+    }
+    public function deleteAll()
+    {
+        Storage::disk('public')->deleteDirectory('tourist-attractions');
+        TouristAttraction::truncate();
+        Storage::disk('public')->makeDirectory('tourist-attractions');
+        return redirect()->back();
     }
 }

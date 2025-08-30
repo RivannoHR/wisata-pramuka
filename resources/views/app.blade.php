@@ -1,25 +1,24 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Pulau Pramuka Travel')</title>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        
         /* Carousel Styles */
         .carousel-container {
             position: relative;
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            padding-bottom: 50px; 
+            padding-bottom: 50px;
             overflow: hidden;
         }
 
@@ -32,7 +31,7 @@
 
         .carousel-slide {
             min-width: 100%;
-            flex: 0 0 100%; 
+            flex: 0 0 100%;
             padding: 0 10px;
             box-sizing: border-box;
             display: flex; 
@@ -113,7 +112,8 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif; /* Changed to Inter */
+            font-family: 'Inter', sans-serif;
+            /* Changed to Inter */
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
@@ -160,11 +160,13 @@
             padding: 5px 0;
             transition: color 0.3s ease;
         }
+
         .header-nav ul li a:hover {
-            color: #007bff; 
+            color: #007bff;
         }
+
         .header-auth-button {
-            background-color: #333; 
+            background-color: #333;
             color: #fff;
             padding: 10px 15px;
             border-radius: 5px;
@@ -177,8 +179,10 @@
             align-items: center;
             gap: 8px;
         }
+
         .header-auth-button:hover {
-            background-color: #555; /* Darker hover */
+            background-color: #555;
+            /* Darker hover */
             text-decoration: none;
             color: #fff;
         }
@@ -275,15 +279,18 @@
 
         /* Page Content Wrapper */
         .page-content {
-            flex: 1; /* Takes up remaining space, pushing footer down */
+            flex: 1;
+            /* Takes up remaining space, pushing footer down */
             display: flex;
             flex-direction: column;
-            order: 0; /* Ensure content comes after header */
+            order: 0;
+            /* Ensure content comes after header */
         }
 
         /* Main Content Area */
         main.content-area {
-            flex: 1; /* Allows main content to grow within page-content */
+            flex: 1;
+            /* Allows main content to grow within page-content */
             max-width: 1200px;
             margin: 20px auto;
             padding: 20px;
@@ -291,41 +298,55 @@
 
         /* Footer Styles */
         footer {
-            background-color: #000; /* Black background for the footer */
+            background-color: #000;
+            /* Black background for the footer */
             color: #fff;
             padding: 40px 0;
-            order: 1; /* Ensure footer comes last */
+            order: 1;
+            /* Ensure footer comes last */
         }
+
         .footer-container {
-            max-width: 1200px; /* Match header container width */
+            max-width: 1200px;
+            /* Match header container width */
             margin: 0 auto;
             padding: 0 20px;
             display: flex;
-            flex-wrap: wrap; /* Allows items to wrap on smaller screens */
+            flex-wrap: wrap;
+            /* Allows items to wrap on smaller screens */
             justify-content: space-between;
             align-items: flex-start;
             gap: 20px;
         }
+
         .footer-logo {
             font-size: 28px;
             font-weight: bold;
             color: #fff;
-            flex: 1 1 150px; /* Allow logo to take flexible width */
+            flex: 1 1 150px;
+            /* Allow logo to take flexible width */
             min-width: 100px;
         }
+
         .footer-company-name {
             font-size: 18px;
-            flex: 2 1 200px; /* Allow company name to take flexible width */
+            flex: 2 1 200px;
+            /* Allow company name to take flexible width */
             text-align: center;
-            margin-top: 5px; /* Adjust spacing */
+            margin-top: 5px;
+            /* Adjust spacing */
         }
+
         .footer-social-icons {
-            flex: 1 1 100px; /* Allow icons to take flexible width */
+            flex: 1 1 100px;
+            /* Allow icons to take flexible width */
             text-align: right;
         }
+
         .social-icon-box {
             display: inline-block;
-            background-color: #333; /* Dark gray for social icon boxes */
+            background-color: #333;
+            /* Dark gray for social icon boxes */
             color: #fff;
             padding: 8px 12px;
             margin-left: 10px;
@@ -334,37 +355,47 @@
             font-size: 14px;
             transition: background-color 0.3s ease;
         }
+
         .social-icon-box:hover {
             background-color: #555;
         }
+
         .footer-separator {
             width: 100%;
             height: 1px;
-            background-color: #333; /* Dark gray line */
+            background-color: #333;
+            /* Dark gray line */
             margin: 20px 0;
         }
+
         .footer-bottom-company-name {
             width: 100%;
             text-align: left;
             font-size: 14px;
-            color: #ccc; /* Lighter gray for bottom text */
+            color: #ccc;
+            /* Lighter gray for bottom text */
         }
 
         /* Responsive adjustments (basic) */
         @media (max-width: 768px) {
-            .header-container, .footer-container {
+
+            .header-container,
+            .footer-container {
                 flex-direction: column;
                 text-align: center;
             }
+
             .header-nav ul {
                 flex-direction: column;
                 gap: 10px;
                 margin-top: 10px;
             }
-            .header-nav, .header-auth-button {
+
+            .header-nav,
+            .header-auth-button {
                 margin-top: 10px;
             }
-            
+
             .user-dropdown {
                 margin-top: 10px;
             }
@@ -374,37 +405,51 @@
                 left: auto;
                 min-width: 180px;
             }
-            .footer-company-name, .footer-social-icons {
+
+            .footer-company-name,
+            .footer-social-icons {
                 text-align: center;
-                width: 100%; /* Take full width on small screens */
+                width: 100%;
+                /* Take full width on small screens */
             }
+
             .social-icon-box {
-                margin: 0 5px; /* Adjust spacing */
+                margin: 0 5px;
+                /* Adjust spacing */
             }
-            
+
         }
 
         /* Hero Section Styles */
         .hero-section-wrapper {
-            min-height: 400px; /* Adjust height as needed for your design */
-            display: flex; /* Use flexbox to align content */
-            align-items: flex-end; /* Align content to the bottom */
-            justify-content: center; /* Center horizontally */
-            padding: 40px 20px; /* Padding for content */
-            box-sizing: border-box; /* Include padding in height calculation */
+            min-height: 400px;
+            /* Adjust height as needed for your design */
+            display: flex;
+            /* Use flexbox to align content */
+            align-items: flex-end;
+            /* Align content to the bottom */
+            justify-content: center;
+            /* Center horizontally */
+            padding: 40px 20px;
+            /* Padding for content */
+            box-sizing: border-box;
+            /* Include padding in height calculation */
             /* This is the gradient background */
             background: linear-gradient(to bottom, #ffffff 0%, #f0f0f0 50%, #555555 100%);
-            color: #fff; /* Default text color for hero content */
+            color: #fff;
+            /* Default text color for hero content */
             text-align: center;
         }
 
         .hero-content {
-            max-width: 800px; /* Constrain text width for readability */
-            margin-bottom: 20px; /* Space from the very bottom of the section */
+            max-width: 800px;
+            /* Constrain text width for readability */
+            margin-bottom: 20px;
+            /* Space from the very bottom of the section */
         }
 
         .hero-content h1 {
-            font-size: 48px; 
+            font-size: 48px;
             font-weight: bold;
             line-height: 1.2;
             margin-bottom: 20px;
@@ -428,9 +473,12 @@
                 min-height: 300px;
                 padding: 20px;
             }
+
             .hero-content h1 {
-                font-size: 32px; /* Adjusted responsive font size to a fixed pixel value for mobile */
+                font-size: 32px;
+                /* Adjusted responsive font size to a fixed pixel value for mobile */
             }
+
             .hero-content p {
                 font-size: 16px;
             }
@@ -438,47 +486,67 @@
 
         /* Products Section Styles */
         .products-section {
-            padding: 40px 0; /* Padding for the section */
+            padding: 40px 0;
+            /* Padding for the section */
         }
 
         .section-header {
-            display: flex; /* Use flexbox to align icon and text */
-            align-items: center; /* Vertically align them */
-            justify-content: center; /* Center them horizontally */
-            margin-bottom: 30px; /* Space below the header */
+            display: flex;
+            /* Use flexbox to align icon and text */
+            align-items: center;
+            /* Vertically align them */
+            justify-content: center;
+            /* Center them horizontally */
+            margin-bottom: 30px;
+            /* Space below the header */
         }
 
         .icon-circle {
-            display: inline-flex; /* Allows custom styling for a small circle */
+            display: inline-flex;
+            /* Allows custom styling for a small circle */
             align-items: center;
             justify-content: center;
-            width: 40px; /* Size of the circle */
+            width: 40px;
+            /* Size of the circle */
             height: 40px;
-            border-radius: 50%; /* Makes it a circle */
-            background-color: #007bff; /* Bright blue background as per screenshot */
-            color: #fff; /* White icon color */
-            font-size: 18px; /* Icon size */
-            margin-right: 15px; /* Space between icon and text */
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Subtle shadow for depth */
+            border-radius: 50%;
+            /* Makes it a circle */
+            background-color: #007bff;
+            /* Bright blue background as per screenshot */
+            color: #fff;
+            /* White icon color */
+            font-size: 18px;
+            /* Icon size */
+            margin-right: 15px;
+            /* Space between icon and text */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            /* Subtle shadow for depth */
         }
 
         .section-header h2 {
-            font-size: 32px; /* Adjust font size as needed */
+            font-size: 32px;
+            /* Adjust font size as needed */
             font-weight: bold;
             color: #333;
-            margin: 0; /* Remove default margin from h2 */
+            margin: 0;
+            /* Remove default margin from h2 */
         }
 
         .product-points-grid {
-            display: grid; /* Use CSS Grid for a flexible layout of points */
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* 3 columns on larger screens, flexible */
-            gap: 20px; /* Space between grid items */
-            padding: 0 20px; /* Padding for the grid inside the container */
+            display: grid;
+            /* Use CSS Grid for a flexible layout of points */
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            /* 3 columns on larger screens, flexible */
+            gap: 20px;
+            /* Space between grid items */
+            padding: 0 20px;
+            /* Padding for the grid inside the container */
         }
 
         .product-point-item:hover {
-            transform: translateY(-5px); /* Slight lift on hover */
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-5px);
+            /* Slight lift on hover */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         .product-point-item h3 {
@@ -492,10 +560,13 @@
             font-size: 16px;
             color: #666;
             line-height: 1.6;
-            flex-grow: 1; /* Allow description to fill available space */
-            overflow: hidden; /* Hide overflow text */
+            flex-grow: 1;
+            /* Allow description to fill available space */
+            overflow: hidden;
+            /* Hide overflow text */
             display: -webkit-box;
-            -webkit-line-clamp: 6; /* Limit to 6 lines */
+            -webkit-line-clamp: 6;
+            /* Limit to 6 lines */
             -webkit-box-orient: vertical;
         }
 
@@ -505,7 +576,8 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-width: 0; /* Allow content to shrink */
+            min-width: 0;
+            /* Allow content to shrink */
         }
 
         /* Product header with ID and stock */
@@ -565,10 +637,13 @@
         }
 
         .product-image {
-            flex: 0 0 200px; /* Fixed width for image container */
+            flex: 0 0 200px;
+            /* Fixed width for image container */
             width: 200px;
-            height: 100%; /* Full height of parent */
-            max-height: 260px; /* Adjust to fit within card height minus padding */
+            height: 100%;
+            /* Full height of parent */
+            max-height: 260px;
+            /* Adjust to fit within card height minus padding */
             overflow: hidden;
             border-radius: 6px;
             position: relative;
@@ -603,45 +678,51 @@
         /* Responsive adjustments for products section */
         @media (max-width: 768px) {
             .section-header h2 {
-                font-size: 28px; /* Smaller heading on mobile */
+                font-size: 28px;
+                /* Smaller heading on mobile */
             }
+
             .product-points-grid {
-                grid-template-columns: 1fr; /* Single column on very small screens */
+                grid-template-columns: 1fr;
+                /* Single column on very small screens */
                 padding: 0 10px;
             }
-            
+
             /* Mobile adjustments for carousel cards */
             .carousel-track {
-                height: 400px; /* Adjusted height for mobile */
+                height: 400px;
+                /* Adjusted height for mobile */
             }
-            
+
             .product-point-item {
-                flex-direction: column; /* Stack vertically on mobile */
+                flex-direction: column;
+                /* Stack vertically on mobile */
                 min-height: 360px;
                 max-height: 360px;
                 max-width: 300px;
                 gap: 15px;
                 align-items: center;
             }
-            
-            .product-image, .product-image.placeholder {
+
+            .product-image,
+            .product-image.placeholder {
                 flex: 0 0 150px;
                 width: 100%;
                 max-height: 150px;
                 height: 150px;
             }
-            
+
             .product-content {
                 text-align: center;
                 width: 100%;
             }
-            
+
             .product-header {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 8px;
             }
-            
+
             .product-button {
                 font-size: 12px;
                 padding: 8px 16px;
@@ -649,8 +730,7 @@
         }
 
 
-        <!-- Login page -->
-        .login-container {
+        < !-- Login page -->.login-container {
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -704,7 +784,7 @@
         .login-button {
             width: 100%;
             padding: 12px;
-            background:rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.95);
             border: 1px solid #ddd;
             color: #666;
             border-radius: 6px;
@@ -715,7 +795,7 @@
         }
 
         .login-button:hover {
-            background:black;
+            background: black;
             color: #fff;
         }
 
@@ -806,7 +886,9 @@
             align-items: center;
         }
 
-        .search-input, .filter-select, .price-input {
+        .search-input,
+        .filter-select,
+        .price-input {
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
@@ -854,14 +936,14 @@
         .product-card {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             overflow: hidden;
         }
 
         .product-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
 
         .product-card-image {
@@ -943,7 +1025,8 @@
             gap: 10px;
         }
 
-        .view-button, .add-to-cart-button {
+        .view-button,
+        .add-to-cart-button {
             padding: 8px 16px;
             border: none;
             border-radius: 5px;
@@ -984,7 +1067,8 @@
             padding: 100px 20px;
             color: #666;
             font-size: 18px;
-            grid-column: 1 / -1; /* Take full width of the grid */
+            grid-column: 1 / -1;
+            /* Take full width of the grid */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -1029,7 +1113,7 @@
             height: 400px;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .product-detail-image img {
@@ -1183,6 +1267,7 @@
             from {
                 opacity: 0;
             }
+
             to {
                 opacity: 1;
             }
@@ -1204,6 +1289,7 @@
                 transform: translateY(-50px);
                 opacity: 0;
             }
+
             to {
                 transform: translateY(0);
                 opacity: 1;
@@ -1592,6 +1678,7 @@
             }
         }
     </style>
+    
 </head>
 
 <body>
@@ -1605,42 +1692,42 @@
                     <li><a href="/accommodations">Accommodation</a></li>
                     <li><a href="/products">Products</a></li>
                     @auth
-                        <li><a href="/transactions">Transaction</a></li>
+                    <li><a href="/transactions">Transaction</a></li>
                     @endauth
                 </ul>
             </nav>
             @auth
-                <div class="user-dropdown">
-                    <button class="header-auth-button dropdown-toggle" onclick="toggleDropdown()">
-                        {{ Auth::user()->username ?: Auth::user()->name }}
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="dropdown-menu" id="userDropdown">
-                        <a href="{{ route('profile.show') }}" class="dropdown-item">
-                            <i class="fas fa-user"></i>
-                            My Profile
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <form method="POST" action="{{ route('logout') }}" style="display: inline;">
-                            @csrf
-                            <button type="submit" class="dropdown-item logout-btn">
-                                <i class="fas fa-sign-out-alt"></i>
-                                Logout
-                            </button>
-                        </form>
-                    </div>
+            <div class="user-dropdown">
+                <button class="header-auth-button dropdown-toggle" onclick="toggleDropdown()">
+                    {{ Auth::user()->username ?: Auth::user()->name }}
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="dropdown-menu" id="userDropdown">
+                    <a href="{{ route('profile.show') }}" class="dropdown-item">
+                        <i class="fas fa-user"></i>
+                        My Profile
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                        @csrf
+                        <button type="submit" class="dropdown-item logout-btn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </button>
+                    </form>
                 </div>
+            </div>
             @else
-                <a href="/login" class="header-auth-button">Login/Register</a>
+            <a href="/login" class="header-auth-button">Login/Register</a>
             @endauth
         </div>
     </header>
 
     <div class="page-content">
         @hasSection('hero_content')
-            <div class="hero-section-wrapper">
-                @yield('hero_content')
-            </div>
+        <div class="hero-section-wrapper">
+            @yield('hero_content')
+        </div>
         @endif
 
         <main class="content-area">
@@ -1661,8 +1748,8 @@
             <div class="footer-bottom-company-name">Company Name</div>
         </div>
     </footer>
+
     
-    {{-- Carousel Section --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             let currentSlide = 0;
@@ -1673,7 +1760,7 @@
             function updateCarousel() {
                 // Update slide position
                 track.style.transform = `translateX(-${currentSlide * 100}%)`;
-                
+
                 // Update dots
                 dots.forEach((dot, index) => {
                     dot.classList.toggle('active', index === currentSlide);
@@ -1703,7 +1790,7 @@
         function toggleDropdown() {
             const dropdown = document.getElementById('userDropdown');
             const toggle = document.querySelector('.dropdown-toggle');
-            
+
             dropdown.classList.toggle('show');
             toggle.classList.toggle('active');
         }
@@ -1712,7 +1799,7 @@
         document.addEventListener('click', function(event) {
             const dropdown = document.getElementById('userDropdown');
             const toggle = document.querySelector('.dropdown-toggle');
-            
+
             if (dropdown && !dropdown.contains(event.target) && !toggle.contains(event.target)) {
                 dropdown.classList.remove('show');
                 toggle.classList.remove('active');
@@ -1720,4 +1807,5 @@
         });
     </script>
 </body>
+
 </html>

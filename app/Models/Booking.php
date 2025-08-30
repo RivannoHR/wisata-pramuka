@@ -10,10 +10,9 @@ class Booking extends Model
         'booking_id',
         'user_id',
         'accommodation_id',
+        'accommodation_room_type_id',
         'rooms_count',
         'booking_date',
-        'checkin_date',
-        'checkout_date',
         'check_in_date',
         'check_out_date',
         'duration_days',
@@ -33,25 +32,22 @@ class Booking extends Model
         'rooms_count' => 'integer'
     ];
 
-    /**
-     * Relationship with User
-     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Relationship with Accommodation
-     */
+
     public function accommodation()
     {
         return $this->belongsTo(Accommodation::class);
     }
+    public function accommodationroomtype()
+    {
+        return $this->belongsTo(AccommodationRoomType::class, 'accommodation_room_type_id');
+    }
 
-    /**
-     * Get formatted price
-     */
+
     public function getFormattedPriceAttribute(): string
     {
         return 'Rp ' . number_format($this->total_price, 0, ',', '.');
@@ -62,7 +58,7 @@ class Booking extends Model
      */
     public function getStatusBadgeAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'pending' => 'warning',
             'active' => 'success',
             'cancelled' => 'danger',
