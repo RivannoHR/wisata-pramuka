@@ -22,11 +22,11 @@ class UserSeeder extends Seeder
 
         // Admin User - Dewi Santika Citra Lesmana
         User::create([
-            'name' => 'Dewi Santika Citra Lesmana',
+            'name' => 'Site Administrator 1',
             'username' => 'Site Administrator 1',
-            'email' => 'rumahliterasihijau@yahoo.com',
+            'email' => 'rlhwisatapramuka@gmail.com',
             'address' => 'Pulau Pramuka, Kepulauan Seribu Utara, Kabupaten Administrasi Kepulauan Seribu',
-            'password' => Hash::make('pulaupramuka'),
+            'password' => Hash::make('g3R4k@nH1JaU#'),
             'is_admin' => true,
         ]);
     }

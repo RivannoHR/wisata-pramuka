@@ -26,7 +26,7 @@
             display: flex;
             transition: transform 0.5s ease-in-out;
             width: 100%;
-            height: 350px; 
+            height: 350px;
         }
 
         .carousel-slide {
@@ -34,10 +34,10 @@
             flex: 0 0 100%;
             padding: 0 10px;
             box-sizing: border-box;
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-        }   
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
         .carousel-button {
             position: absolute;
@@ -93,22 +93,22 @@
         /* Adjust product point item for carousel */
         .product-point-item {
             margin: 10px;
-            flex: 1; 
+            flex: 1;
             display: flex;
             flex-direction: row;
             background-color: #f9f9f9;
             border: 1px solid #eee;
             border-radius: 8px;
             padding: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             /* Fixed size for carousel cards */
             min-height: 300px;
             max-height: 300px;
             width: 100%;
-            max-width: 600px; 
-            gap: 20px; 
-            align-items: stretch; 
+            max-width: 600px;
+            gap: 20px;
+            align-items: stretch;
         }
 
         body {
@@ -125,34 +125,38 @@
 
         /* Header Styles */
         header {
-            background-color: #fff; 
+            background-color: #fff;
             padding: 10px 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             position: relative;
             z-index: 1000;
-            order: -1; /* Ensure header comes first in flexbox */
+            order: -1;
+            /* Ensure header comes first in flexbox */
         }
+
         .header-container {
-            max-width: 1200px; 
+            max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .header-logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-            text-decoration: none;
+
+        .header-logo img {
+            height: 70px;
+            width: auto;
+            object-fit: contain;
         }
+
         .header-nav ul {
             list-style: none;
             margin: 0;
             padding: 0;
             display: flex;
-            gap: 20px; 
+            gap: 20px;
         }
+
         .header-nav ul li a {
             color: #333;
             text-decoration: none;
@@ -420,24 +424,18 @@
 
         }
 
-        /* Hero Section Styles */
         .hero-section-wrapper {
             min-height: 400px;
-            /* Adjust height as needed for your design */
             display: flex;
-            /* Use flexbox to align content */
             align-items: flex-end;
-            /* Align content to the bottom */
             justify-content: center;
-            /* Center horizontally */
             padding: 40px 20px;
-            /* Padding for content */
             box-sizing: border-box;
-            /* Include padding in height calculation */
-            /* This is the gradient background */
-            background: linear-gradient(to bottom, #ffffff 0%, #f0f0f0 50%, #555555 100%);
+            background-image: linear-gradient(rgba(115, 115, 115, 0) 15%, rgba(0, 0, 0, 0.75) 100%),
+                url("storage/pulau-pramuka.jpg");
+            background-size: cover;
+            background-position: center;
             color: #fff;
-            /* Default text color for hero content */
             text-align: center;
         }
 
@@ -1678,13 +1676,15 @@
             }
         }
     </style>
-    
+
 </head>
 
 <body>
     <header>
         <div class="header-container">
-            <a href="/" class="header-logo">Logo</a>
+            <a href="/" class="header-logo">
+                <img src="storage/logo.jpg" style="object-fit: contain">
+            </a>
             <nav class="header-nav">
                 <ul>
                     <li><a href="/">Home</a></li>
@@ -1749,7 +1749,7 @@
         </div>
     </footer>
 
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             let currentSlide = 0;
