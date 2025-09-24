@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2">
+  <!-- Outer rounded square -->
+  <rect x="10" y="10" width="80" height="80" rx="20" ry="20"/>
+  
+  <!-- Inner rounded square (for the main body) -->
+  <rect x="25" y="25" width="50" height="50" rx="10" ry="10"/>
+  
+  <!-- Camera lens (large circle in center) -->
+  <circle cx="50" cy="50" r="15"/>
+  
+  <!-- Inner lens circle -->
+  <circle cx="50" cy="50" r="8"/>
+  
+  <!-- Camera flash/indicator (small circle in top right) -->
+  <circle cx="72" cy="28" r="3"/>
+</svg>
