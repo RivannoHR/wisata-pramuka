@@ -124,6 +124,14 @@ class LoginController extends Controller
     }
 
     /**
+     * Show the regular login form
+     */
+    public function showLoginForm()
+    {
+        return view('auth.login');
+    }
+
+    /**
      * Show the admin login form
      */
     public function showAdminLoginForm()
