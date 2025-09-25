@@ -127,3 +127,8 @@
 #23 {main}
 "} 
 [2025-09-24 06:41:46] local.INFO: User login successful {"user_id":3,"email":"nathanaelss1601@gmail.com","ip":"127.0.0.1","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15"} 
+[2025-09-25 02:31:02] local.INFO: Admin login successful {"user_id":3,"email":"nathanaelss1601@gmail.com","ip":"127.0.0.1","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15"} 
+[2025-09-25 03:54:37] local.ERROR: Maximum execution time of 300 seconds exceeded {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Maximum execution time of 300 seconds exceeded at /Users/nathanaelss/Downloads/wisata-pramuka-minimal/vendor/laravel/framework/src/Illuminate/Foundation/Console/ServeCommand.php:158)
+[stacktrace]
+#0 {main}
+"} 
