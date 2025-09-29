@@ -139,12 +139,49 @@ class LoginController extends Controller
         return view('admin.login');
     }
 
+    /**
+     * Log the user out of the application.
+     */
     public function logout(Request $request)
     {
+        // Log the logout activity
+        if (Auth::check()) {
+            \Log::info('User logout', [
+                'user_id' => Auth::user()->id,
+                'email' => Auth::user()->email,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+        }
+
         Auth::logout();
+        
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('/')->with('success', 'You have been logged out successfully.');
+    }
+
+    /**
+     * Log the admin out of the application.
+     */
+    public function adminLogout(Request $request)
+    {
+        // Log the admin logout activity
+        if (Auth::check()) {
+            \Log::info('Admin logout', [
+                'user_id' => Auth::user()->id,
+                'email' => Auth::user()->email,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+        }
+
+        Auth::logout();
+        
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('admin.login')->with('success', 'Admin logged out successfully.');
     }
 }

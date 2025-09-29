@@ -38,22 +38,28 @@ Route::get('/accommodations/{id}', [AccommodationController::class, 'show'])->na
 Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
 Route::get('/articles/{article}', [ArticleController::class, 'show'])->name('articles.show');
 
-// Authentication Routes
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class, 'login'])->name('login.post');
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+// Authentication Routes (Guest Only)
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+    Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
+    Route::get('/admin/login', [LoginController::class, 'showAdminLoginForm'])->name('admin.login');
+    Route::post('/admin/login', [LoginController::class, 'adminLogin'])->name('admin.login.post');
+});
 
-Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
-
-// Admin Login Routes
-Route::get('/admin/login', [LoginController::class, 'showAdminLoginForm'])->name('admin.login');
-Route::post('/admin/login', [LoginController::class, 'adminLogin'])->name('admin.login.post');
+// Logout Routes (Authenticated Only)
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+    Route::post('/admin/logout', [LoginController::class, 'adminLogout'])->name('admin.logout');
+});
 
 // Profile Routes (Authenticated Users)
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
     Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
     Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
     Route::get('/bookings/{booking}', [BookingController::class, 'show'])->name('bookings.show');

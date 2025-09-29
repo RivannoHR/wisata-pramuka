@@ -6,7 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class SiteStatistic extends Model
 {
-    protected $fillable = ['key', 'value', 'date'];
+    protected $fillable = [
+        'key', 
+        'value', 
+        'date', 
+        'item_type', 
+        'item_id', 
+        'item_name', 
+        'visits'
+    ];
 
     /**
      * Get total site visits

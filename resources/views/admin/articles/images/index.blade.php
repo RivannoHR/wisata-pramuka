@@ -140,10 +140,73 @@
         border-radius: 8px;
         cursor: pointer;
         transition: background-color 0.3s;
+        font-size: 12px;
+        font-family: Arial, sans-serif;
+        margin-bottom: 5px;
+        width: 100%;
     }
 
     .edit-product-button:hover {
         opacity: 60%;
+    }
+
+    .cancel-button {
+        text-decoration: none;
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        font-size: 12px;
+        font-family: Arial, sans-serif;
+    }
+
+    .cancel-button:hover {
+        opacity: 60%;
+    }
+
+    .form-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
+        margin-top: 15px;
+    }
+
+    .back-button {
+        text-decoration: none;
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+        margin-bottom: 20px;
+        display: inline-block;
+    }
+
+    .back-button:hover {
+        opacity: 60%;
+        color: white;
+        text-decoration: none;
+    }
+
+    .page-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        gap: 15px;
+    }
+
+    .page-title {
+        margin: 0;
+        color: #333;
+        font-size: 24px;
     }
 
     .operation-cell {
@@ -213,6 +276,12 @@
         border-radius: 4px
     }
 </style>
+
+<div class="page-header">
+    <a href="{{ route('admin.articles') }}" class="back-button">← Back to Articles</a>
+    <h2 class="page-title">Images for: {{ $article->title }}</h2>
+</div>
+
 <script>
     function showEditPopup(popupId) {
         document.getElementById(popupId).style.display = 'block';
@@ -285,7 +354,10 @@
                                 </div>
                                 @enderror
                                 <br>
-                                <button type="submit" class="create-product-button">Submit</button>
+                                <div class="form-buttons">
+                                    <button type="submit" class="create-product-button">Submit</button>
+                                    <button type="button" class="cancel-button" onclick="hideEditPopup('edit-popup-{{ $image->id }}')">Cancel</button>
+                                </div>
                             </form>
                         </div>
                     </div>

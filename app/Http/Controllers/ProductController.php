@@ -6,10 +6,12 @@ use Illuminate\Support\Facades\Storage;
 use App\Filters\GeneralFilter;
 use App\Http\Requests\StoreProductRequest;
 use App\Models\Product;
+use App\Traits\TrackVisits;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
+    use TrackVisits;
     public function index(Request $request)
     {
         $query = Product::query();
@@ -42,6 +44,10 @@ class ProductController extends Controller
     public function show($product_id)
     {
         $product = Product::where('product_id', $product_id)->firstOrFail();
+        
+        // Track visit
+        $this->trackVisit('product', $product->id, $product->title);
+        
         return view('products.show', compact('product'));
     }
     public function deleteAll()

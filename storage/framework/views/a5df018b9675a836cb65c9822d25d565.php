@@ -1,7 +1,5 @@
-@extends('admin.dashboard')
-
-@section('content')
-<link rel="stylesheet" href="{{ asset('css/admin-tables.css') }}">
+<?php $__env->startSection('content'); ?>
+<link rel="stylesheet" href="<?php echo e(asset('css/admin-tables.css')); ?>">
 <style>
     .filters-section {
         background: white;
@@ -261,40 +259,41 @@
 </style>
 
 <div class="filter-section">
-    <form method="GET" action="{{ route('admin.accommodations') }}">
+    <form method="GET" action="<?php echo e(route('admin.accommodations')); ?>">
         <input type="hidden" name="filter_yes" value="1">
         <div class="filters-row">
             <div class="filter-group">
                 <label for="search">Search</label>
                 <input type="text" id="search" name="search" class="filter-input search-input"
-                    placeholder="Search hotels, locations..." value="{{ request('search') }}">
+                    placeholder="Search hotels, locations..." value="<?php echo e(request('search')); ?>">
             </div>
 
             <div class="filter-group">
                 <label for="type">Type</label>
                 <select id="type" name="type" class="filter-input">
-                    @foreach($types as $value => $label)
-                    <option value="{{ $value }}" {{ request('type') == $value ? 'selected' : '' }}>
-                        {{ $label }}
+                    <?php $__currentLoopData = $types; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($value); ?>" <?php echo e(request('type') == $value ? 'selected' : ''); ?>>
+                        <?php echo e($label); ?>
+
                     </option>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </select>
             </div>
 
             <div class="filter-group">
                 <label for="sort">Sort By</label>
                 <select id="sort" name="sort" class="filter-input">
-                    <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Name</option>
-                    <option value="price" {{ request('sort') == 'price' ? 'selected' : '' }}>Price</option>
-                    <option value="rating" {{ request('sort') == 'rating' ? 'selected' : '' }}>Rating</option>
+                    <option value="name" <?php echo e(request('sort') == 'name' ? 'selected' : ''); ?>>Name</option>
+                    <option value="price" <?php echo e(request('sort') == 'price' ? 'selected' : ''); ?>>Price</option>
+                    <option value="rating" <?php echo e(request('sort') == 'rating' ? 'selected' : ''); ?>>Rating</option>
                 </select>
             </div>
 
             <div class="filter-group">
                 <label for="order">Order</label>
                 <select id="order" name="order" class="filter-input">
-                    <option value="asc" {{ request('order') == 'asc' ? 'selected' : '' }}>Ascending</option>
-                    <option value="desc" {{ request('order') == 'desc' ? 'selected' : '' }}>Descending</option>
+                    <option value="asc" <?php echo e(request('order') == 'asc' ? 'selected' : ''); ?>>Ascending</option>
+                    <option value="desc" <?php echo e(request('order') == 'desc' ? 'selected' : ''); ?>>Descending</option>
                 </select>
             </div>
 
@@ -325,84 +324,89 @@
             </tr>
         </thead>
         <tbody>
-            @forelse ($accommodations as $accommodation)
+            <?php $__empty_1 = true; $__currentLoopData = $accommodations; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $accommodation): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
             <tr>
-                <td class="id-cell">{{ $accommodation->id }}</td>
-                <td class="name-cell">{{ $accommodation->name }}</td>
+                <td class="id-cell"><?php echo e($accommodation->id); ?></td>
+                <td class="name-cell"><?php echo e($accommodation->name); ?></td>
                 <td class="description-cell">
                     <div style="max-height: 100px; overflow-y: auto;">
-                        {{ $accommodation->description }}
+                        <?php echo e($accommodation->description); ?>
+
                     </div>
                 </td>
-                <td class="category-cell">{{ $accommodation->type }}</td>
+                <td class="category-cell"><?php echo e($accommodation->type); ?></td>
                 <td class="location-cell">
                     <div style="max-height: 100px; overflow-y: auto;">
-                        {{ $accommodation->location }}
+                        <?php echo e($accommodation->location); ?>
+
                     </div>
                 </td>
                 <td class="count-cell">
-                    @if($accommodation->average_rating)
-                        {{ $accommodation->rating_display }} ({{ $accommodation->rating_count }})
-                    @else
+                    <?php if($accommodation->average_rating): ?>
+                        <?php echo e($accommodation->rating_display); ?> (<?php echo e($accommodation->rating_count); ?>)
+                    <?php else: ?>
                         N/A
-                    @endif
+                    <?php endif; ?>
                 </td>
-                <td class="count-cell">{{ $accommodation->capacity }}</td>
+                <td class="count-cell"><?php echo e($accommodation->capacity); ?></td>
                 <td class="description-cell">
                     <div style="max-height: 100px; overflow-y: auto;">
-                        {{ implode(', ', $accommodation->facilities) }}
+                        <?php echo e(implode(', ', $accommodation->facilities)); ?>
+
                     </div>
                 </td>
                 <td class="count-cell">
-                    <div>{{ $accommodation->img_count }}</div>
-                    <a href="{{ route('admin.accommodations.images', $accommodation->id) }}" class="edit-link">
+                    <div><?php echo e($accommodation->img_count); ?></div>
+                    <a href="<?php echo e(route('admin.accommodations.images', $accommodation->id)); ?>" class="edit-link">
                         Edit Images
                     </a>
                 </td>
                 <td class="price-cell">
-                    Rp {{ number_format($accommodation->price, 0, ',', '.') }}/night
+                    Rp <?php echo e(number_format($accommodation->price, 0, ',', '.')); ?>/night
                 </td>
                 <td class="status-cell">
-                    <form action="{{ route('admin.accommodations.toggle.isactive',$accommodation->id) }}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        <button class="status-btn {{ $accommodation->is_active ? 'active-btn' : 'inactive-btn' }}"
+                    <form action="<?php echo e(route('admin.accommodations.toggle.isactive',$accommodation->id)); ?>" method="POST">
+                        <?php echo csrf_field(); ?>
+                        <?php echo method_field('PUT'); ?>
+                        <button class="status-btn <?php echo e($accommodation->is_active ? 'active-btn' : 'inactive-btn'); ?>"
                             type="submit" title="Click to change">
-                            {{ $accommodation->is_active ? 'Active' : 'Inactive' }}
+                            <?php echo e($accommodation->is_active ? 'Active' : 'Inactive'); ?>
+
                         </button>
                     </form>
                 </td>
                 <td class="actions-cell">
-                    <a href="{{ route('admin.accommodations.edit', $accommodation->id) }}" class="edit-link">Edit</a>
-                    <a href="{{ route('admin.accommodations.reviews', $accommodation->id) }}" class="edit-link" style="margin-left: 8px;">Edit Reviews</a>
-                    <form action="{{ route('admin.accommodations.delete', $accommodation->id) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete {{ $accommodation->name }}? This action cannot be undone.');">
-                        @csrf
-                        @method('DELETE')
+                    <a href="<?php echo e(route('admin.accommodations.edit', $accommodation->id)); ?>" class="edit-link">Edit</a>
+                    <a href="<?php echo e(route('admin.accommodations.reviews', $accommodation->id)); ?>" class="edit-link" style="margin-left: 8px;">Edit Reviews</a>
+                    <form action="<?php echo e(route('admin.accommodations.delete', $accommodation->id)); ?>" method="POST" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete <?php echo e($accommodation->name); ?>? This action cannot be undone.');">
+                        <?php echo csrf_field(); ?>
+                        <?php echo method_field('DELETE'); ?>
                         <button type="submit" class="delete-button" style="font-size: 0.8rem; padding: 4px 8px;">Delete</button>
                     </form>
                 </td>
             </tr>
-            @empty
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
             <tr>
                 <td colspan="12" style="text-align: center;">No Accommodations Found</td>
             </tr>
-            @endforelse
+            <?php endif; ?>
         </tbody>
     </table>
 </div>
 
 
 <div class="operation-container">
-    <form action="{{ route('admin.accommodations.delete.all') }}" method="POST" onsubmit="return confirm('Are you absolutely sure you want to delete all accommodations? This action cannot be undone.');">
-        @csrf
-        @method('DELETE')
+    <form action="<?php echo e(route('admin.accommodations.delete.all')); ?>" method="POST" onsubmit="return confirm('Are you absolutely sure you want to delete all accommodations? This action cannot be undone.');">
+        <?php echo csrf_field(); ?>
+        <?php echo method_field('DELETE'); ?>
         <button type="submit" class="delete-button">
             Delete All Accommodations
         </button>
     </form>
-    <a href="{{ route('admin.accommodations.create') }}" class="create-button">
+    <a href="<?php echo e(route('admin.accommodations.create')); ?>" class="create-button">
         Add Accommodations
     </a>
 </div>
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('admin.dashboard', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Users/nathanaelss/Downloads/wisata-pramuka-minimal/resources/views/admin/accommodations/index.blade.php ENDPATH**/ ?>

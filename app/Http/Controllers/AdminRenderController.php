@@ -9,7 +9,9 @@ use App\Models\AccommodationImage;
 use App\Models\Article;
 use App\Models\Booking;
 use App\Models\Product;
+use App\Models\SiteStatistic;
 use App\Models\TouristAttraction;
+use App\Traits\TrackVisits;
 use Illuminate\Http\Request;
 use Illuminate\Http\Request as HttpRequest;
 
@@ -18,9 +20,92 @@ use function PHPUnit\Framework\isNull;
 
 class AdminRenderController extends Controller
 {
+    use TrackVisits;
     public function dashboardRender(Request $request)
     {
-        return view('admin.dashboard');
+        // Get pending bookings count
+        $pendingBookingsCount = Booking::where('status', 'pending')->count();
+        
+        // Get pending bookings for notification
+        $pendingBookings = Booking::where('status', 'pending')
+            ->with(['user', 'accommodation'])
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        // Get top 5 most visited items by category using real visit tracking data
+        
+        // Get visit counts for each category
+        $productVisits = $this->getVisitCounts('product', 5);
+        $accommodationVisits = $this->getVisitCounts('accommodation', 5);
+        $attractionVisits = $this->getVisitCounts('tourist_attraction', 5);
+
+        // Get actual models with visit data
+        $topProducts = collect();
+        foreach ($productVisits as $visit) {
+            $product = Product::find($visit->item_id);
+            if ($product && $product->is_active) {
+                $product->view_count = $visit->total_visits;
+                $topProducts->push($product);
+            }
+        }
+
+        $topAccommodations = collect();
+        foreach ($accommodationVisits as $visit) {
+            $accommodation = Accommodation::find($visit->item_id);
+            if ($accommodation && $accommodation->is_active) {
+                $accommodation->view_count = $visit->total_visits;
+                $topAccommodations->push($accommodation);
+            }
+        }
+
+        $topAttractions = collect();
+        foreach ($attractionVisits as $visit) {
+            $attraction = TouristAttraction::find($visit->item_id);
+            if ($attraction && $attraction->is_active) {
+                $attraction->view_count = $visit->total_visits;
+                $topAttractions->push($attraction);
+            }
+        }
+
+        // If no visit data exists yet, fallback to some items with zero visits
+        if ($topProducts->isEmpty()) {
+            $topProducts = Product::where('is_active', true)
+                ->limit(5)
+                ->get()
+                ->map(function ($product) {
+                    $product->view_count = 0;
+                    return $product;
+                });
+        }
+
+        if ($topAccommodations->isEmpty()) {
+            $topAccommodations = Accommodation::where('is_active', true)
+                ->limit(5)
+                ->get()
+                ->map(function ($accommodation) {
+                    $accommodation->view_count = 0;
+                    return $accommodation;
+                });
+        }
+
+        if ($topAttractions->isEmpty()) {
+            $topAttractions = TouristAttraction::where('is_active', true)
+                ->limit(5)
+                ->get()
+                ->map(function ($attraction) {
+                    $attraction->view_count = 0;
+                    return $attraction;
+                });
+        }
+
+        return view('admin.dashboard-content', compact(
+            'pendingBookingsCount',
+            'pendingBookings',
+            'topProducts',
+            'topAccommodations',
+            'topAttractions'
+        ));
     }
     public function productRender(Request $request)
     {
@@ -46,7 +131,9 @@ class AdminRenderController extends Controller
     public function bookingRender(Request $request)
     {
         if (!$request->has('filter_yes')) {
-            $bookings = Booking::all();
+            $bookings = Booking::with(['accommodation', 'user'])
+                ->orderBy('created_at', 'desc')
+                ->get();
             return view('admin.bookings.index', compact('bookings'));
         }
         $bookingsQuery = Booking::with(['accommodation', 'user']);
@@ -56,7 +143,7 @@ class AdminRenderController extends Controller
                 $query->where('name', 'like', '%' . $searchTerm . '%');
             })->orWhereHas('accommodation', function ($query) use ($searchTerm) {
                 $query->where('name', 'like', '%' . $searchTerm . '%');
-            });
+            })->orWhere('booking_id', 'like', '%' . $searchTerm . '%');
         }
         if ($request->has('status') && $request->get('status') !== '') {
             $bookingsQuery->where('status', $request->get('status'));
@@ -68,12 +155,14 @@ class AdminRenderController extends Controller
                 $bookingsQuery->orderBy('created_at', 'asc');
             }
         } else {
+            // Default to newest first (latest)
             $bookingsQuery->orderBy('created_at', 'desc');
         }
         $bookings = $bookingsQuery->get();
 
         return view('admin.bookings.index', compact('bookings'));
     }
+    
     public function touristattractionRender(Request $request)
     {
         $types = [

@@ -173,40 +173,6 @@
         margin-top: 15px;
     }
 
-    .back-button {
-        text-decoration: none;
-        background: #6c757d;
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        font-size: 14px;
-        font-family: Arial, sans-serif;
-        margin-bottom: 20px;
-        display: inline-block;
-    }
-
-    .back-button:hover {
-        opacity: 60%;
-        color: white;
-        text-decoration: none;
-    }
-
-    .page-header {
-        display: flex;
-        align-items: center;
-        margin-bottom: 20px;
-        gap: 15px;
-    }
-
-    .page-title {
-        margin: 0;
-        color: #333;
-        font-size: 24px;
-    }
-
     .operation-cell {
         display: flex;
         align-items: center;
@@ -274,12 +240,6 @@
         border-radius: 4px
     }
 </style>
-
-<div class="page-header">
-    <a href="<?php echo e(route('admin.articles')); ?>" class="back-button">← Back to Articles</a>
-    <h2 class="page-title">Images for: <?php echo e($article->title); ?></h2>
-</div>
-
 <script>
     function showEditPopup(popupId) {
         document.getElementById(popupId).style.display = 'block';
@@ -302,6 +262,7 @@
         <tr>
             <th class="id-cell">Sort Order</th>
             <th class="image-cell">Image</th>
+            <th class="single-button-cell">Is Featured</th>
             <th style="width: 120px;">Operation</th>
         </tr>
     </thead>
@@ -319,13 +280,24 @@
                         class="small-image"
                         data-large-image="<?php echo e(asset('storage/' . $image->image_path)); ?>">
                 </td>
+                <td class="single-button-cell">
+                    <form action="<?php echo e(route('admin.accommodations.images.toggle.isfeatured', [$accommodation->id, $image->id])); ?>" method="POST">
+                        <?php echo csrf_field(); ?>
+                        <?php echo method_field('PUT'); ?>
+                        <button class="status-btn <?php echo e($image->is_featured ? 'active-btn' : 'inactive-btn'); ?>"
+                            type="submit" title="click to change">
+                            <?php echo e($image->is_featured ? 'Yes' : 'No'); ?>
+
+                        </button>
+                    </form>
+                </td>
                 <td style="width: 120px;">
                     <div class="operation-cell">
                         <button type="button" class="edit-product-button" onclick="showEditPopup('edit-popup-<?php echo e($image->id); ?>')">
                             Edit
                         </button>
                         <?php if($images->count() > 1): ?>
-                        <form action="<?php echo e(route('admin.articles.images.delete', [$article->id ,$image->id])); ?>" method="POST">
+                        <form action="<?php echo e(route('admin.accommodations.images.delete', [$accommodation->id ,$image->id])); ?>" method="POST">
                             <?php echo csrf_field(); ?>
                             <?php echo method_field('DELETE'); ?>
                             <button type="submit" class="delete-button">
@@ -339,12 +311,31 @@
                         <div class="edit-popup-content">
                             <span class="close-popup" onclick="hideEditPopup('edit-popup-<?php echo e($image->id); ?>')">&times;</span>
                             <h4>Edit Image</h4>
-                            <form action="<?php echo e(route('admin.articles.images.edit', [$article->id, $image->id])); ?>" method="POST" enctype="multipart/form-data">
+                            <form action="<?php echo e(route('admin.accommodations.images.edit', [$accommodation->id, $image->id])); ?>" method="POST" enctype="multipart/form-data">
                                 <?php echo csrf_field(); ?>
                                 <?php echo method_field('PUT'); ?> <p>Please select a new image:</p>
                                 <input type="file" name="product_image" required>
                                 <br>
                                 <?php $__errorArgs = ['product_image'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <div style="padding-top: 10px; padding: bottom 10px;">
+                                    <span class="error-message">
+                                        <h4><?php echo e($message); ?></h4>
+                                    </span>
+                                </div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                <br>
+                                <label for="alt_text">Enter placeholder text:</label>
+                                <br>
+                                <input type="text" name="alt_text" id="alt_text" required>
+                                <br>
+                                <?php $__errorArgs = ['alt_text'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -384,7 +375,7 @@ unset($__errorArgs, $__bag); ?>
             </tr>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
             <tr>
-                <td colspan="8">No Images Found For <?php echo e($article->title); ?></td>
+                <td colspan="8">No Images Found For <?php echo e($accommodation->name); ?></td>
             </tr>
             <?php endif; ?>
         </tbody>
@@ -400,11 +391,30 @@ unset($__errorArgs, $__bag); ?>
         <div class="edit-popup-content">
             <span class="close-popup" onclick="hideEditPopup('edit-popup-create')">&times;</span>
             <h4>Add New Image</h4>
-            <form action="<?php echo e(route('admin.articles.images.create', $article->id)); ?>" method="POST" enctype="multipart/form-data">
+            <form action="<?php echo e(route('admin.accommodations.images.create', $accommodation->id)); ?>" method="POST" enctype="multipart/form-data">
                 <?php echo csrf_field(); ?>
                 <p>Please select select new image:</p>
                 <input type="file" name="product_image" required>
                 <?php $__errorArgs = ['product_image'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                <div style="padding-top: 10px; padding: bottom 10px;">
+                    <span class="error-message">
+                        <h4><?php echo e($message); ?></h4>
+                    </span>
+                </div>
+                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                <br>
+                <br>
+                <label for="alt_text">Enter placeholder text:</label>
+                <br>
+                <input type="text" name="alt_text" required>
+                <?php $__errorArgs = ['alt_text'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -427,4 +437,4 @@ unset($__errorArgs, $__bag); ?>
 </div>
 
 <?php $__env->stopSection(); ?>
-<?php echo $__env->make('admin.dashboard', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Users/nathanaelss/Downloads/wisata-pramuka-minimal/resources/views/admin/articles/images/index.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('admin.dashboard', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Users/nathanaelss/Downloads/wisata-pramuka-minimal/resources/views/admin/accommodations/images/index.blade.php ENDPATH**/ ?>

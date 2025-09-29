@@ -7,6 +7,7 @@ use App\Http\Requests\StoreAccommodationRequest;
 use App\Models\Accommodation;
 use App\Models\AccommodationImage;
 use App\Models\Review;
+use App\Traits\TrackVisits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Validator;
 
 class AccommodationController extends Controller
 {
+    use TrackVisits;
     public function index(Request $request)
     {
         $query = Accommodation::with(['images', 'featuredImage', 'reviews'])
@@ -51,6 +53,9 @@ class AccommodationController extends Controller
         $accommodation = Accommodation::with(['images', 'reviews'])
             ->active()
             ->findOrFail($id);
+
+        // Track visit
+        $this->trackVisit('accommodation', $accommodation->id, $accommodation->name);
 
         // Get reviews from completed bookings for this accommodation
         $reviews = Review::whereHas('booking', function($query) use ($id) {

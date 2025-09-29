@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\TouristAttraction;
 use App\Models\TouristAttractionImage;
 use App\Models\Rating;
+use App\Traits\TrackVisits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 
 class TouristAttractionController extends Controller
 {
+    use TrackVisits;
     public function index(Request $request)
     {
         $query = TouristAttraction::with(['featuredImage', 'images', 'ratings'])->active();
@@ -81,6 +83,9 @@ class TouristAttractionController extends Controller
         $attraction = TouristAttraction::with(['images', 'ratings.user'])
             ->active()
             ->findOrFail($id);
+
+        // Track visit
+        $this->trackVisit('tourist_attraction', $attraction->id, $attraction->name);
 
         // Get reviews (ratings with comments)
         $reviews = $attraction->ratings()

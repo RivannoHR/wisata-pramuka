@@ -115,7 +115,9 @@
 
     <div class="sidebar-area">
         <div class="logo-container">
-            <img src="<?php echo e(asset('storage/logo.png')); ?>">
+            <a href="<?php echo e(route('admin.dashboard')); ?>" style="display: block; cursor: pointer;">
+                <img src="<?php echo e(asset('storage/logo.png')); ?>">
+            </a>
         </div>
         <div class="main-menu">
             <a href="<?php echo e(route('admin.bookings')); ?>">

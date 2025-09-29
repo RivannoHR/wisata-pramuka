@@ -228,6 +228,49 @@
         opacity: 60%;
     }
 
+    .edit-link {
+        text-decoration: none;
+        background: #200fdb;
+        color: white;
+        border: none;
+        padding: 6px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        font-size: 0.75rem;
+        font-family: Arial, sans-serif;
+        display: inline-block;
+        margin-top: 5px;
+    }
+
+    .edit-link:hover {
+        opacity: 60%;
+        color: white;
+        text-decoration: none;
+    }
+
+    .view-link {
+        text-decoration: none;
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 6px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        font-size: 0.75rem;
+        font-family: Arial, sans-serif;
+        display: inline-block;
+        margin-top: 5px;
+        margin-left: 8px;
+    }
+
+    .view-link:hover {
+        opacity: 60%;
+        color: white;
+        text-decoration: none;
+    }
+
     .image-cell {
         /* Required to position the zoom image correctly */
         position: relative;

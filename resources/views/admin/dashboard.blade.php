@@ -115,7 +115,9 @@
 
     <div class="sidebar-area">
         <div class="logo-container">
-            <img src="{{ asset('storage/logo.png') }}">
+            <a href="{{ route('admin.dashboard') }}" style="display: block; cursor: pointer;">
+                <img src="{{ asset('storage/logo.png') }}">
+            </a>
         </div>
         <div class="main-menu">
             <a href="{{ route('admin.bookings')}}">
