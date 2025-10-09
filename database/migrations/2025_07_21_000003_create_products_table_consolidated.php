@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('stock')->default(0);
             $table->string('image_path')->nullable();
             $table->boolean('is_active')->default(true); // For carousel/featured products
+            $table->boolean('is_featured')->default(false);
             $table->timestamps();
         });
     }

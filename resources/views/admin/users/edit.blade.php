@@ -322,6 +322,35 @@
             </div>
         </div>
 
+        <div class="form-group">
+            <div class="checkbox-group">
+                <input type="checkbox" 
+                       id="is_verified" 
+                       name="is_verified" 
+                       class="checkbox-input"
+                       value="1"
+                       {{ old('is_verified', $user->is_verified) ? 'checked' : '' }}>
+                <label for="is_verified" class="checkbox-label">
+                    Mark as verified user
+                </label>
+            </div>
+            <div class="help-text">
+                Verified users have confirmed their email address through OTP verification
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="email_verified_at">Email Verified Date</label>
+            <input type="datetime-local" 
+                   id="email_verified_at" 
+                   name="email_verified_at" 
+                   value="{{ old('email_verified_at', $user->email_verified_at ? $user->email_verified_at->format('Y-m-d\TH:i') : '') }}">
+            @if($errors->has('email_verified_at'))
+                <span class="error-message">{{ $errors->first('email_verified_at') }}</span>
+            @endif
+            <div class="help-text">Set when the user's email was verified (leave empty for unverified)</div>
+        </div>
+
         <div class="password-section">
             <h4>Change Password</h4>
             <div class="help-text" style="margin-bottom: 15px;">

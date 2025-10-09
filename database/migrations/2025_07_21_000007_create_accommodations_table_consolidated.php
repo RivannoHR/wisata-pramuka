@@ -16,6 +16,7 @@ return new class extends Migration
             $table->text('location')->nullable();
             $table->decimal('rating', 2, 1)->nullable();
             $table->integer('capacity');
+            $table->decimal('price', 12, 2);
             $table->json('facilities')->nullable(); // amenities like wifi, ac, pool, etc.
             $table->boolean('is_active')->default(true);
             $table->timestamps();

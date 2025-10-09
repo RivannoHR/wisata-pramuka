@@ -23,6 +23,11 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
+            
+            // OTP Email Verification fields
+            $table->string('email_otp', 6)->nullable();
+            $table->timestamp('email_otp_expires_at')->nullable();
+            $table->boolean('is_verified')->default(false);
         });
     }
 

@@ -148,6 +148,37 @@
         color: #374151;
     }
 
+    .btn-success {
+        background: #10b981;
+        color: white;
+    }
+
+    .btn-success:hover {
+        background: #059669;
+        text-decoration: none;
+        color: white;
+    }
+
+    .verification-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .verification-badge.verified {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .verification-badge.unverified {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
     .alert {
         padding: 15px 20px;
         border-radius: 8px;
@@ -236,6 +267,22 @@
                     </div>
                 </div>
                 <div class="info-item">
+                    <div class="info-label">Email Verification</div>
+                    <div class="info-value">
+                        @if($user->is_verified)
+                            <span class="verification-badge verified">
+                                <i class="fas fa-check-circle"></i>
+                                Verified
+                            </span>
+                        @else
+                            <span class="verification-badge unverified">
+                                <i class="fas fa-exclamation-circle"></i>
+                                Not Verified
+                            </span>
+                        @endif
+                    </div>
+                </div>
+                <div class="info-item">
                     <div class="info-label">Member Since</div>
                     <div class="info-value">{{ $user->created_at->format('M d, Y') }}</div>
                 </div>
@@ -247,6 +294,12 @@
                     <i class="fas fa-edit"></i>
                     Edit Profile
                 </a>
+                @if(!$user->is_verified)
+                    <a href="{{ route('verify.email') }}" class="btn btn-success">
+                        <i class="fas fa-shield-check"></i>
+                        Verify Email
+                    </a>
+                @endif
             </div>
         </div>
     </div>

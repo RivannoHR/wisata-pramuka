@@ -18,8 +18,13 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\TouristAttractionImageController;
+use App\Http\Controllers\OTPVerificationController;
+use App\Http\Controllers\AboutController;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
+
+// About Us Route
+Route::get('/about', [AboutController::class, 'index'])->name('about.index');
 
 // Product Routes
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
@@ -52,6 +57,14 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::post('/admin/logout', [LoginController::class, 'adminLogout'])->name('admin.logout');
+});
+
+// OTP Verification Routes
+Route::middleware('auth')->group(function () {
+    Route::get('/verify-email', [OTPVerificationController::class, 'showVerifyForm'])->name('verify.email');
+    Route::post('/send-otp', [OTPVerificationController::class, 'sendOTP'])->name('send.otp');
+    Route::post('/verify-otp', [OTPVerificationController::class, 'verifyOTP'])->name('verify.otp');
+    Route::post('/resend-otp', [OTPVerificationController::class, 'resendOTP'])->name('resend.otp');
 });
 
 // Profile Routes (Authenticated Users)
@@ -162,5 +175,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // Booking Management
     Route::get('/admin/bookings', [AdminRenderController::class, 'bookingRender'])->name('admin.bookings');
+    Route::post('/admin/bookings/{booking}/update-status', [BookingController::class, 'updateStatus'])->name('admin.bookings.updateStatus');
+    Route::delete('/admin/bookings/{booking}', [BookingController::class, 'destroy'])->name('admin.bookings.destroy');
     Route::patch('/admin/bookings/{booking}/togglestatus', [BookingController::class, 'updateStatus'])->name('admin.bookings.togglestatus');
 });

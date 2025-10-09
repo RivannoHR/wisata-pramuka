@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/modern-admin-theme.css') }}">
     <style>
         body {
             margin: 0;
@@ -14,6 +15,8 @@
             text-decoration: none;
             color: #333;
             display: flex;
+            overflow-x: hidden;
+            overflow-y: auto;
         }
 
         .sidebar-area {
@@ -89,10 +92,9 @@
             background-color: #f2f2f4;
             height: 100vh;
             width: 80vw;
-            height: 100vh;
             padding: 3%;
             box-sizing: border-box;
-            overflow-y: hidden;
+            overflow-y: auto;
         }
 
         .content-box {

@@ -14,13 +14,13 @@ return new class extends Migration
         Schema::create('ratings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->morphs('ratable'); // This will create ratable_type and ratable_id columns
+            $table->morphs('ratable'); // This will create ratable_type and ratable_id columns with index
             $table->tinyInteger('rating')->unsigned(); // 1-5 stars
+            $table->text('comment')->nullable();
             $table->timestamps();
             
             // Ensure one rating per user per item
             $table->unique(['user_id', 'ratable_type', 'ratable_id']);
-            $table->index(['ratable_type', 'ratable_id']);
         });
     }
 

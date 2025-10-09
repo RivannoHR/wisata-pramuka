@@ -27,8 +27,13 @@ class AdminUserController extends Controller
         }
 
         // Filter by admin status
-        if ($request->has('filter_admin') && $request->filter_admin !== '') {
-            $query->where('is_admin', $request->filter_admin);
+        if ($request->has('is_admin') && $request->is_admin !== '') {
+            $query->where('is_admin', $request->is_admin);
+        }
+
+        // Filter by verification status
+        if ($request->has('is_verified') && $request->is_verified !== '') {
+            $query->where('is_verified', $request->is_verified);
         }
 
         $users = $query->orderBy('created_at', 'desc')->paginate(15);
@@ -131,7 +136,9 @@ class AdminUserController extends Controller
             ],
             'address' => 'nullable|string|max:500',
             'password' => 'nullable|string|min:8|confirmed',
-            'is_admin' => 'boolean'
+            'is_admin' => 'boolean',
+            'is_verified' => 'boolean',
+            'email_verified_at' => 'nullable|date'
         ], [
             'name.required' => 'Full name is required.',
             'name.regex' => 'Full name can only contain letters and spaces.',
@@ -149,6 +156,8 @@ class AdminUserController extends Controller
             'phone' => $request->phone,
             'address' => $request->address,
             'is_admin' => $request->has('is_admin'),
+            'is_verified' => $request->has('is_verified'),
+            'email_verified_at' => $request->email_verified_at,
         ];
 
         // Only update password if provided

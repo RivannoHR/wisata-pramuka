@@ -97,7 +97,15 @@ class BookingController extends Controller
             $booking->update([
                 'status' => $request->status
             ]);
-            return back()->with('success', 'Booking status updated successfully!');
+            
+            $statusMessage = match($request->status) {
+                'active' => 'Booking confirmed successfully!',
+                'cancelled' => 'Booking cancelled successfully!',
+                'completed' => 'Booking marked as completed!',
+                default => 'Booking status updated successfully!'
+            };
+            
+            return back()->with('success', $statusMessage);
         }
 
         if ($booking->user_id !== auth()->id()) {
@@ -112,6 +120,19 @@ class BookingController extends Controller
         }
 
         return back()->with('error', 'Unable to update booking status.');
+    }
+
+    /**
+     * Delete a booking (admin only)
+     */
+    public function destroy(Booking $booking)
+    {
+        if (!auth()->user()->is_admin) {
+            abort(403, 'Unauthorized access.');
+        }
+
+        $booking->delete();
+        return back()->with('success', 'Booking deleted successfully!');
     }
 
     private function generateBookingId(): string

@@ -1,408 +1,240 @@
 @extends('admin.dashboard')
 
 @section('content')
-<link rel="stylesheet" href="{{ asset('css/admin-tables.css') }}">
-<style>
-    .filters-section {
-        background: white;
-        padding: 25px;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        margin-bottom: 30px;
-    }
+<div class="admin-container">
+    <!-- Header Section -->
+    <div class="admin-header">
+        <h1><i class="fas fa-bed"></i> Accommodations</h1>
+        <p>Manage hotels, lodges, and accommodation bookings</p>
+    </div>
 
-    .filters-row {
-        display: flex;
-        gap: 20px;
-        align-items: center;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-
-    .filter-group {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-    }
-
-    .filter-group label {
-        font-weight: 500;
-        color: #333;
-        font-size: 0.9rem;
-    }
-
-    .filter-input {
-        padding: 10px 15px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        min-width: 150px;
-    }
-
-    .filter-input:focus {
-        outline: none;
-        border-color: black;
-        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
-    }
-
-    .search-input {
-        min-width: 250px;
-    }
-
-    .filter-button {
-        background: black;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 500;
-        margin-top: 20px;
-        transition: background-color 0.3s;
-    }
-
-    .filter-button:hover {
-        background: #555;
-    }
-
-    .scroll-x {
-        overflow-x: scroll;
-    }
-
-    .table-container {
-        /* This is the key for overflow scrolling */
-        overflow: auto;
-        /* Allows both X and Y overflow */
-        flex-grow: 1;
-
-        background: white;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    table {
-        width: 100%;
-        /* Ensure the table fills its container */
-        border-collapse: collapse;
-        table-layout: fixed;
-        /* This is crucial for handling overflow */
-    }
-
-    .id-cell {
-        width: 10px;
-    }
-
-    .price-cell {
-        width: 100px;
-    }
-
-    .stock-cell {
-        width: 50px;
-        text-align: center;
-    }
-
-    .single-button-cell {
-        width: 60px;
-    }
-
-
-    th,
-    td {
-        padding: 12px 15px;
-        text-align: left;
-        border-bottom: 1px solid #e0e0e0;
-        vertical-align: top;
-        border-left: 1px solid #e0e0e0;
-        border-right: 1px solid #e0e0e0;
-        /* Ensures content aligns to the top of the cell */
-    }
-
-    th {
-        background-color: #f8f8f8;
-        font-weight: 600;
-        color: #555;
-    }
-
-    tr:hover {
-        background-color: #f2f2f2;
-    }
-
-    td {
-        word-wrap: normal;
-        /* Allows long words to break and wrap to the next line */
-    }
-
-    .stock-cell-header {
-        font-size: small;
-    }
-
-    .description-cell {
-        min-height: 50px;
-
-    }
-
-    .operation-cell {
-        display: flex;
-        gap: 10px;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .operation-cell button {
-        width: 70px;
-    }
-
-    .status-btn {
-        border: none;
-        padding: 8px 12px;
-        border-radius: 6px;
-        color: white;
-        cursor: pointer;
-        font-weight: 500;
-        position: relative;
-        overflow: hidden;
-        transition: background-color 0.3s ease;
-        min-width: 60px;
-    }
-
-    .status-btn:hover {
-        opacity: 60%;
-    }
-
-    .active-btn {
-        background-color: #4CAF50;
-    }
-
-    .inactive-btn {
-        background-color: #f44336;
-
-    }
-
-    .operation-container {
-        background-color: white;
-        width: 100%;
-        font-weight: 600;
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-around;
-        padding-top: 10px;
-        padding-bottom: 10px;
-        border-top: 1px solid #e0e0e0;
-        border-radius: 0px 0px 12px 12px;
-    }
-
-    .delete-button {
-        background: red;
-        color: white;
-        border: none;
-        padding: 8px 12px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-
-    .delete-button:hover {
-        opacity: 60%;
-    }
-
-    .operation-container form {
-        margin: 0;
-    }
-
-    .create-product-button {
-        text-decoration: none;
-        background: #4CAF50;
-        color: white;
-        border: none;
-        padding: 8px 12px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-
-    .create-product-button:hover {
-        opacity: 60%;
-    }
-
-    .edit-product-button {
-        text-decoration: none;
-        background: #200fdb;
-        color: white;
-        border: none;
-        padding: 8px 12px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-
-    .edit-product-button:hover {
-        opacity: 60%;
-    }
-
-    .edit-link {
-        text-decoration: none;
-        background: #200fdb;
-        color: white;
-        border: none;
-        padding: 6px 10px;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        font-size: 0.75rem;
-        font-family: Arial, sans-serif;
-        display: inline-block;
-        margin-top: 5px;
-    }
-
-    .edit-link:hover {
-        opacity: 60%;
-        color: white;
-        text-decoration: none;
-    }
-</style>
-
-<div class="filter-section">
-    <form method="GET" action="{{ route('admin.accommodations') }}">
-        <input type="hidden" name="filter_yes" value="1">
-        <div class="filters-row">
-            <div class="filter-group">
-                <label for="search">Search</label>
-                <input type="text" id="search" name="search" class="filter-input search-input"
-                    placeholder="Search hotels, locations..." value="{{ request('search') }}">
+    <!-- Main Content Card -->
+    <div class="admin-card">
+        <!-- Card Header with Actions -->
+        <div class="card-header">
+            <div class="card-title">
+                <i class="fas fa-list"></i>
+                Accommodations Management
             </div>
-
-            <div class="filter-group">
-                <label for="type">Type</label>
-                <select id="type" name="type" class="filter-input">
-                    @foreach($types as $value => $label)
-                    <option value="{{ $value }}" {{ request('type') == $value ? 'selected' : '' }}>
-                        {{ $label }}
-                    </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="filter-group">
-                <label for="sort">Sort By</label>
-                <select id="sort" name="sort" class="filter-input">
-                    <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Name</option>
-                    <option value="price" {{ request('sort') == 'price' ? 'selected' : '' }}>Price</option>
-                    <option value="rating" {{ request('sort') == 'rating' ? 'selected' : '' }}>Rating</option>
-                </select>
-            </div>
-
-            <div class="filter-group">
-                <label for="order">Order</label>
-                <select id="order" name="order" class="filter-input">
-                    <option value="asc" {{ request('order') == 'asc' ? 'selected' : '' }}>Ascending</option>
-                    <option value="desc" {{ request('order') == 'desc' ? 'selected' : '' }}>Descending</option>
-                </select>
-            </div>
-
-            <div class="filter-group">
-                <button type="submit" class="filter-button">
-                    <i class="fas fa-filter"></i> Filter
+            <div class="action-buttons">
+                <div class="filter-group">
+                    <input type="text" class="search-input" placeholder="Search accommodations..." id="searchInput" value="{{ request('search') }}">
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="toggleFilters()">
+                    <i class="fas fa-filter"></i> Filter Data
                 </button>
+                <a href="{{ route('admin.accommodations.create') ?? '#' }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add Accommodation
+                </a>
             </div>
         </div>
-    </form>
-</div>
-<div class="table-container">
-    <table>
-        <thead>
-            <tr>
-                <th class="id-cell">ID</th>
-                <th class="name-cell">Name</th>
-                <th class="description-cell">Description</th>
-                <th class="category-cell">Type</th>
-                <th class="location-cell">Location</th>
-                <th class="count-cell">Rating</th>
-                <th class="count-cell">Capacity</th>
-                <th class="description-cell">Facilities</th>
-                <th class="count-cell">Images</th>
-                <th class="price-cell">Price</th>
-                <th class="status-cell">Status</th>
-                <th class="actions-cell">Operations</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse ($accommodations as $accommodation)
-            <tr>
-                <td class="id-cell">{{ $accommodation->id }}</td>
-                <td class="name-cell">{{ $accommodation->name }}</td>
-                <td class="description-cell">
-                    <div style="max-height: 100px; overflow-y: auto;">
-                        {{ $accommodation->description }}
-                    </div>
-                </td>
-                <td class="category-cell">{{ $accommodation->type }}</td>
-                <td class="location-cell">
-                    <div style="max-height: 100px; overflow-y: auto;">
-                        {{ $accommodation->location }}
-                    </div>
-                </td>
-                <td class="count-cell">
-                    @if($accommodation->average_rating)
-                        {{ $accommodation->rating_display }} ({{ $accommodation->rating_count }})
-                    @else
-                        N/A
-                    @endif
-                </td>
-                <td class="count-cell">{{ $accommodation->capacity }}</td>
-                <td class="description-cell">
-                    <div style="max-height: 100px; overflow-y: auto;">
-                        {{ implode(', ', $accommodation->facilities) }}
-                    </div>
-                </td>
-                <td class="count-cell">
-                    <div>{{ $accommodation->img_count }}</div>
-                    <a href="{{ route('admin.accommodations.images', $accommodation->id) }}" class="edit-link">
-                        Edit Images
+
+        <!-- Filters Section (Hidden by default) -->
+        <div class="filters-section" id="filtersSection" style="display: none;">
+            <form method="GET" action="{{ route('admin.accommodations') ?? '#' }}" class="filters-row">
+                <div class="filter-group">
+                    <label for="type">Type</label>
+                    <select name="type" id="type" class="filter-input">
+                        <option value="">All Types</option>
+                        <option value="hotel" {{ request('type') == 'hotel' ? 'selected' : '' }}>Hotel</option>
+                        <option value="lodge" {{ request('type') == 'lodge' ? 'selected' : '' }}>Lodge</option>
+                        <option value="guesthouse" {{ request('type') == 'guesthouse' ? 'selected' : '' }}>Guesthouse</option>
+                        <option value="camping" {{ request('type') == 'camping' ? 'selected' : '' }}>Camping</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="min_price">Min Price</label>
+                    <input type="number" name="min_price" id="min_price" class="filter-input" placeholder="0" value="{{ request('min_price') }}">
+                </div>
+                <div class="filter-group">
+                    <label for="max_price">Max Price</label>
+                    <input type="number" name="max_price" id="max_price" class="filter-input" placeholder="1000000" value="{{ request('max_price') }}">
+                </div>
+                <div class="filter-group">
+                    <label for="location">Location</label>
+                    <input type="text" name="location" id="location" class="filter-input" placeholder="Search location..." value="{{ request('location') }}">
+                </div>
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Apply Filters
+                    </button>
+                </div>
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <a href="{{ route('admin.accommodations') ?? '#' }}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Clear
                     </a>
-                </td>
-                <td class="price-cell">
-                    Rp {{ number_format($accommodation->price, 0, ',', '.') }}/night
-                </td>
-                <td class="status-cell">
-                    <form action="{{ route('admin.accommodations.toggle.isactive',$accommodation->id) }}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        <button class="status-btn {{ $accommodation->is_active ? 'active-btn' : 'inactive-btn' }}"
-                            type="submit" title="Click to change">
-                            {{ $accommodation->is_active ? 'Active' : 'Inactive' }}
-                        </button>
-                    </form>
-                </td>
-                <td class="actions-cell">
-                    <a href="{{ route('admin.accommodations.edit', $accommodation->id) }}" class="edit-link">Edit</a>
-                    <a href="{{ route('admin.accommodations.reviews', $accommodation->id) }}" class="edit-link" style="margin-left: 8px;">Edit Reviews</a>
-                    <form action="{{ route('admin.accommodations.delete', $accommodation->id) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete {{ $accommodation->name }}? This action cannot be undone.');">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="delete-button" style="font-size: 0.8rem; padding: 4px 8px;">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="12" style="text-align: center;">No Accommodations Found</td>
-            </tr>
-            @endforelse
-        </tbody>
-    </table>
+                </div>
+            </form>
+        </div>
+
+        <!-- Table Content -->
+        <div class="card-content">
+            @if(isset($accommodations) && $accommodations->count() > 0)
+                <div style="overflow-x: auto;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Accommodation</th>
+                                <th>Type</th>
+                                <th>Location</th>
+                                <th>Price/Night</th>
+                                <th>Capacity</th>
+                                <th>Status</th>
+                                <th>Visits</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($accommodations as $accommodation)
+                            <tr>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                        @if(isset($accommodation->featuredImage) && $accommodation->featuredImage)
+                                            <img src="{{ asset('storage/' . $accommodation->featuredImage->image_path) }}" 
+                                                 alt="{{ $accommodation->name }}" 
+                                                 class="img-thumbnail">
+                                        @else
+                                            <div class="img-thumbnail" style="background: #f3f4f6; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-image" style="color: #9ca3af;"></i>
+                                            </div>
+                                        @endif
+                                        <div>
+                                            <div style="font-weight: 600; color: #1f2937;">{{ $accommodation->name }}</div>
+                                            <div style="font-size: 0.75rem; color: #6b7280;">ID: {{ $accommodation->id }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-info">
+                                        {{ ucfirst($accommodation->type ?? 'Hotel') }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div style="color: #374151;">
+                                        <i class="fas fa-map-marker-alt" style="color: #6b7280; margin-right: 0.5rem;"></i>
+                                        {{ $accommodation->location ?? 'N/A' }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="font-weight: 600; color: #059669;">
+                                        Rp {{ number_format($accommodation->price ?? 0, 0, ',', '.') }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <i class="fas fa-users" style="color: #6b7280;"></i>
+                                        <span style="color: #374151;">{{ $accommodation->capacity ?? 'N/A' }} guests</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if($accommodation->is_available ?? true)
+                                        <span class="status-badge status-active">
+                                            <i class="fas fa-check-circle"></i> Available
+                                        </span>
+                                    @else
+                                        <span class="status-badge status-inactive">
+                                            <i class="fas fa-times-circle"></i> Unavailable
+                                        </span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <i class="fas fa-eye" style="color: #6b7280;"></i>
+                                        <span style="color: #374151;">{{ $accommodation->visit_count ?? 0 }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a href="{{ route('admin.accommodations.edit', $accommodation->id) }}" class="btn btn-sm btn-primary" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{{ route('admin.accommodations.images', $accommodation->id) }}" class="btn btn-sm btn-secondary" title="Manage Images">
+                                            <i class="fas fa-images"></i>
+                                        </a>
+                                        <a href="{{ route('admin.accommodations.reviews', $accommodation) ?? '#' }}" class="btn btn-sm btn-warning" title="Manage Reviews">
+                                            <i class="fas fa-star"></i>
+                                        </a>
+                                        <button type="button" 
+                                                class="btn btn-sm btn-danger" 
+                                                onclick="confirmDelete({{ $accommodation->id }})"
+                                                title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                @if(method_exists($accommodations, 'hasPages') && $accommodations->hasPages())
+                    <div class="pagination">
+                        {{ $accommodations->appends(request()->query())->links() }}
+                    </div>
+                @endif
+            @else
+                <div class="empty-state">
+                    <i class="fas fa-bed"></i>
+                    <h3>No Accommodations Found</h3>
+                    <p>Start by adding your first accommodation to offer lodging services.</p>
+                    <br>
+                    <a href="{{ route('admin.accommodations.create') ?? '#' }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add First Accommodation
+                    </a>
+                </div>
+            @endif
+        </div>
+    </div>
 </div>
 
+<script>
+function toggleFilters() {
+    const filtersSection = document.getElementById('filtersSection');
+    filtersSection.style.display = filtersSection.style.display === 'none' ? 'block' : 'none';
+}
 
-<div class="operation-container">
-    <form action="{{ route('admin.accommodations.delete.all') }}" method="POST" onsubmit="return confirm('Are you absolutely sure you want to delete all accommodations? This action cannot be undone.');">
-        @csrf
-        @method('DELETE')
-        <button type="submit" class="delete-button">
-            Delete All Accommodations
-        </button>
-    </form>
-    <a href="{{ route('admin.accommodations.create') }}" class="create-button">
-        Add Accommodations
-    </a>
-</div>
+function confirmDelete(id) {
+    if (confirm('Are you sure you want to delete this accommodation? This action cannot be undone.')) {
+        // Create and submit delete form
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/accommodations/${id}`;
+        
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = '{{ csrf_token() }}';
+        
+        const methodField = document.createElement('input');
+        methodField.type = 'hidden';
+        methodField.name = '_method';
+        methodField.value = 'DELETE';
+        
+        form.appendChild(csrfToken);
+        form.appendChild(methodField);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
 
+// Search functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.admin-table tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+    }
+});
+</script>
 @endsection

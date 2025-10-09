@@ -1,383 +1,355 @@
 @extends('admin.dashboard')
 
 @section('content')
-<link rel="stylesheet" href="{{ asset('css/admin-tables.css') }}">
+<div class="admin-container" style="margin: 0; max-width: 100%; padding: 1.5rem;">
+    <!-- Header Section -->
+    <div class="admin-header" style="border-radius: 16px; margin-bottom: 2rem;">
+        <div>
+            <h1><i class="fas fa-comments"></i> Article Comments</h1>
+            <p>Manage comments for "{{ $article->title ?? 'Article' }}"</p>
+        </div>
+        <a href="{{ route('admin.articles') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Articles
+        </a>
+    </div>
+
+    <!-- Main Content Card -->
+    <div class="admin-card" style="border-radius: 16px;">
+        <!-- Card Header with Actions -->
+        <div class="card-header">
+            <div class="card-title">
+                <i class="fas fa-list"></i>
+                Comments Management
+            </div>
+            <div class="action-buttons">
+                <div class="filter-group">
+                    <input type="text" class="search-input" placeholder="Search comments..." id="searchInput" value="{{ request('search') }}">
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="toggleFilters()">
+                    <i class="fas fa-filter"></i> Filter Data
+                </button>
+                @if(isset($comments) && $comments->count() > 0)
+                <button type="button" class="btn btn-danger" onclick="bulkDelete()">
+                    <i class="fas fa-trash-alt"></i> Delete Selected
+                </button>
+                @endif
+            </div>
+        </div>
+
+        <!-- Filters Section (Hidden by default) -->
+        <div class="filters-section" id="filtersSection" style="display: none;">
+            <form method="GET" action="{{ route('admin.articles.comments', $article) }}" class="filters-row">
+                <div class="filter-group">
+                    <label for="date_from">From Date</label>
+                    <input type="date" name="date_from" id="date_from" class="filter-input" value="{{ request('date_from') }}">
+                </div>
+                <div class="filter-group">
+                    <label for="date_from">From Date</label>
+                    <input type="date" name="date_from" id="date_from" class="filter-input" value="{{ request('date_from') }}">
+                </div>
+                <div class="filter-group">
+                    <label for="date_to">To Date</label>
+                    <input type="date" name="date_to" id="date_to" class="filter-input" value="{{ request('date_to') }}">
+                </div>
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Apply Filters
+                    </button>
+                </div>
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <a href="{{ route('admin.articles.comments', $article) }}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Clear
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Bulk Actions -->
+        @if(isset($comments) && $comments->count() > 0)
+        <div class="bulk-actions" id="bulkActions" style="display: none;">
+            <div class="bulk-actions-content">
+                <span id="selectedCount">0</span> comment(s) selected
+                <div class="bulk-buttons">
+                    <button type="button" class="btn btn-danger btn-sm" onclick="bulkDeleteSelected()">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        <!-- Table Content -->
+        <div class="card-content">
+            @if(isset($comments) && $comments->count() > 0)
+                <div style="overflow-x: auto;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 40px;">
+                                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                                </th>
+                                <th>Comment</th>
+                                <th>User</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($comments as $comment)
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="comment-checkbox" value="{{ $comment->id }}" onchange="updateBulkActions()">
+                                </td>
+                                <td>
+                                    <div style="max-width: 400px;">
+                                        <div style="color: #374151; line-height: 1.5; margin-bottom: 0.5rem;">
+                                            {{ Str::limit($comment->content ?? '', 150) }}
+                                        </div>
+                                        @if(strlen($comment->content ?? '') > 150)
+                                        <button type="button" class="btn btn-sm btn-link" onclick="toggleFullComment({{ $comment->id }})" style="padding: 0; font-size: 0.75rem;">
+                                            <span id="toggle-text-{{ $comment->id }}">Show more</span>
+                                        </button>
+                                        <div id="full-comment-{{ $comment->id }}" style="display: none; color: #374151; line-height: 1.5; margin-top: 0.5rem;">
+                                            {{ $comment->content }}
+                                        </div>
+                                        @endif
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        @if(isset($comment->user))
+                                        <div style="font-weight: 600; color: #1f2937;">{{ $comment->user->name }}</div>
+                                        <div style="font-size: 0.75rem; color: #6b7280;">
+                                            <i class="fas fa-envelope" style="margin-right: 0.25rem;"></i>
+                                            {{ $comment->user->email }}
+                                        </div>
+                                        <div style="font-size: 0.75rem; color: #059669;">
+                                            <i class="fas fa-user" style="margin-right: 0.25rem;"></i>
+                                            Registered User
+                                        </div>
+                                        @else
+                                        <div style="font-weight: 600; color: #1f2937;">{{ $comment->name ?? 'Anonymous' }}</div>
+                                        <div style="font-size: 0.75rem; color: #6b7280;">
+                                            <i class="fas fa-envelope" style="margin-right: 0.25rem;"></i>
+                                            {{ $comment->email ?? 'No email' }}
+                                        </div>
+                                        <div style="font-size: 0.75rem; color: #9ca3af;">
+                                            <i class="fas fa-user-slash" style="margin-right: 0.25rem;"></i>
+                                            Guest User
+                                        </div>
+                                        @endif
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="color: #374151;">
+                                        {{ \Carbon\Carbon::parse($comment->created_at)->format('M d, Y') }}
+                                    </div>
+                                    <div style="font-size: 0.75rem; color: #6b7280;">
+                                        {{ \Carbon\Carbon::parse($comment->created_at)->format('H:i') }}
+                                    </div>
+                                    <div style="font-size: 0.75rem; color: #6b7280;">
+                                        {{ \Carbon\Carbon::parse($comment->created_at)->diffForHumans() }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button type="button" 
+                                                class="btn btn-sm btn-danger" 
+                                                onclick="confirmDelete({{ $comment->id }})"
+                                                title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                @if(method_exists($comments, 'hasPages') && $comments->hasPages())
+                    <div class="pagination">
+                        {{ $comments->appends(request()->query())->links() }}
+                    </div>
+                @endif
+            @else
+                <div class="empty-state">
+                    <i class="fas fa-comments"></i>
+                    <h3>No Comments Found</h3>
+                    <p>This article doesn't have any comments yet.</p>
+                    <br>
+                    <a href="{{ route('admin.articles') }}" class="btn btn-primary">
+                        <i class="fas fa-arrow-left"></i> Back to Articles
+                    </a>
+                </div>
+            @endif
+        </div>
+    </div>
+</div>
+
 <style>
-    .header-section {
-        background: white;
-        padding: 25px;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        margin-bottom: 30px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
+.bulk-actions {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
 
-    .header-info h1 {
-        margin: 0 0 10px 0;
-        color: #333;
-        font-size: 1.8rem;
-    }
+.bulk-actions-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-    .header-info p {
-        margin: 0;
-        color: #666;
-        font-size: 1rem;
-    }
-
-    .back-link {
-        background: #6c757d;
-        color: white;
-        padding: 10px 20px;
-        text-decoration: none;
-        border-radius: 8px;
-        transition: background-color 0.3s;
-    }
-
-    .back-link:hover {
-        background: #5a6268;
-        color: white;
-        text-decoration: none;
-    }
-
-    .bulk-actions {
-        background: white;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        margin-bottom: 20px;
-        display: flex;
-        gap: 15px;
-        align-items: center;
-    }
-
-    .select-all-checkbox {
-        margin-right: 10px;
-    }
-
-    .bulk-delete-btn {
-        background: #dc3545;
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 0.9rem;
-        transition: background-color 0.3s;
-    }
-
-    .bulk-delete-btn:hover {
-        background: #c82333;
-    }
-
-    .bulk-delete-btn:disabled {
-        background: #6c757d;
-        cursor: not-allowed;
-    }
-
-    .table-container {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-    }
-
-    .comments-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .comments-table th,
-    .comments-table td {
-        padding: 15px;
-        text-align: left;
-        border-bottom: 1px solid #e9ecef;
-        vertical-align: top;
-    }
-
-    .comments-table th {
-        background: #f8f9fa;
-        font-weight: 600;
-        color: #333;
-    }
-
-    .user-info {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-    }
-
-    .user-name {
-        font-weight: 600;
-        color: #333;
-    }
-
-    .user-email {
-        color: #666;
-        font-size: 0.9rem;
-    }
-
-    .comment-cell {
-        max-width: 350px;
-        word-wrap: break-word;
-        line-height: 1.5;
-    }
-
-    .comment-preview {
-        color: #333;
-        font-size: 0.95rem;
-    }
-
-    .date-cell {
-        color: #666;
-        font-size: 0.9rem;
-        white-space: nowrap;
-    }
-
-    .action-cell {
-        text-align: center;
-    }
-
-    .delete-btn {
-        background: #dc3545;
-        color: white;
-        border: none;
-        padding: 6px 12px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 0.85rem;
-        transition: background-color 0.3s;
-    }
-
-    .delete-btn:hover {
-        background: #c82333;
-    }
-
-    .no-comments {
-        text-align: center;
-        padding: 60px 20px;
-        color: #666;
-    }
-
-    .no-comments i {
-        font-size: 4rem;
-        margin-bottom: 20px;
-        color: #ddd;
-    }
-
-    .pagination {
-        display: flex;
-        justify-content: center;
-        margin-top: 30px;
-    }
-
-    .checkbox-cell {
-        text-align: center;
-        width: 50px;
-    }
-
-    .comment-checkbox {
-        cursor: pointer;
-    }
-
-    .alert {
-        padding: 15px;
-        margin-bottom: 20px;
-        border-radius: 8px;
-    }
-
-    .alert-success {
-        background: #d4edda;
-        border: 1px solid #c3e6cb;
-        color: #155724;
-    }
-
-    .alert-error {
-        background: #f8d7da;
-        border: 1px solid #f5c6cb;
-        color: #721c24;
-    }
-
-    .article-title {
-        color: #007bff;
-        font-weight: 600;
-    }
+.bulk-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
 </style>
 
-<div class="header-section">
-    <div class="header-info">
-        <h1>Comments for <span class="article-title">{{ $article->title }}</span></h1>
-        <p>Manage reader comments and feedback</p>
-    </div>
-    <a href="{{ route('admin.articles') }}" class="back-link">
-        <i class="fas fa-arrow-left"></i> Back to Articles
-    </a>
-</div>
-
-@if(session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
-@endif
-
-@if(session('error'))
-    <div class="alert alert-error">
-        {{ session('error') }}
-    </div>
-@endif
-
-@if($comments->count() > 0)
-<div class="bulk-actions">
-    <label>
-        <input type="checkbox" id="select-all" class="select-all-checkbox"> Select All
-    </label>
-    <button type="button" id="bulk-delete-btn" class="bulk-delete-btn" disabled>
-        <i class="fas fa-trash"></i> Delete Selected
-    </button>
-    <span id="selected-count">0 comments selected</span>
-</div>
-
-<div class="table-container">
-    <table class="comments-table">
-        <thead>
-            <tr>
-                <th class="checkbox-cell">
-                    <i class="fas fa-check"></i>
-                </th>
-                <th>User</th>
-                <th>Comment</th>
-                <th>Date</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($comments as $comment)
-            <tr>
-                <td class="checkbox-cell">
-                    <input type="checkbox" name="comment_ids[]" value="{{ $comment->id }}" class="comment-checkbox">
-                </td>
-                <td>
-                    <div class="user-info">
-                        <div class="user-name">{{ $comment->user->name }}</div>
-                        <div class="user-email">{{ $comment->user->email }}</div>
-                    </div>
-                </td>
-                <td class="comment-cell">
-                    <div class="comment-preview">
-                        {{ Str::limit($comment->content, 150) }}
-                    </div>
-                </td>
-                <td class="date-cell">
-                    {{ $comment->created_at->format('M d, Y') }}<br>
-                    <small>{{ $comment->created_at->diffForHumans() }}</small>
-                </td>
-                <td class="action-cell">
-                    <form action="{{ route('admin.articles.comments.delete', $comment->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this comment?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="delete-btn">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </form>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-</div>
-
-<div class="pagination">
-    {{ $comments->links() }}
-</div>
-
-<!-- Bulk Delete Form -->
-<form id="bulk-delete-form" action="{{ route('admin.articles.comments.bulk-delete', $article->id) }}" method="POST" style="display: none;">
-    @csrf
-    <div id="bulk-delete-inputs"></div>
-</form>
-
-@else
-<div class="table-container">
-    <div class="no-comments">
-        <i class="fas fa-comment-slash"></i>
-        <h3>No Comments Found</h3>
-        <p>This article doesn't have any comments yet.</p>
-    </div>
-</div>
-@endif
-
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const selectAllCheckbox = document.getElementById('select-all');
-    const commentCheckboxes = document.querySelectorAll('.comment-checkbox');
-    const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
-    const selectedCountSpan = document.getElementById('selected-count');
-    const bulkDeleteForm = document.getElementById('bulk-delete-form');
-    const bulkDeleteInputs = document.getElementById('bulk-delete-inputs');
+function toggleFilters() {
+    const filtersSection = document.getElementById('filtersSection');
+    filtersSection.style.display = filtersSection.style.display === 'none' ? 'block' : 'none';
+}
 
-    function updateBulkActions() {
-        const checkedBoxes = document.querySelectorAll('.comment-checkbox:checked');
-        const count = checkedBoxes.length;
-        
-        selectedCountSpan.textContent = `${count} comments selected`;
-        bulkDeleteBtn.disabled = count === 0;
-        
-        // Update select all checkbox state
-        if (count === 0) {
-            selectAllCheckbox.indeterminate = false;
-            selectAllCheckbox.checked = false;
-        } else if (count === commentCheckboxes.length) {
-            selectAllCheckbox.indeterminate = false;
-            selectAllCheckbox.checked = true;
+function toggleSelectAll() {
+    const selectAll = document.getElementById('selectAll');
+    const checkboxes = document.querySelectorAll('.comment-checkbox');
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAll.checked;
+    });
+    
+    updateBulkActions();
+}
+
+function updateBulkActions() {
+    const checkboxes = document.querySelectorAll('.comment-checkbox:checked');
+    const bulkActions = document.getElementById('bulkActions');
+    const selectedCount = document.getElementById('selectedCount');
+    
+    if (bulkActions && selectedCount) {
+        if (checkboxes.length > 0) {
+            bulkActions.style.display = 'block';
+            selectedCount.textContent = checkboxes.length;
         } else {
-            selectAllCheckbox.indeterminate = true;
+            bulkActions.style.display = 'none';
         }
     }
+}
 
-    // Select all functionality
-    selectAllCheckbox.addEventListener('change', function() {
-        commentCheckboxes.forEach(checkbox => {
-            checkbox.checked = this.checked;
-        });
-        updateBulkActions();
-    });
-
-    // Individual checkbox functionality
-    commentCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', updateBulkActions);
-    });
-
-    // Bulk delete functionality
-    bulkDeleteBtn.addEventListener('click', function() {
-        const checkedBoxes = document.querySelectorAll('.comment-checkbox:checked');
+function confirmDelete(id) {
+    if (confirm('Are you sure you want to delete this comment? This action cannot be undone.')) {
+        // Create and submit delete form
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/articles/comments/${id}`;
         
-        if (checkedBoxes.length === 0) {
-            alert('Please select comments to delete.');
-            return;
-        }
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = '{{ csrf_token() }}';
+        
+        const methodField = document.createElement('input');
+        methodField.type = 'hidden';
+        methodField.name = '_method';
+        methodField.value = 'DELETE';
+        
+        form.appendChild(csrfToken);
+        form.appendChild(methodField);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
 
-        if (confirm(`Are you sure you want to delete ${checkedBoxes.length} selected comments? This action cannot be undone.`)) {
-            // Clear previous inputs
-            bulkDeleteInputs.innerHTML = '';
+function updateCommentStatus(id, status) {
+    // Create and submit form to update status
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/admin/articles/comments/${id}/update-status`;
+    
+    const csrfToken = document.createElement('input');
+    csrfToken.type = 'hidden';
+    csrfToken.name = '_token';
+    csrfToken.value = '{{ csrf_token() }}';
+    
+    const statusField = document.createElement('input');
+    statusField.type = 'hidden';
+    statusField.name = 'status';
+    statusField.value = status;
+    
+    form.appendChild(csrfToken);
+    form.appendChild(statusField);
+    document.body.appendChild(form);
+    form.submit();
+}
+
+function bulkDeleteSelected() {
+    const checkboxes = document.querySelectorAll('.comment-checkbox:checked');
+    const ids = Array.from(checkboxes).map(cb => cb.value);
+    
+    if (ids.length === 0) {
+        alert('Please select comments to delete.');
+        return;
+    }
+    
+    if (confirm(`Are you sure you want to delete ${ids.length} comment(s)? This action cannot be undone.`)) {
+        // Create and submit bulk delete form
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/articles/{{ $article->id }}/comments/bulk-delete`;
+        
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = '{{ csrf_token() }}';
+        
+        ids.forEach(id => {
+            const idField = document.createElement('input');
+            idField.type = 'hidden';
+            idField.name = 'comment_ids[]';
+            idField.value = id;
+            form.appendChild(idField);
+        });
+        
+        form.appendChild(csrfToken);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+function toggleFullComment(id) {
+    const fullComment = document.getElementById(`full-comment-${id}`);
+    const toggleText = document.getElementById(`toggle-text-${id}`);
+    
+    if (fullComment.style.display === 'none') {
+        fullComment.style.display = 'block';
+        toggleText.textContent = 'Show less';
+    } else {
+        fullComment.style.display = 'none';
+        toggleText.textContent = 'Show more';
+    }
+}
+
+// Search functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.admin-table tbody tr');
             
-            // Add checked comment IDs to form
-            checkedBoxes.forEach(checkbox => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'comment_ids[]';
-                input.value = checkbox.value;
-                bulkDeleteInputs.appendChild(input);
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
             });
-            
-            // Submit form
-            bulkDeleteForm.submit();
-        }
-    });
-
-    // Initialize state
-    updateBulkActions();
+        });
+    }
 });
 </script>
-
 @endsection

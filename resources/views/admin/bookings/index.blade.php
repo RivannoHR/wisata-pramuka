@@ -1,412 +1,308 @@
 @extends('admin.dashboard')
 
 @section('content')
-<link rel="stylesheet" href="{{ asset('css/admin-tables.css') }}">
-<style>
-    .filter-container {
-        background: white;
-        border-radius: 12px 12px 0 0;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
+<div class="admin-container">
+    <!-- Header Section -->
+    <div class="admin-header">
+        <h1><i class="fas fa-calendar-check"></i> Bookings</h1>
+        <p>Manage accommodation bookings and reservations</p>
+    </div>
 
-    .filter-form {
-        display: flex;
-        gap: 20px;
-        align-items: center;
-        justify-content: center;
-        flex-wrap: wrap;
-        padding-top: 10px;
-        padding-bottom: 10px;
-    }
+    <!-- Main Content Card -->
+    <div class="admin-card">
+        <!-- Card Header with Actions -->
+        <div class="card-header">
+            <div class="card-title">
+                <i class="fas fa-list"></i>
+                Bookings Management
+            </div>
+            <div class="action-buttons">
+                <div class="filter-group">
+                    <input type="text" class="search-input" placeholder="Search bookings..." id="searchInput" value="{{ request('search') }}">
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="toggleFilters()">
+                    <i class="fas fa-filter"></i> Filter Data
+                </button>
+            </div>
+        </div>
 
-    .filter-group {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-    }
+        <!-- Filters Section (Hidden by default) -->
+        <div class="filters-section" id="filtersSection" style="display: none;">
+            <form method="GET" action="{{ route('admin.bookings') ?? '#' }}" class="filters-row">
+                <div class="filter-group">
+                    <label for="status">Status</label>
+                    <select name="status" id="status" class="filter-input">
+                        <option value="">All Status</option>
+                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
+                        <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="date_from">From Date</label>
+                    <input type="date" name="date_from" id="date_from" class="filter-input" value="{{ request('date_from') }}">
+                </div>
+                <div class="filter-group">
+                    <label for="date_to">To Date</label>
+                    <input type="date" name="date_to" id="date_to" class="filter-input" value="{{ request('date_to') }}">
+                </div>
+                <div class="filter-group">
+                    <label for="accommodation">Accommodation</label>
+                    <select name="accommodation" id="accommodation" class="filter-input">
+                        <option value="">All Accommodations</option>
+                        @if(isset($accommodationsList))
+                            @foreach($accommodationsList as $acc)
+                                <option value="{{ $acc->id }}" {{ request('accommodation') == $acc->id ? 'selected' : '' }}>
+                                    {{ $acc->name }}
+                                </option>
+                            @endforeach
+                        @endif
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Apply Filters
+                    </button>
+                </div>
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <a href="{{ route('admin.bookings') ?? '#' }}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Clear
+                    </a>
+                </div>
+            </form>
+        </div>
 
-    .filter-group label {
-        font-weight: 500;
-        color: #333;
-        font-size: 0.9rem;
-    }
+        <!-- Success/Error Messages -->
+        @if(session('success'))
+            <div class="alert alert-success" style="background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 15px; margin-bottom: 20px; border-radius: 8px;">
+                <i class="fas fa-check-circle" style="margin-right: 8px;"></i>
+                {{ session('success') }}
+            </div>
+        @endif
 
-    .filter-select,
-    .search-input,
-    .price-input {
-        padding: 10px 15px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        min-width: 150px;
-    }
+        @if(session('error'))
+            <div class="alert alert-danger" style="background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; margin-bottom: 20px; border-radius: 8px;">
+                <i class="fas fa-exclamation-circle" style="margin-right: 8px;"></i>
+                {{ session('error') }}
+            </div>
+        @endif
 
-    .price-input {
-        padding: 10px 15px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        font-size: 0.5rem;
-        min-width: 100px;
-    }
+        <!-- Table Content -->
+        <div class="card-content">
+            @if(isset($bookings) && $bookings->count() > 0)
+                <div style="overflow-x: auto;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>User Name</th>
+                                <th>Accommodation</th>
+                                <th>Check-in</th>
+                                <th>Check-out</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($bookings as $booking)
+                            <tr>
+                                <td>
+                                    <div style="font-weight: 600; color: #1f2937;">#{{ $booking->id }}</div>
+                                    <div style="font-size: 0.75rem; color: #6b7280;">
+                                        {{ \Carbon\Carbon::parse($booking->created_at)->format('M d, Y') }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <div style="font-weight: 600; color: #1f2937;">
+                                            {{ $booking->user->name ?? ($booking->guest_name ?? 'N/A') }}
+                                        </div>
+                                        <div style="font-size: 0.75rem; color: #6b7280;">
+                                            <i class="fas fa-envelope" style="margin-right: 0.25rem;"></i>
+                                            {{ $booking->user->email ?? ($booking->guest_email ?? 'N/A') }}
+                                        </div>
+                                        @if($booking->user->phone ?? $booking->guest_phone)
+                                        <div style="font-size: 0.75rem; color: #6b7280;">
+                                            <i class="fas fa-phone" style="margin-right: 0.25rem;"></i>
+                                            {{ $booking->user->phone ?? $booking->guest_phone }}
+                                        </div>
+                                        @endif
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="font-weight: 500; color: #374151;">
+                                        {{ $booking->accommodation->name ?? 'Unknown' }}
+                                    </div>
+                                    @if(isset($booking->accommodation->location))
+                                    <div style="font-size: 0.75rem; color: #6b7280;">
+                                        <i class="fas fa-map-marker-alt" style="margin-right: 0.25rem;"></i>
+                                        {{ $booking->accommodation->location }}
+                                    </div>
+                                    @endif
+                                </td>
+                                <td>
+                                    <div style="color: #374151;">
+                                        {{ \Carbon\Carbon::parse($booking->check_in_date)->format('M d, Y') }}
+                                    </div>
+                                    <div style="font-size: 0.75rem; color: #6b7280;">
+                                        {{ \Carbon\Carbon::parse($booking->check_in_date)->format('l') }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="color: #374151;">
+                                        {{ \Carbon\Carbon::parse($booking->check_out_date)->format('M d, Y') }}
+                                    </div>
+                                    <div style="font-size: 0.75rem; color: #6b7280;">
+                                        {{ \Carbon\Carbon::parse($booking->check_out_date)->format('l') }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="font-weight: 600; color: #059669;">
+                                        Rp {{ number_format($booking->total_price ?? 0, 0, ',', '.') }}
+                                    </div>
+                                </td>
+                                <td>
+                                    @php
+                                        $status = $booking->status ?? 'pending';
+                                        $statusClass = match($status) {
+                                            'active' => 'status-active',
+                                            'cancelled' => 'status-inactive',
+                                            'completed' => 'status-featured',
+                                            default => 'status-warning'
+                                        };
+                                        $statusIcon = match($status) {
+                                            'active' => 'fas fa-check-circle',
+                                            'cancelled' => 'fas fa-times-circle',
+                                            'completed' => 'fas fa-star',
+                                            default => 'fas fa-clock'
+                                        };
+                                    @endphp
+                                    <span class="status-badge {{ $statusClass }}">
+                                        <i class="{{ $statusIcon }}"></i> {{ ucfirst($status) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        @if($status === 'pending')
+                                            <button type="button" class="btn btn-sm btn-success" onclick="updateStatus({{ $booking->id }}, 'active')" title="Confirm Booking">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-danger" onclick="updateStatus({{ $booking->id }}, 'cancelled')" title="Cancel Booking">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        @elseif($status === 'active')
+                                            <button type="button" class="btn btn-sm btn-info" onclick="updateStatus({{ $booking->id }}, 'completed')" title="Mark as Completed">
+                                                <i class="fas fa-flag-checkered"></i>
+                                            </button>
+                                        @endif
+                                        <button type="button" 
+                                                class="btn btn-sm btn-danger" 
+                                                onclick="confirmDelete({{ $booking->id }})"
+                                                title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
 
-    .search-input {
-        min-width: 100px;
-    }
+                <!-- Pagination -->
+                @if(method_exists($bookings, 'hasPages') && $bookings->hasPages())
+                    <div class="pagination">
+                        {{ $bookings->appends(request()->query())->links() }}
+                    </div>
+                @endif
+            @else
+                <div class="empty-state">
+                    <i class="fas fa-calendar-check"></i>
+                    <h3>No Bookings Found</h3>
+                    <p>No accommodation bookings have been made yet.</p>
+                    <br>
+                    <a href="{{ route('admin.accommodations') ?? '#' }}" class="btn btn-primary">
+                        <i class="fas fa-bed"></i> Manage Accommodations
+                    </a>
+                </div>
+            @endif
+        </div>
+    </div>
+</div>
 
-    .filter-button {
-        background: black;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 500;
-        transition: background-color 0.3s;
-    }
-
-    .filter-button:hover {
-        background: #555;
-    }
-
-    .scroll-x {
-        overflow-x: scroll;
-    }
-
-    .table-container {
-        /* This is the key for overflow scrolling */
-        overflow-x: auto;
-        overflow-y: visible;
-        /* Allows horizontal scrolling */
-        flex-grow: 1;
-        background: white;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        max-width: 100%;
-        position: relative;
-        border-radius: 0 0 12px 12px;
-    }
-
-    table {
-        min-width: 1400px;
-        /* Force table to be wider to trigger horizontal scroll */
-        width: max-content;
-        border-collapse: collapse;
-        table-layout: auto;
-        /* Allow columns to size naturally */
-    }
-
-    .id-cell {
-        width: 60px;
-        min-width: 60px;
-    }
-
-    .user-cell {
-        width: 120px;
-        min-width: 120px;
-    }
-
-    .accommodation-cell {
-        width: 180px;
-        min-width: 180px;
-    }
-
-    .room-count-cell {
-        width: 100px;
-        min-width: 100px;
-        text-align: center;
-    }
-
-    .date-cell {
-        width: 120px;
-        min-width: 120px;
-    }
-
-    .duration-cell {
-        width: 100px;
-        min-width: 100px;
-        text-align: center;
-    }
-
-    .price-cell {
-        width: 140px;
-        min-width: 140px;
-        text-align: right;
-    }
-
-    .status-cell {
-        width: 120px;
-        min-width: 120px;
-    }
-
-    .notes-cell {
-        width: 200px;
-        min-width: 200px;
-        white-space: normal;
-        /* Allow text wrapping in notes */
-    }
-
-    .special-request-cell {
-        width: 200px;
-        min-width: 200px;
-        white-space: normal;
-        /* Allow text wrapping in special requests */
-    }
-
-
-    th,
-    td {
-        padding: 12px 15px;
-        text-align: left;
-        border-bottom: 1px solid #e0e0e0;
-        vertical-align: top;
-        white-space: nowrap;
-        /* Prevent text wrapping to maintain column widths */
-    }
-
-    th {
-        background-color: #f8f8f8;
-        font-weight: 600;
-        color: #555;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        /* Make headers sticky when scrolling vertically */
-    }
-
-    tr:hover {
-        background-color: #f2f2f2;
-    }
-
-    td {
-        word-wrap: normal;
-        /* Allows long words to break and wrap to the next line */
-    }
-
-    .description-cell {
-        min-height: 50px;
-
-    }
-
-    .operation-cell {
-        display: flex;
-        gap: 10px;
-    }
-
-    .status-btn {
-        border: none;
-        padding: 8px 12px;
-        border-radius: 6px;
-        color: white;
-        cursor: pointer;
-        font-weight: 500;
-        position: relative;
-        overflow: hidden;
-        transition: background-color 0.3s ease;
-        min-width: 60px;
-    }
-
-    .status-btn:hover {
-        opacity: 60%;
-    }
-
-    .active-btn {
-        background-color: #4CAF50;
-    }
-
-    .inactive-btn {
-        background-color: #f44336;
-
-    }
-
-    .operation-container {
-        background-color: white;
-        width: 100%;
-        font-weight: 600;
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-around;
-        padding-top: 10px;
-        padding-bottom: 10px;
-        border-top: 1px solid #e0e0e0;
-        border-radius: 0px 0px 12px 12px;
-    }
-
-    .delete-button {
-        background: red;
-        color: white;
-        border: none;
-        padding: 8px 12px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-
-    .delete-button:hover {
-        opacity: 60%;
-    }
-
-    .operation-container form {
-        margin: 0;
-    }
-
-    .create-product-button {
-        text-decoration: none;
-        background: #4CAF50;
-        color: white;
-        border: none;
-        padding: 8px 12px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-
-    .create-product-button:hover {
-        opacity: 60%;
-    }
-
-    .edit-product-button {
-        text-decoration: none;
-        background: #200fdb;
-        color: white;
-        border: none;
-        padding: 8px 12px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-
-    .edit-product-button:hover {
-        opacity: 60%;
-    }
-
-    .status-select {
-        padding: 5px 5px;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-        cursor: pointer;
-        font-weight: 600;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-    }
-
-    .status-pending {
-        background: #fef3c7;
-        color: #92400e;
-    }
-
-    .status-active {
-        background: #dcfce7;
-        color: #166534;
-    }
-
-    .status-completed {
-        background: #dbeafe;
-        color: #1e40af;
-    }
-
-    .status-cancelled {
-        background: #fecaca;
-        color: #b91c1c;
-    }
-</style>
 <script>
-    // Function to automatically submit the form when a new status is selected
-    function updateStatus(selectElement) {
-        const form = selectElement.closest('form');
+function toggleFilters() {
+    const filtersSection = document.getElementById('filtersSection');
+    filtersSection.style.display = filtersSection.style.display === 'none' ? 'block' : 'none';
+}
+
+function confirmDelete(id) {
+    if (confirm('Are you sure you want to delete this booking? This action cannot be undone.')) {
+        // Create and submit delete form
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/bookings/${id}`;
+        
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = '{{ csrf_token() }}';
+        
+        const methodField = document.createElement('input');
+        methodField.type = 'hidden';
+        methodField.name = '_method';
+        methodField.value = 'DELETE';
+        
+        form.appendChild(csrfToken);
+        form.appendChild(methodField);
+        document.body.appendChild(form);
         form.submit();
     }
+}
 
-    // Function to set the initial class based on the current value
-    document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.status-select').forEach(select => {
-            const status = select.value;
-            select.className = `status-select status-${status}`;
+function updateStatus(id, status) {
+    const actionText = status === 'active' ? 'approve' : status === 'cancelled' ? 'decline' : `mark as ${status}`;
+    if (confirm(`Are you sure you want to ${actionText} this booking?`)) {
+        // Create and submit form to update status
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/bookings/${id}/update-status`;
+        
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = '{{ csrf_token() }}';
+        
+        const statusField = document.createElement('input');
+        statusField.type = 'hidden';
+        statusField.name = 'status';
+        statusField.value = status;
+        
+        form.appendChild(csrfToken);
+        form.appendChild(statusField);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+// Search functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.admin-table tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
         });
-    });
+    }
+});
 </script>
-<div class="filter-container">
-    <form method="GET" action="{{ route('admin.bookings') }}" class="filter-form" id="filterForm">
-        <input type="hidden" name="filter_yes" value="1">
-        <div class="filter-group">
-            <input type="text" name="search" placeholder="Search by user or accommodation..." value="{{ request('search') }}" class="search-input">
-        </div>
-
-        <div class="filter-group">
-            <select name="status" class="filter-select">
-                <option value="">All Statuses</option>
-                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
-                <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <select name="sort_by" class="filter-select">
-                <option value="">Sort by</option>
-                <option value="latest" {{ request('sort_by') == 'latest' ? 'selected' : '' }}>Latest Bookings</option>
-                <option value="oldest" {{ request('sort_by') == 'oldest' ? 'selected' : '' }}>Oldest Bookings</option>
-            </select>
-        </div>
-
-        <button type="submit" class="filter-button">Filter</button>
-    </form>
-</div>
-<div class="table-container">
-    <table>
-        <thead>
-            <tr>
-                <th class="id-cell">Id</th>
-                <th class="user-cell">User</th>
-                <th class="accommodation-cell">Accommodation</th>
-                <th class="room-count-cell">Room Count</th>
-                <th class="date-cell">Check in date</th>
-                <th class="date-cell">Check out date</th>
-                <th class="duration-cell">Duration (days)</th>
-                <th class="price-cell">Total Price</th>
-                <th class="status-cell">Status</th>
-                <th class="notes-cell">Notes</th>
-                <th class="special-request-cell">Special Request</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse ($bookings as $booking)
-            <tr>
-                <td class="id-cell">{{ $booking->id }}</td>
-                <td class="user-cell">{{ $booking->user->name }}</td>
-                <td class="accommodation-cell">{{ $booking->accommodation->name }}</td>
-                <td class="room-count-cell">{{ $booking->rooms_count }}</td>
-                <td class="date-cell">{{ $booking->check_in_date }}</td>
-                <td class="date-cell">{{ $booking->check_out_date }}</td>
-                <td class="duration-cell">{{ $booking->duration_days }}</td>
-                <td class="price-cell">Rp {{ number_format($booking->total_price, 0, ',', '.') }}</td>
-                <td class="status-cell">
-                    <form action="{{ route('admin.bookings.togglestatus', $booking->id) }}" method="POST">
-                        @csrf
-                        @method('PATCH')
-                        <select name="status" onchange="updateStatus(this)" class="status-select">
-                            <option value="pending" {{ $booking->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                            <option value="active" {{ $booking->status == 'active' ? 'selected' : '' }}>Active</option>
-                            <option value="completed" {{ $booking->status == 'completed' ? 'selected' : '' }}>Completed</option>
-                            <option value="cancelled" {{ $booking->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                        </select>
-                    </form>
-                </td>
-                <td class="notes-cell">
-                    <div style="max-height: 100px; overflow-y: auto;">
-                        {{ $booking->notes }}
-                    </div>
-                </td>
-                <td class="special-request-cell">
-                    <div style="max-height: 100px; overflow-y: auto;">
-                        {{ $booking->special_requests }}
-                    </div>
-                </td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="11" style="text-align: center;">No bookings found</td>
-            </tr>
-            @endforelse
-        </tbody>
-    </table>
-</div>
 @endsection

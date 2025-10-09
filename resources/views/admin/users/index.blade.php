@@ -1,282 +1,297 @@
 @extends('admin.dashboard')
 
 @section('content')
-<link rel="stylesheet" href="{{ asset('css/admin-tables.css') }}">
 <style>
-    .user-avatar {
-        width: 40px;
-        height: 40px;
-        background: linear-gradient(135deg, #666, #999);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: 600;
-        font-size: 14px;
-    }
-
-    .user-info {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .user-details h4 {
-        margin: 0 0 4px 0;
-        font-size: 14px;
-        font-weight: 600;
-        color: #333;
-    }
-
-    .user-details p {
-        margin: 0;
-        font-size: 12px;
-        color: #666;
-    }
-
     .status-badge {
-        padding: 4px 8px;
-        border-radius: 12px;
-        font-size: 11px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-    }
-
-    .status-admin {
-        background-color: #e3f2fd;
-        color: #1976d2;
-    }
-
-    .status-user {
-        background-color: #f3e5f5;
-        color: #7b1fa2;
-    }
-
-    .action-buttons {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: flex-start;
-    }
-
-    .btn-small {
-        padding: 6px 12px;
-        border: none;
-        border-radius: 4px;
-        font-size: 11px;
-        cursor: pointer;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        font-weight: 500;
-        white-space: nowrap;
         display: inline-flex;
         align-items: center;
         gap: 4px;
     }
 
-    .btn-edit {
-        background-color: #28a745;
-        color: white;
+    .status-active {
+        background: #dcfce7;
+        color: #166534;
     }
 
-    .btn-edit:hover {
-        background-color: #218838;
-        text-decoration: none;
-        color: white;
+    .status-warning {
+        background: #fef3c7;
+        color: #92400e;
     }
 
-    .btn-delete {
-        background-color: red;
-        color: white;
+    .status-featured {
+        background: #ddd6fe;
+        color: #7c3aed;
     }
 
-    .btn-delete:hover {
-        opacity: 80%;
+    .status-info {
+        background: #dbeafe;
+        color: #1e40af;
     }
 
-    .btn-current-user {
-        background-color: #6c757d;
-        color: white;
-        cursor: default;
-        font-size: 10px;
-    }
-
-    .no-users {
-        text-align: center;
-        padding: 60px 20px;
-        color: #666;
-    }
-
-    .no-users i {
-        font-size: 48px;
-        margin-bottom: 16px;
-        color: #ddd;
-    }
-
-    .alert {
-        padding: 12px 16px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        font-weight: 500;
-    }
-
-    .alert-success {
-        background-color: #d4edda;
-        border: 1px solid #c3e6cb;
-        color: #155724;
-    }
-
-    .alert-error {
-        background-color: #f8d7da;
-        border: 1px solid #f5c6cb;
-        color: #721c24;
+    .status-danger {
+        background: #fee2e2;
+        color: #dc2626;
     }
 </style>
-
-@if(session('success'))
-<div class="alert alert-success">
-    <i class="fas fa-check-circle"></i>
-    {{ session('success') }}
-</div>
-@endif
-
-@if(session('error'))
-<div class="alert alert-error">
-    <i class="fas fa-exclamation-circle"></i>
-    {{ session('error') }}
-</div>
-@endif
-
-<!-- Filter Section -->
-<div class="filter-container">
-    <form method="GET" action="{{ route('admin.users') }}" class="filter-form">
-        <div class="filter-group">
-            <input type="text" 
-                   name="search" 
-                   class="search-input" 
-                   placeholder="Search users (name, email, username)..." 
-                   value="{{ request('search') }}">
-        </div>
-        
-        <div class="filter-group">
-            <select name="filter_admin" class="filter-select">
-                <option value="">All Users</option>
-                <option value="1" {{ request('filter_admin') === '1' ? 'selected' : '' }}>Admins Only</option>
-                <option value="0" {{ request('filter_admin') === '0' ? 'selected' : '' }}>Regular Users Only</option>
-            </select>
-        </div>
-        
-        <button type="submit" class="filter-button">
-            Filter
-        </button>
-    </form>
-</div>
-
-<!-- Users Table -->
-<div class="table-container">
-    @if($users->count() > 0)
-    <table>
-                <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Username</th>
-                <th>Phone</th>
-                <th>Admin</th>
-                <th>Joined</th>
-                <th>Operations</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($users as $user)
-            <tr>
-                <td>{{ $user->id }}</td>
-                <td>
-                    <div class="user-info">
-                        <div class="user-avatar">
-                            {{ strtoupper(substr($user->name, 0, 1)) }}
-                        </div>
-                        <div class="user-details">
-                            <h4>{{ $user->name }}</h4>
-                        </div>
-                    </div>
-                </td>
-                <td>{{ $user->email }}</td>
-                <td>{{ $user->username ?: '-' }}</td>
-                <td>{{ $user->phone ?: '-' }}</td>
-                <td>
-                    @if($user->id !== auth()->id())
-                    <form action="{{ route('admin.users.toggle-admin', $user) }}" method="POST" style="display: inline;">
-                        @csrf
-                        @method('PATCH')
-                        <button type="submit" 
-                                class="btn-small {{ $user->is_admin ? 'btn-edit' : 'btn-delete' }}"
-                                onclick="return confirm('Are you sure you want to {{ $user->is_admin ? 'remove admin access from' : 'grant admin access to' }} this user?')"
-                                title="Click to change admin status">
-                            {{ $user->is_admin ? 'Yes' : 'No' }}
-                        </button>
-                    </form>
-                    @else
-                    <span class="btn-small btn-current-user">
-                        {{ $user->is_admin ? 'Yes' : 'No' }} (You)
-                    </span>
-                    @endif
-                </td>
-                <td>{{ $user->created_at->format('M d, Y') }}</td>
-                <td>
-                    <div class="action-buttons">
-                        <form action="{{ route('admin.users.edit', $user) }}" method="GET" style="display: inline;">
-                            <button type="submit" class="btn-small btn-edit">Edit</button>
-                        </form>
-                        
-                        <form action="{{ route('admin.users.destroy', $user) }}" 
-                              method="POST" 
-                              style="display: inline;"
-                              onsubmit="return confirm('Are you sure you want to delete user &quot;{{ addslashes($user->name) }}&quot;? This action cannot be undone.')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn-small btn-delete">Delete</button>
-                        </form>
-                    </div>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-    @else
-    <div class="no-users">
-        <h3>No users found</h3>
-        <p>No users match your current filters.</p>
+<div class="admin-container">
+    <!-- Header Section -->
+    <div class="admin-header">
+        <h1><i class="fas fa-users"></i> Users</h1>
+        <p>Manage user accounts and permissions</p>
     </div>
-    @endif
+
+    <!-- Main Content Card -->
+    <div class="admin-card">
+        <!-- Card Header with Actions -->
+        <div class="card-header">
+            <div class="card-title">
+                <i class="fas fa-list"></i>
+                Users Management
+            </div>
+            <div class="action-buttons">
+                <div class="filter-group">
+                    <input type="text" class="search-input" placeholder="Search users..." id="searchInput" value="{{ request('search') }}">
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="toggleFilters()">
+                    <i class="fas fa-filter"></i> Filter Data
+                </button>
+                <a href="{{ route('admin.users.create') ?? '#' }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add User
+                </a>
+            </div>
+        </div>
+
+        <!-- Filters Section (Hidden by default) -->
+        <div class="filters-section" id="filtersSection" style="display: none;">
+            <form method="GET" action="{{ route('admin.users') ?? '#' }}" class="filters-row">
+                <div class="filter-group">
+                    <label for="is_admin">Role</label>
+                    <select name="is_admin" id="is_admin" class="filter-input">
+                        <option value="">All Roles</option>
+                        <option value="1" {{ request('is_admin') == '1' ? 'selected' : '' }}>Admin</option>
+                        <option value="0" {{ request('is_admin') == '0' ? 'selected' : '' }}>User</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="is_verified">Email Verified</label>
+                    <select name="is_verified" id="is_verified" class="filter-input">
+                        <option value="">All Users</option>
+                        <option value="1" {{ request('is_verified') == '1' ? 'selected' : '' }}>Verified</option>
+                        <option value="0" {{ request('is_verified') == '0' ? 'selected' : '' }}>Unverified</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="date_from">Joined From</label>
+                    <input type="date" name="date_from" id="date_from" class="filter-input" value="{{ request('date_from') }}">
+                </div>
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Apply Filters
+                    </button>
+                </div>
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <a href="{{ route('admin.users') ?? '#' }}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Clear
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Table Content -->
+        <div class="card-content">
+            @if(isset($users) && $users->count() > 0)
+                <div style="overflow-x: auto;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Role</th>
+                                <th>Email Status</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($users as $user)
+                            <tr>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                        <div class="user-avatar" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #10b981, #059669); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
+                                            {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 600; color: #1f2937;">{{ $user->name ?? 'Unknown' }}</div>
+                                            <div style="font-size: 0.75rem; color: #6b7280;">{{ $user->email }}</div>
+                                            <div style="font-size: 0.75rem; color: #6b7280;">ID: {{ $user->id }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if($user->is_admin)
+                                        <span class="status-badge status-featured">
+                                            <i class="fas fa-crown"></i> Admin
+                                        </span>
+                                    @else
+                                        <span class="status-badge status-info">
+                                            <i class="fas fa-user"></i> User
+                                        </span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($user->is_verified)
+                                        <span class="status-badge status-active">
+                                            <i class="fas fa-check-circle"></i> Verified
+                                        </span>
+                                    @else
+                                        <span class="status-badge status-warning">
+                                            <i class="fas fa-exclamation-circle"></i> Unverified
+                                        </span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <div style="color: #374151;">
+                                        {{ \Carbon\Carbon::parse($user->created_at)->format('M d, Y') }}
+                                    </div>
+                                    <div style="font-size: 0.75rem; color: #6b7280;">
+                                        {{ \Carbon\Carbon::parse($user->created_at)->diffForHumans() }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a href="{{ route('admin.users.edit', $user) ?? '#' }}" class="btn btn-sm btn-primary" title="Edit User">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        @if($user->role !== 'admin')
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-danger" 
+                                                    onclick="confirmDelete({{ $user->id }})"
+                                                    title="Delete User">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                @if(method_exists($users, 'hasPages') && $users->hasPages())
+                    <div class="pagination">
+                        {{ $users->appends(request()->query())->links() }}
+                    </div>
+                @endif
+            @else
+                <div class="empty-state">
+                    <i class="fas fa-users"></i>
+                    <h3>No Users Found</h3>
+                    <p>No users have registered yet.</p>
+                    <br>
+                    <a href="{{ route('admin.users.create') ?? '#' }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add First User
+                    </a>
+                </div>
+            @endif
+        </div>
+    </div>
 </div>
 
-<!-- Operation Container -->
-<div class="operation-container">
-    <form action="{{ route('admin.users.delete-all') }}" 
-          method="POST" 
-          onsubmit="return confirm('Are you absolutely sure you want to delete all users? This action cannot be undone.');">
-        @csrf
-        @method('DELETE')
-        <button type="submit" class="delete-button">
-            Delete All Users
-        </button>
-    </form>
-    <form action="{{ route('admin.users.create') }}" method="GET">
-        <button type="submit" class="create-button">
-            Add User
-        </button>
-    </form>
-</div>
+<script>
+function toggleFilters() {
+    const filtersSection = document.getElementById('filtersSection');
+    filtersSection.style.display = filtersSection.style.display === 'none' ? 'block' : 'none';
+}
 
-<!-- Delete User Form (hidden) -->
-<form id="deleteUserForm" method="POST" style="display: none;">
-    @csrf
-    @method('DELETE')
-</form>
+function confirmDelete(id) {
+    if (confirm('Are you sure you want to delete this user? This action cannot be undone and will remove all user data.')) {
+        // Create and submit delete form
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/users/${id}`;
+        
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = '{{ csrf_token() }}';
+        
+        const methodField = document.createElement('input');
+        methodField.type = 'hidden';
+        methodField.name = '_method';
+        methodField.value = 'DELETE';
+        
+        form.appendChild(csrfToken);
+        form.appendChild(methodField);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
 
+function updateStatus(id, status) {
+    if (confirm(`Are you sure you want to ${status} this user?`)) {
+        // Create and submit form to update status
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/users/${id}/update-status`;
+        
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = '{{ csrf_token() }}';
+        
+        const statusField = document.createElement('input');
+        statusField.type = 'hidden';
+        statusField.name = 'status';
+        statusField.value = status;
+        
+        form.appendChild(csrfToken);
+        form.appendChild(statusField);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+function resendVerification(id) {
+    if (confirm('Resend email verification to this user?')) {
+        // Create and submit form to resend verification
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/users/${id}/resend-verification`;
+        
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = '{{ csrf_token() }}';
+        
+        form.appendChild(csrfToken);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+// Search functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.admin-table tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+    }
+});
+</script>
 @endsection

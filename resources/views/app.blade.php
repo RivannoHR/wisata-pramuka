@@ -529,7 +529,7 @@
             background-color: #000;
             /* Black background for the footer */
             color: #fff;
-            padding: 40px 0;
+            padding: 20px 0;
             order: 1;
             /* Ensure footer comes last */
         }
@@ -538,42 +538,127 @@
             max-width: 1200px;
             /* Match header container width */
             margin: 0 auto;
-            padding: 0 20px;
-            display: flex;
-            flex-direction: column;
-            flex-wrap: wrap;
+            padding: 20px;
         }
 
-        .footer-content-top {
+        .footer-top {
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .footer-left-top {
+            display: flex;
+            align-items: center;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
 
         .footer-logo img {
-            height: 70px;
+            height: 50px;
             width: auto;
             object-fit: contain;
         }
 
         .footer-company-name {
-            font-size: 20px;
+            font-size: 14px;
+            color: #ccc;
+            font-weight: 400;
+        }
+
+        .footer-center {
+            flex: 1;
+            text-align: center;
+        }
+
+        .footer-center-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-center-title:hover {
+            color: #4CAF50;
+        }
+
+        .footer-right-top {
+            display: flex;
+            align-items: center;
+        }
+
+        .footer-right-bottom {
+            display: flex;
+            align-items: center;
+        }
+
+        .footer-separator {
+            width: 100%;
+            height: 1px;
+            background-color: #444;
+            margin: 15px 0;
+        }
+
+        .footer-funding-text {
+            font-size: 14px;
+            color: #ccc;
+            font-weight: 400;
+        }
+
+        .footer-icons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #333;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            color: #fff;
+            font-size: 12px;
             font-weight: 600;
         }
 
+        .footer-icon:hover {
+            background-color: #555;
+        }
+
         .footer-social-icons {
-            text-align: right;
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
 
         .social-icon-box {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             background-color: #333;
             /* Dark gray for social icon boxes */
             color: #fff;
-            padding: 8px 12px;
-            margin-left: 10px;
-            border-radius: 5px;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
             text-decoration: none;
-            font-size: 14px;
             transition: background-color 0.3s ease;
         }
 
@@ -581,19 +666,10 @@
             background-color: #555;
         }
 
-        .footer-separator {
-            width: 100%;
-            height: 1px;
-            background-color: #333;
-            /* Dark gray line */
-            margin: 20px 0;
-        }
-
-        .footer-content-bottom {
-            text-align: left;
-            font-size: 14px;
-            color: #ccc;
-            /* Lighter gray for bottom text */
+        .social-icon-box img {
+            width: 18px;
+            height: 18px;
+            filter: invert(1);
         }
 
         /* Responsive adjustments (basic) */
@@ -639,11 +715,25 @@
                 min-width: 180px;
             }
 
-            .footer-company-name,
-            .footer-social-icons {
+            .footer-container {
+                flex-direction: column;
+                gap: 15px;
                 text-align: center;
-                width: 100%;
-                /* Take full width on small screens */
+            }
+
+            .footer-left,
+            .footer-center,
+            .footer-right {
+                justify-content: center;
+            }
+
+            .footer-left {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .footer-funding-text {
+                font-size: 12px;
             }
 
             .social-icon-box {
@@ -1983,6 +2073,7 @@
             <nav class="header-nav">
                 <ul>
                     <li><a href="/">Home</a></li>
+                    <li><a href="{{ route('about.index') }}">About Us</a></li>
                     <li><a href="/tourist-attractions">Tourist Attraction</a></li>
                     <li><a href="/accommodations">Accommodation</a></li>
                     <li><a href="/products">Products</a></li>
@@ -2043,23 +2134,42 @@
 
     <footer>
         <div class="footer-container">
-            <div class="footer-content-top">
-                <div class="footer-logo">
-                    <img src="{{ asset('storage/logo.png') }}">
+            <!-- Top Section -->
+            <div class="footer-top">
+                <div class="footer-left-top">
+                    <div class="footer-logo">
+                        <img src="{{ asset('storage/logo.png') }}" alt="Rumah Literasi Hijau Logo">
+                    </div>
                 </div>
-                <div class="footer-company-name">Rumah Literasi Hijau</div>
-                <div class="footer-social-icons">
-                    <a href="http://wa.me/6281213643354" class="social-icon-box">
-                        <img src="{{ asset('images/whatsapp-icon.svg') }}" alt="WhatsApp" style="width: 20px; height: 20px; filter: invert(1);">
-                    </a>
-                    <a href="https://www.instagram.com/rumahliterasihijau_id?igsh=MWU4MjlvZDRkcWxvag==" class="social-icon-box" target="_blank">
-                        <img src="{{ asset('images/instagram-icon.svg') }}" alt="Instagram" style="width: 20px; height: 20px; filter: invert(1);">
-                    </a>
+                <div class="footer-center">
+                    <a href="https://rumahliterasihijau.id" class="footer-center-title" target="_blank">Rumah Literasi Hijau</a>
+                </div>
+                <div class="footer-right-top">
+                    <div class="footer-social-icons">
+                        <a href="http://wa.me/6281213643354" class="social-icon-box" title="WhatsApp">
+                            <img src="{{ asset('images/whatsapp-icon.svg') }}" alt="WhatsApp">
+                        </a>
+                        <a href="https://www.instagram.com/rumahliterasihijau_id?igsh=MWU4MjlvZDRkcWxvag==" class="social-icon-box" target="_blank" title="Instagram">
+                            <img src="{{ asset('images/instagram-icon.svg') }}" alt="Instagram">
+                        </a>
+                    </div>
                 </div>
             </div>
+            
+            <!-- Separator -->
             <div class="footer-separator"></div>
-            <div class="footer-content-bottom">
-                Rumah Literasi Hijau
+            
+            <!-- Bottom Section -->
+            <div class="footer-bottom">
+                <div class="footer-left">
+                    <div class="footer-company-name">Rumah Literasi Hijau</div>
+                </div>
+                
+                <div class="footer-right-bottom">
+                    <div class="footer-funding-text">
+                        Pendanaan dari HIBAH PHM DIKTI KEMENDIKBUDRISAINTEK 2025
+                    </div>
+                </div>
             </div>
         </div>
     </footer>

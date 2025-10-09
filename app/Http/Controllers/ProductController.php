@@ -114,6 +114,19 @@ class ProductController extends Controller
         // Redirect the user to a product page or a success message.
         return redirect()->route('admin.products');
     }
+
+    public function apply(StoreProductRequest $request, Product $product)
+    {
+        // Delegate to the existing productEditApply method
+        return $this->productEditApply($request, $product);
+    }
+
+    public function delete(Product $product)
+    {
+        // Delegate to the existing productDelete method
+        return $this->productDelete($product);
+    }
+
     public function productDelete(Product $product)
     {
         if ($product->image_path) {

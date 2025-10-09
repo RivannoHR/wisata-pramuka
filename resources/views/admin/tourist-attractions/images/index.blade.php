@@ -3,21 +3,17 @@
 @section('content')
 <style>
     .table-container {
-        /* This is the key for overflow scrolling */
-        overflow: auto;
-        /* Allows both X and Y overflow */
-        flex-grow: 1;
-
+        overflow-x: auto;
+        margin-bottom: 30px;
         background: white;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
     }
 
     table {
         width: 100%;
-        /* Ensure the table fills its container */
         border-collapse: collapse;
-        table-layout: fixed;
-        /* This is crucial for handling overflow */
+        background: white;
     }
 
     .id-cell {
@@ -25,19 +21,40 @@
     }
 
     .single-button-cell {
-        width: 60px;
+        width: 100px;
+    }
+
+    .status-btn {
+        padding: 5px 10px;
+        border: none;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .active-btn {
+        background: #28a745;
+        color: white;
+    }
+
+    .inactive-btn {
+        background: #6c757d;
+        color: white;
+    }
+
+    .status-btn:hover {
+        opacity: 0.8;
     }
 
 
     th,
     td {
-        padding: 12px 15px;
+        padding: 15px;
         text-align: center;
         border-bottom: 1px solid #e0e0e0;
         vertical-align: middle;
-        border-left: 1px solid #e0e0e0;
-        border-right: 1px solid #e0e0e0;
-        /* Ensures content aligns to the top of the cell */
     }
 
     th {
@@ -85,26 +102,26 @@
 
     }
 
-    .operation-container {
-        background-color: white;
-        width: 100%;
-        font-weight: 600;
+        .operation-container {
         display: flex;
-        align-items: flex-end;
-        justify-content: space-around;
-        padding-top: 10px;
-        padding-bottom: 10px;
-        border-top: 1px solid #e0e0e0;
-        border-radius: 0px 0px 12px 12px;
+        align-items: center;
+        justify-content: center;
+        padding: 30px;
+        margin-top: 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
 
     .delete-button {
-        background: red;
+        background: #dc3545;
         color: white;
         border: none;
-        padding: 8px 12px;
-        border-radius: 8px;
+        padding: 5px 8px;
+        border-radius: 4px;
         cursor: pointer;
+        font-size: 12px;
+        min-width: 50px;
         transition: background-color 0.3s;
     }
 
@@ -131,19 +148,15 @@
         opacity: 60%;
     }
 
-    .edit-product-button {
-        text-decoration: none;
-        background: #200fdb;
+        .edit-product-button {
+        background-color: #007bff;
         color: white;
         border: none;
-        padding: 8px 12px;
-        border-radius: 8px;
+        border-radius: 4px;
         cursor: pointer;
-        transition: background-color 0.3s;
         font-size: 12px;
-        font-family: Arial, sans-serif;
-        margin-bottom: 5px;
-        width: 100%;
+        padding: 5px 8px;
+        min-width: 50px;
     }
 
     .edit-product-button:hover {
@@ -199,8 +212,26 @@
     .page-header {
         display: flex;
         align-items: center;
-        margin-bottom: 20px;
+        margin-bottom: 30px;
+        padding: 20px 0;
         gap: 15px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .back-button {
+        background: #6c757d;
+        color: white;
+        text-decoration: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        font-size: 14px;
+        transition: background-color 0.3s;
+    }
+
+    .back-button:hover {
+        background: #545b62;
+        color: white;
+        text-decoration: none;
     }
 
     .page-title {
@@ -209,18 +240,32 @@
         font-size: 24px;
     }
 
+    .operation-cell-container {
+        width: 150px;
+        padding: 10px;
+    }
+
     .operation-cell {
         display: flex;
         align-items: center;
-        justify-content: space-around;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
     }
 
     .small-image {
-
         aspect-ratio: auto;
-        width: 600px;
-        height: auto;
+        width: 120px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 4px;
+        cursor: pointer;
         image-rendering: -webkit-optimize-contrast;
+    }
+
+    .small-image:hover {
+        opacity: 0.8;
+        transition: opacity 0.3s ease;
     }
 
     .edit-popup-overlay {
@@ -299,19 +344,16 @@
     }
 </script>
 
-<table>
-    <thead>
-        <tr>
-            <th class="id-cell">Sort Order</th>
-            <th class="image-cell">Image</th>
-            <th class="single-button-cell">Is Featured</th>
-            <th style="width: 120px;">Operation</th>
-        </tr>
-    </thead>
-</table>
 <div class="table-container">
-
     <table>
+        <thead>
+            <tr>
+                <th class="id-cell">Sort Order</th>
+                <th class="image-cell">Image</th>
+                <th class="single-button-cell">Is Featured</th>
+                <th style="width: 150px;">Operations</th>
+            </tr>
+        </thead>
         <tbody>
             @forelse ($images as $image)
             <tr>
@@ -332,7 +374,7 @@
                         </button>
                     </form>
                 </td>
-                <td style="width: 120px;">
+                <td class="operation-cell-container">
                     <div class="operation-cell">
                         <button type="button" class="edit-product-button" onclick="showEditPopup('edit-popup-{{ $image->id }}')">
                             Edit
