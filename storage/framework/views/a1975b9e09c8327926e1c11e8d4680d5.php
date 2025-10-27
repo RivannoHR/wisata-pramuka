@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Pulau Pramuka Travel')</title>
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    <title><?php echo $__env->yieldContent('title', 'Pulau Pramuka Travel'); ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
@@ -2789,40 +2789,40 @@
 
             <!-- Logo (Centered on Mobile, Left on Desktop) -->
             <a href="/" class="header-logo">
-                <img src="{{ asset('storage/logo.png') }}" alt="Logo">
+                <img src="<?php echo e(asset('storage/logo.png')); ?>" alt="Logo">
             </a>
 
             <!-- Desktop Navigation (Desktop Only) -->
             <nav class="desktop-nav">
                 <ul>
                     <li><a href="/">Home</a></li>
-                    <li><a href="{{ route('about.index') }}">About Us</a></li>
+                    <li><a href="<?php echo e(route('about.index')); ?>">About Us</a></li>
                     <li><a href="/tourist-attractions">Tourist Attractions</a></li>
                     <li><a href="/accommodations">Accommodations</a></li>
                     <li><a href="/products">Products</a></li>
-                    <li><a href="{{ route('articles.index')}}">News</a></li>
-                    @auth
+                    <li><a href="<?php echo e(route('articles.index')); ?>">News</a></li>
+                    <?php if(auth()->guard()->check()): ?>
                     <li><a href="/transactions">Transactions</a></li>
-                    @endauth
+                    <?php endif; ?>
                 </ul>
             </nav>
             
             <!-- Mobile Sidebar Navigation -->
             <nav class="mobile-nav" id="mobileNav">
                 <div class="sidebar-header">
-                    <img src="{{ asset('storage/logo.png') }}" alt="Logo" class="logo">
+                    <img src="<?php echo e(asset('storage/logo.png')); ?>" alt="Logo" class="logo">
                     <button class="sidebar-close" onclick="closeMobileMenu()">&times;</button>
                 </div>
                 <ul>
                     <li><a href="/" onclick="closeMobileMenu()">Home</a></li>
-                    <li><a href="{{ route('about.index') }}" onclick="closeMobileMenu()">About Us</a></li>
+                    <li><a href="<?php echo e(route('about.index')); ?>" onclick="closeMobileMenu()">About Us</a></li>
                     <li><a href="/tourist-attractions" onclick="closeMobileMenu()">Tourist Attractions</a></li>
                     <li><a href="/accommodations" onclick="closeMobileMenu()">Accommodations</a></li>
                     <li><a href="/products" onclick="closeMobileMenu()">Products</a></li>
-                    <li><a href="{{ route('articles.index')}}" onclick="closeMobileMenu()">News</a></li>
-                    @auth
+                    <li><a href="<?php echo e(route('articles.index')); ?>" onclick="closeMobileMenu()">News</a></li>
+                    <?php if(auth()->guard()->check()): ?>
                     <li><a href="/transactions" onclick="closeMobileMenu()">Transactions</a></li>
-                    @endauth
+                    <?php endif; ?>
                 </ul>
             </nav>
 
@@ -2830,20 +2830,21 @@
             <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileMenu()"></div>
             
             <div class="header-right">
-                @auth
+                <?php if(auth()->guard()->check()): ?>
                 <div class="user-dropdown">
                     <button class="header-auth-button dropdown-toggle" onclick="toggleDropdown()">
-                        {{ Auth::user()->username ?: Auth::user()->name }}
+                        <?php echo e(Auth::user()->username ?: Auth::user()->name); ?>
+
                         <i class="fas fa-chevron-down"></i>
                     </button>
                     <div class="dropdown-menu" id="userDropdown">
-                        <a href="{{ route('profile.show') }}" class="dropdown-item">
+                        <a href="<?php echo e(route('profile.show')); ?>" class="dropdown-item">
                             <i class="fas fa-user"></i>
                             My Profile
                         </a>
                         <div class="dropdown-divider"></div>
-                        <form method="POST" action="{{ route('logout') }}" style="display: inline;">
-                            @csrf
+                        <form method="POST" action="<?php echo e(route('logout')); ?>" style="display: inline;">
+                            <?php echo csrf_field(); ?>
                             <button type="submit" class="dropdown-item logout-btn">
                                 <i class="fas fa-sign-out-alt"></i>
                                 Logout
@@ -2851,14 +2852,14 @@
                         </form>
                     </div>
                 </div>
-                @else
+                <?php else: ?>
                 <a href="/login" class="header-auth-button">Login/Register</a>
-                @endauth
+                <?php endif; ?>
 
                 <!-- Visit Counter -->
                 <div class="visit-counter">
                     <i class="fas fa-eye"></i>
-                    <span class="visit-count">{{ $formattedVisits }}</span>
+                    <span class="visit-count"><?php echo e($formattedVisits); ?></span>
                     <span>visits</span>
                 </div>
             </div>
@@ -2866,14 +2867,14 @@
     </header>
 
     <div class="page-content">
-        @hasSection('hero_content')
+        <?php if (! empty(trim($__env->yieldContent('hero_content')))): ?>
         <div class="hero-section-wrapper">
-            @yield('hero_content')
+            <?php echo $__env->yieldContent('hero_content'); ?>
         </div>
-        @endif
+        <?php endif; ?>
 
         <main class="content-area">
-            @yield('content') {{-- Existing placeholder for main page content --}}
+            <?php echo $__env->yieldContent('content'); ?> 
         </main>
     </div>
 
@@ -2884,7 +2885,7 @@
             <div class="footer-top">
                 <div class="footer-left-top">
                     <div class="footer-logo">
-                        <img src="{{ asset('storage/logo.png') }}" alt="Rumah Literasi Hijau Logo">
+                        <img src="<?php echo e(asset('storage/logo.png')); ?>" alt="Rumah Literasi Hijau Logo">
                     </div>
                 </div>
                 <div class="footer-center">
@@ -2893,10 +2894,10 @@
                 <div class="footer-right-top">
                     <div class="footer-social-icons">
                         <a href="http://wa.me/6281213643354" class="social-icon-box" title="WhatsApp">
-                            <img src="{{ asset('images/whatsapp-icon.svg') }}" alt="WhatsApp">
+                            <img src="<?php echo e(asset('images/whatsapp-icon.svg')); ?>" alt="WhatsApp">
                         </a>
                         <a href="https://www.instagram.com/rumahliterasihijau_id?igsh=MWU4MjlvZDRkcWxvag==" class="social-icon-box" target="_blank" title="Instagram">
-                            <img src="{{ asset('images/instagram-icon.svg') }}" alt="Instagram">
+                            <img src="<?php echo e(asset('images/instagram-icon.svg')); ?>" alt="Instagram">
                         </a>
                     </div>
                 </div>
@@ -2921,7 +2922,7 @@
             <!-- Mobile-only elements (hidden on desktop) -->
             <div class="footer-mobile-only">
                 <div class="footer-logo-section">
-                    <img src="{{ asset('storage/logo.png') }}" alt="Rumah Literasi Hijau Logo">
+                    <img src="<?php echo e(asset('storage/logo.png')); ?>" alt="Rumah Literasi Hijau Logo">
                     <div class="footer-brand-name">Rumah Literasi Hijau</div>
                 </div>
 
@@ -2929,10 +2930,10 @@
 
                 <div class="footer-social-icons">
                     <a href="https://www.instagram.com/rumahliterasihijau_id?igsh=MWU4MjlvZDRkcWxvag==" class="social-icon-box" target="_blank" title="Instagram">
-                        <img src="{{ asset('images/instagram-icon.svg') }}" alt="Instagram">
+                        <img src="<?php echo e(asset('images/instagram-icon.svg')); ?>" alt="Instagram">
                     </a>
                     <a href="http://wa.me/6281213643354" class="social-icon-box" title="WhatsApp">
-                        <img src="{{ asset('images/whatsapp-icon.svg') }}" alt="WhatsApp">
+                        <img src="<?php echo e(asset('images/whatsapp-icon.svg')); ?>" alt="WhatsApp">
                     </a>
                 </div>
 
@@ -3005,4 +3006,4 @@
     </script>
 </body>
 
-</html>
+</html><?php /**PATH /Users/nathanaelss/Downloads/wisata-pramuka-minimal/resources/views/app.blade.php ENDPATH**/ ?>

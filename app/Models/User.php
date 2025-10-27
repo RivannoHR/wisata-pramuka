@@ -17,9 +17,6 @@ class User extends Authenticatable
         'phone',
         'address',
         'is_admin',
-        'email_otp',
-        'email_otp_expires_at',
-        'is_verified',
     ];
 
     protected $hidden = [
@@ -28,10 +25,7 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
-        'email_verified_at' => 'datetime',
-        'email_otp_expires_at' => 'datetime',
         'is_admin' => 'boolean',
-        'is_verified' => 'boolean',
     ];
 
     /**
@@ -90,49 +84,5 @@ class User extends Authenticatable
         return $this->hasMany(Rating::class);
     }
 
-    /**
-     * Generate and save OTP for email verification
-     */
-    public function generateEmailOTP()
-    {
-        $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-        $this->update([
-            'email_otp' => $otp,
-            'email_otp_expires_at' => now()->addMinutes(10), // OTP expires in 10 minutes
-        ]);
-        return $otp;
-    }
-
-    /**
-     * Verify the provided OTP
-     */
-    public function verifyEmailOTP($otp)
-    {
-        if ($this->email_otp === $otp && $this->email_otp_expires_at > now()) {
-            $this->update([
-                'email_otp' => null,
-                'email_otp_expires_at' => null,
-                'email_verified_at' => now(),
-                'is_verified' => true,
-            ]);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Check if OTP has expired
-     */
-    public function isOTPExpired()
-    {
-        return $this->email_otp_expires_at && $this->email_otp_expires_at < now();
-    }
-
-    /**
-     * Check if user is fully verified
-     */
-    public function isFullyVerified()
-    {
-        return $this->is_verified && $this->email_verified_at;
-    }
+    // Email verification removed
 }

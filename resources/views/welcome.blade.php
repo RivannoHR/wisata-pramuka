@@ -73,49 +73,55 @@
         <h2>Comfortable Accommodations</h2>
     </div>
 
-    <div class="cards-grid">
-        @if($accommodations->count() > 0)
-        @foreach($accommodations as $accommodation)
-        <div class="feature-card">
-            <div class="card-image">
-                @if($accommodation->main_image)
-                <img src="{{ $accommodation->main_image }}" alt="{{ $accommodation->name }}">
-                @else
-                <div class="placeholder-image">
-                    <i class="fas fa-bed"></i>
-                </div>
-                @endif
-            </div>
-            <div class="card-content">
-                <h3>{{ $accommodation->name }}</h3>
-                <p class="card-location">
-                    <i class="fas fa-map-marker-alt"></i>
-                    {{ $accommodation->location ?? 'Pulau Pramuka' }}
-                </p>
-                <p class="card-description">{{ Str::limit($accommodation->description, 100) }}</p>
-                <div class="card-meta">
-                    @if($accommodation->capacity)
-                    <span class="meta-item">
-                        <i class="fas fa-users"></i>
-                        Up to {{ $accommodation->capacity }} guests
-                    </span>
-                    @endif
-                    @if($accommodation->price_per_night)
-                    <span class="meta-price">
-                        Starting Rp {{ $accommodation->LowestPrice }}/night
-                    </span>
+    @if($accommodations->count() > 0)
+    <div class="horizontal-scroll-container">
+        <div class="horizontal-scroll-track">
+            @foreach($accommodations as $accommodation)
+            <div class="horizontal-feature-card">
+                <div class="card-image">
+                    @if($accommodation->main_image)
+                    <img src="{{ $accommodation->main_image }}" alt="{{ $accommodation->name }}">
+                    @else
+                    <div class="placeholder-image">
+                        <i class="fas fa-bed"></i>
+                    </div>
                     @endif
                 </div>
-                <a href="{{ route('accommodations.show', $accommodation->id) }}" class="card-button">
-                    Explore Now
-                </a>
+                <div class="card-content">
+                    <h3>{{ $accommodation->name }}</h3>
+                    <p class="card-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        {{ $accommodation->location ?? 'Pulau Pramuka' }}
+                    </p>
+                    <p class="card-description">{{ Str::limit($accommodation->description, 100) }}</p>
+                    <div class="card-meta">
+                        @if($accommodation->capacity)
+                        <span class="meta-item">
+                            <i class="fas fa-users"></i>
+                            Up to {{ $accommodation->capacity }} guests
+                        </span>
+                        @endif
+                        @if($accommodation->price_per_night)
+                        <span class="meta-price">
+                            Starting Rp {{ $accommodation->LowestPrice }}/night
+                        </span>
+                        @endif
+                    </div>
+                    <a href="{{ route('accommodations.show', $accommodation->id) }}" class="card-button">
+                        Explore Now
+                    </a>
+                </div>
             </div>
+            @endforeach
         </div>
-        @endforeach
-        @else
-        <p>No accommodations found.</p>
-        @endif
     </div>
+    @else
+    <div class="no-products">
+        <i class="fas fa-bed"></i>
+        <h3>No accommodations available</h3>
+        <p>Check back later for our accommodations!</p>
+    </div>
+    @endif
 
     @if($accommodations->count() >= 3)
     <div style="text-align: center; margin-top: 40px;">
@@ -134,49 +140,60 @@
         <h2>Amazing Tourist Attractions</h2>
     </div>
 
-    <div class="cards-grid">
-        @if($touristAttractions->count() > 0)
-        @foreach($touristAttractions as $attraction)
-        <div class="feature-card">
-            <div class="card-image">
-                @if($attraction->main_image)
-                <img src="{{ $attraction->main_image }}" alt="{{ $attraction->name }}">
-                @elseif($attraction->images->count() > 0)
-                <img src="{{ $attraction->images->first()->image_url }}" alt="{{ $attraction->name }}">
-                @else
-                <div class="placeholder-image">
-                    <i class="fas fa-camera"></i>
-                </div>
-                @endif
-            </div>
-            <div class="card-content">
-                <h3>{{ $attraction->name }}</h3>
-                <p class="card-location">
-                    <i class="fas fa-map-marker-alt"></i>
-                    {{ $attraction->location ?? 'Pulau Pramuka' }}
-                </p>
-                <p class="card-description">{{ Str::limit($attraction->description, 100) }}</p>
-                <div class="card-meta">
-                    <span class="meta-item type-badge {{ $attraction->type }}">
-                        {{ $attraction->formatted_type }}
-                    </span>
-                    @if($attraction->rating)
-                    <span class="meta-rating">
-                        <i class="fas fa-star"></i>
-                        {{ number_format($attraction->rating, 1) }}
-                    </span>
+    @if($touristAttractions->count() > 0)
+    <div class="horizontal-scroll-container">
+        <div class="horizontal-scroll-track">
+            @foreach($touristAttractions as $attraction)
+            <div class="horizontal-feature-card">
+                <div class="card-image">
+                    @if($attraction->main_image)
+                    <img src="{{ $attraction->main_image }}" alt="{{ $attraction->name }}">
+                    @elseif($attraction->images->count() > 0)
+                    <img src="{{ $attraction->images->first()->image_url }}" alt="{{ $attraction->name }}">
+                    @else
+                    <div class="placeholder-image">
+                        <i class="fas fa-camera"></i>
+                    </div>
                     @endif
                 </div>
-                <a href="{{ route('tourist-attractions.show', $attraction->id) }}" class="card-button">
-                    Explore Now
-                </a>
+                <div class="card-content">
+                    <h3>{{ $attraction->name }}</h3>
+                    <p class="card-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        {{ $attraction->location ?? 'Pulau Pramuka' }}
+                    </p>
+                    <p class="card-description">{{ Str::limit($attraction->description, 100) }}</p>
+                    <div class="card-meta">
+                        <span class="meta-item type-badge {{ $attraction->type }}">
+                            {{ $attraction->formatted_type }}
+                        </span>
+                        @if($attraction->average_rating)
+                        <span class="meta-rating">
+                            <i class="fas fa-star"></i>
+                            {{ number_format($attraction->average_rating, 1) }}
+                        </span>
+                        @elseif($attraction->rating_count == 0)
+                        <span class="meta-rating">
+                            <i class="fas fa-star"></i>
+                            N/A
+                        </span>
+                        @endif
+                    </div>
+                    <a href="{{ route('tourist-attractions.show', $attraction->id) }}" class="card-button">
+                        Explore Now
+                    </a>
+                </div>
             </div>
+            @endforeach
         </div>
-        @endforeach
-        @else
-        <p>No tourist attractions found.</p>
-        @endif
     </div>
+    @else
+    <div class="no-products">
+        <i class="fas fa-camera"></i>
+        <h3>No tourist attractions available</h3>
+        <p>Check back later for amazing attractions!</p>
+    </div>
+    @endif
 
     @if($touristAttractions->count() > 0)
     <div style="text-align: center; margin-top: 40px;">
@@ -194,31 +211,37 @@
         <h2>Latest News</h2>
     </div>
 
-    <div class="cards-grid">
-        @if($articles->count() > 0)
-        @foreach($articles as $article)
-        <div class="feature-card">
-            <div class="card-image">
-                <div class="article-badge">{{ $article->capital_category }}</div>
-                <img src="{{ $article->first_image ? asset('storage/' . $article->first_image) : asset('images/default-article.jpg') }}" alt="{{ $article->name }}">
+    @if($articles->count() > 0)
+    <div class="horizontal-scroll-container">
+        <div class="horizontal-scroll-track">
+            @foreach($articles as $article)
+            <div class="horizontal-feature-card">
+                <div class="card-image">
+                    <div class="article-badge">{{ $article->capital_category }}</div>
+                    <img src="{{ $article->first_image ? asset('storage/' . $article->first_image) : asset('images/default-article.jpg') }}" alt="{{ $article->name }}">
+                </div>
+                <div class="card-content">
+                    <h3>{{ $article->title }}</h3>
+                    <p class="card-location">
+                        <i class="fa-regular fa-calendar fa-xl" style="color: #7f8c8d;"></i>
+                        {{ $article->formatted_date }}
+                    </p>
+                    <p class="card-description">{{ Str::limit($article->content, 200) }}</p>
+                    <a href="{{ route('articles.show', $article->id) }}" class="card-button">
+                        Read More
+                    </a>
+                </div>
             </div>
-            <div class="card-content">
-                <h3>{{ $article->title }}</h3>
-                <p class="card-location">
-                    <i class="fa-regular fa-calendar fa-xl" style="color: #7f8c8d;"></i>
-                    {{ $article->formatted_date }}
-                </p>
-                <p class="card-description">{{ Str::limit($article->content, 200) }}</p>
-                <a href="{{ route('articles.show', $article->id) }}" class="card-button">
-                    Read More
-                </a>
-            </div>
+            @endforeach
         </div>
-        @endforeach
-        @else
-        <p>No latest news.</p>
-        @endif
     </div>
+    @else
+    <div class="no-products">
+        <i class="fas fa-newspaper"></i>
+        <h3>No latest news available</h3>
+        <p>Check back later for the latest news!</p>
+    </div>
+    @endif
 
     @if($articles->count() >= 3)
     <div style="text-align: center; margin-top: 40px;">
@@ -228,6 +251,22 @@
         </a>
     </div>
     @endif
+</section>
+
+{{-- Supported By Logos Section --}}
+<section class="supported-by-section">
+    <h2>Supported by</h2>
+    <div class="logos-container">
+        <div class="logo-item">
+            <img src="{{ asset('storage/dikti.png') }}" alt="DIKTI Logo">
+        </div>
+        <div class="logo-item">
+            <img src="{{ asset('storage/bima.png') }}" alt="BIMA Logo">
+        </div>
+        <div class="logo-item">
+            <img src="{{ asset('storage/binus.png') }}" alt="BINUS University Logo">
+        </div>
+    </div>
 </section>
 
 @endsection

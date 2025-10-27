@@ -1,15 +1,13 @@
-@extends('app')
+<?php $__env->startSection('title', 'Tourist Attractions - Pulau Pramuka'); ?>
 
-@section('title', 'Tourist Attractions - Pulau Pramuka')
-
-@section('hero_content')
+<?php $__env->startSection('hero_content'); ?>
     <div class="hero-content">
-        <h1>Explore the Wonders of Pulau Pramuka</h1>
-        <p>Discover amazing tourist spots, delicious restaurants, and unique shops</p>
+        <h1>Latest News and Articles</h1>
+        <p>Stay on tune with latest news and articles</p>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <style>
     .attractions-container {
         max-width: 1200px;
@@ -23,41 +21,6 @@
         border-radius: 12px;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         margin-bottom: 30px;
-    }
-
-    /* Mobile filter toggle */
-    .mobile-filter-toggle {
-        display: none;
-        width: 100%;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-        background: #f8f9fa;
-        color: #333;
-        border: 1px solid #e5e7eb;
-        padding: 12px 16px;
-        border-radius: 10px;
-        font-weight: 600;
-        cursor: pointer;
-        -webkit-tap-highlight-color: transparent;
-    }
-
-    .mobile-filter-toggle .left {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .mobile-filter-toggle i {
-        color: #111827; /* near-black to match theme */
-    }
-
-    .chevron {
-        transition: transform 0.2s ease;
-    }
-
-    .filters-section.open .chevron {
-        transform: rotate(180deg);
     }
 
     .filters-row {
@@ -277,67 +240,22 @@
             min-width: auto;
             width: 100%;
         }
-
-        /* Show the toggle and collapse the form by default on mobile */
-        .mobile-filter-toggle { display: flex; }
-        .filters-form { display: none; margin-top: 12px; }
-        .filters-section.open .filters-form { display: block; }
-        /* Reduce padding slightly on mobile for the wrapper */
-        .filters-section { padding: 16px; }
     }
 </style>
 
 <div class="attractions-container">
     <!-- Filters Section -->
-    <div class="filters-section" id="filtersSectionRoot">
-        <!-- Mobile-only dropdown button -->
-        <button type="button" class="mobile-filter-toggle" id="mobileFilterToggle" aria-expanded="false" aria-controls="filtersForm">
-            <span class="left">
-                <i class="fas fa-filter"></i>
-                Filter
-            </span>
-            <i class="fas fa-chevron-down chevron" aria-hidden="true"></i>
-        </button>
-
-        <form id="filtersForm" class="filters-form" method="GET" action="{{ route('tourist-attractions.index') }}">
+    <div class="filters-section">
+        <form method="GET" action="<?php echo e(route('articles.index')); ?>">
             <div class="filters-row">
                 <div class="filter-group">
                     <label for="search">Search</label>
                     <input type="text" id="search" name="search" class="filter-input search-input" 
-                           placeholder="Search attractions, locations..." value="{{ request('search') }}">
+                           placeholder="Search articles, categories" value="<?php echo e(request('search')); ?>">
                 </div>
-
-                <div class="filter-group">
-                    <label for="type">Type</label>
-                    <select id="type" name="type" class="filter-input">
-                        @foreach($types as $value => $label)
-                            <option value="{{ $value }}" {{ request('type') == $value ? 'selected' : '' }}>
-                                {{ $label }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="filter-group">
-                    <label for="sort">Sort By</label>
-                    <select id="sort" name="sort" class="filter-input">
-                        <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Name</option>
-                        <option value="date_added" {{ request('sort') == 'date_added' ? 'selected' : '' }}>Date Added</option>
-                        <option value="rating" {{ request('sort') == 'rating' ? 'selected' : '' }}>Rating</option>
-                    </select>
-                </div>
-
-                <div class="filter-group">
-                    <label for="order">Order</label>
-                    <select id="order" name="order" class="filter-input">
-                        <option value="asc" {{ request('order') == 'asc' ? 'selected' : '' }}>Ascending</option>
-                        <option value="desc" {{ request('order') == 'desc' ? 'selected' : '' }}>Descending</option>
-                    </select>
-                </div>
-
                 <div class="filter-group">
                     <button type="submit" class="filter-button">
-                        <i class="fas fa-filter"></i> Apply Filters
+                        <i class="fas fa-magnifying-glass"></i> Search
                     </button>
                 </div>
             </div>
@@ -346,34 +264,34 @@
 
     <!-- Attractions Grid -->
     <div class="attractions-grid" id="attractionsGrid">
-        @if($attractions->count() > 0)
-            @include('tourist-attractions.partials.attraction-cards', ['attractions' => $attractions])
-        @else
+        <?php if($articles->count() > 0): ?>
+            <?php echo $__env->make('articles.partials.attraction-cards', ['articles' => $articles], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+        <?php else: ?>
             <div class="no-attractions" style="grid-column: 1 / -1;">
                 <i class="fas fa-search"></i>
-                <h3>No attractions found</h3>
-                <p>Try adjusting your search criteria or browse all attractions.</p>
+                <h3>No articles found</h3>
+                <p>Try adjusting your search criteria or browse articles.</p>
             </div>
-        @endif
+        <?php endif; ?>
     </div>
 
     <!-- Loading Spinner -->
     <div class="loading-spinner" id="loadingSpinner">
         <i class="fas fa-spinner"></i>
-        <p>Loading more attractions...</p>
+        <p>Loading more articles...</p>
     </div>
 
     <!-- End of Results -->
     <div class="end-of-results" id="endOfResults">
         <i class="fas fa-check-circle"></i>
-        <p>You've seen all attractions!</p>
+        <p>You've seen all articles!</p>
     </div>
 </div>
 
 <script>
     let currentPage = 1;
     let isLoading = false;
-    let hasMorePages = {{ $attractions->hasMorePages() ? 'true' : 'false' }};
+    let hasMorePages = <?php echo e($articles->hasMorePages() ? 'true' : 'false'); ?>;
     let currentFilters = {};
 
     // Auto-submit form when filters change and reset infinite scroll
@@ -420,7 +338,7 @@
             ...currentFilters
         });
         
-        fetch(`{{ route('tourist-attractions.index') }}?${params.toString()}`, {
+        fetch(`<?php echo e(route('articles.index')); ?>?${params.toString()}`, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'application/json'
@@ -443,8 +361,8 @@
                 document.getElementById('attractionsGrid').innerHTML = `
                     <div class="no-attractions" style="grid-column: 1 / -1;">
                         <i class="fas fa-search"></i>
-                        <h3>No attractions found</h3>
-                        <p>Try adjusting your search criteria or browse all attractions.</p>
+                        <h3>No articles found</h3>
+                        <p>Try adjusting your search criteria or browse all articles.</p>
                     </div>
                 `;
             }
@@ -452,7 +370,7 @@
             isLoading = false;
         })
         .catch(error => {
-            console.error('Error loading attractions:', error);
+            console.error('Error loading articles:', error);
             document.getElementById('loadingSpinner').classList.remove('show');
             isLoading = false;
         });
@@ -485,25 +403,14 @@
     window.addEventListener('DOMContentLoaded', function() {
         currentFilters = {
             search: document.getElementById('search').value,
-            type: document.getElementById('type').value,
-            sort: document.getElementById('sort').value,
-            order: document.getElementById('order').value
         };
         
         // If we have attractions but no more pages, show end message
-        if (!hasMorePages && {{ $attractions->count() }} > 0) {
+        if (!hasMorePages && <?php echo e($articles->count()); ?> > 0) {
             document.getElementById('endOfResults').classList.add('show');
-        }
-
-        // Mobile filter toggle wiring
-        const toggleBtn = document.getElementById('mobileFilterToggle');
-        const sectionRoot = document.getElementById('filtersSectionRoot');
-        if (toggleBtn && sectionRoot) {
-            toggleBtn.addEventListener('click', () => {
-                const open = sectionRoot.classList.toggle('open');
-                toggleBtn.setAttribute('aria-expanded', String(open));
-            });
         }
     });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Users/nathanaelss/Downloads/wisata-pramuka-minimal/resources/views/articles/index.blade.php ENDPATH**/ ?>

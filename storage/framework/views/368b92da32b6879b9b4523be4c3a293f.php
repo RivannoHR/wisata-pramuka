@@ -1,15 +1,13 @@
-@extends('app')
+<?php $__env->startSection('title', 'Tourist Attractions - Pulau Pramuka'); ?>
 
-@section('title', 'Tourist Attractions - Pulau Pramuka')
-
-@section('hero_content')
+<?php $__env->startSection('hero_content'); ?>
     <div class="hero-content">
         <h1>Explore the Wonders of Pulau Pramuka</h1>
         <p>Discover amazing tourist spots, delicious restaurants, and unique shops</p>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <style>
     .attractions-container {
         max-width: 1200px;
@@ -299,39 +297,40 @@
             <i class="fas fa-chevron-down chevron" aria-hidden="true"></i>
         </button>
 
-        <form id="filtersForm" class="filters-form" method="GET" action="{{ route('tourist-attractions.index') }}">
+        <form id="filtersForm" class="filters-form" method="GET" action="<?php echo e(route('tourist-attractions.index')); ?>">
             <div class="filters-row">
                 <div class="filter-group">
                     <label for="search">Search</label>
                     <input type="text" id="search" name="search" class="filter-input search-input" 
-                           placeholder="Search attractions, locations..." value="{{ request('search') }}">
+                           placeholder="Search attractions, locations..." value="<?php echo e(request('search')); ?>">
                 </div>
 
                 <div class="filter-group">
                     <label for="type">Type</label>
                     <select id="type" name="type" class="filter-input">
-                        @foreach($types as $value => $label)
-                            <option value="{{ $value }}" {{ request('type') == $value ? 'selected' : '' }}>
-                                {{ $label }}
+                        <?php $__currentLoopData = $types; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($value); ?>" <?php echo e(request('type') == $value ? 'selected' : ''); ?>>
+                                <?php echo e($label); ?>
+
                             </option>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </select>
                 </div>
 
                 <div class="filter-group">
                     <label for="sort">Sort By</label>
                     <select id="sort" name="sort" class="filter-input">
-                        <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Name</option>
-                        <option value="date_added" {{ request('sort') == 'date_added' ? 'selected' : '' }}>Date Added</option>
-                        <option value="rating" {{ request('sort') == 'rating' ? 'selected' : '' }}>Rating</option>
+                        <option value="name" <?php echo e(request('sort') == 'name' ? 'selected' : ''); ?>>Name</option>
+                        <option value="date_added" <?php echo e(request('sort') == 'date_added' ? 'selected' : ''); ?>>Date Added</option>
+                        <option value="rating" <?php echo e(request('sort') == 'rating' ? 'selected' : ''); ?>>Rating</option>
                     </select>
                 </div>
 
                 <div class="filter-group">
                     <label for="order">Order</label>
                     <select id="order" name="order" class="filter-input">
-                        <option value="asc" {{ request('order') == 'asc' ? 'selected' : '' }}>Ascending</option>
-                        <option value="desc" {{ request('order') == 'desc' ? 'selected' : '' }}>Descending</option>
+                        <option value="asc" <?php echo e(request('order') == 'asc' ? 'selected' : ''); ?>>Ascending</option>
+                        <option value="desc" <?php echo e(request('order') == 'desc' ? 'selected' : ''); ?>>Descending</option>
                     </select>
                 </div>
 
@@ -346,15 +345,15 @@
 
     <!-- Attractions Grid -->
     <div class="attractions-grid" id="attractionsGrid">
-        @if($attractions->count() > 0)
-            @include('tourist-attractions.partials.attraction-cards', ['attractions' => $attractions])
-        @else
+        <?php if($attractions->count() > 0): ?>
+            <?php echo $__env->make('tourist-attractions.partials.attraction-cards', ['attractions' => $attractions], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+        <?php else: ?>
             <div class="no-attractions" style="grid-column: 1 / -1;">
                 <i class="fas fa-search"></i>
                 <h3>No attractions found</h3>
                 <p>Try adjusting your search criteria or browse all attractions.</p>
             </div>
-        @endif
+        <?php endif; ?>
     </div>
 
     <!-- Loading Spinner -->
@@ -373,7 +372,7 @@
 <script>
     let currentPage = 1;
     let isLoading = false;
-    let hasMorePages = {{ $attractions->hasMorePages() ? 'true' : 'false' }};
+    let hasMorePages = <?php echo e($attractions->hasMorePages() ? 'true' : 'false'); ?>;
     let currentFilters = {};
 
     // Auto-submit form when filters change and reset infinite scroll
@@ -420,7 +419,7 @@
             ...currentFilters
         });
         
-        fetch(`{{ route('tourist-attractions.index') }}?${params.toString()}`, {
+        fetch(`<?php echo e(route('tourist-attractions.index')); ?>?${params.toString()}`, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'application/json'
@@ -491,7 +490,7 @@
         };
         
         // If we have attractions but no more pages, show end message
-        if (!hasMorePages && {{ $attractions->count() }} > 0) {
+        if (!hasMorePages && <?php echo e($attractions->count()); ?> > 0) {
             document.getElementById('endOfResults').classList.add('show');
         }
 
@@ -506,4 +505,6 @@
         }
     });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Users/nathanaelss/Downloads/wisata-pramuka-minimal/resources/views/tourist-attractions/index.blade.php ENDPATH**/ ?>

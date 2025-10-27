@@ -1,10 +1,10 @@
 @foreach($accommodations as $accommodation)
 <div class="accommodation-card" onclick="window.location.href='{{ route('accommodations.show', $accommodation->id) }}'">
     <div class="accommodation-image" style="background-image: url('{{ $accommodation->main_image }}')">
-        @if($accommodation->average_rating_from_reviews)
+        @if($accommodation->average_rating)
         <div class="rating-overlay">
             <i class="fas fa-star star"></i>
-            {{ number_format($accommodation->average_rating_from_reviews, 1) }}
+            {{ number_format($accommodation->average_rating, 1) }}
         </div>
         @else
         <div class="rating-overlay">

@@ -78,14 +78,7 @@
                         <option value="0" {{ request('is_admin') == '0' ? 'selected' : '' }}>User</option>
                     </select>
                 </div>
-                <div class="filter-group">
-                    <label for="is_verified">Email Verified</label>
-                    <select name="is_verified" id="is_verified" class="filter-input">
-                        <option value="">All Users</option>
-                        <option value="1" {{ request('is_verified') == '1' ? 'selected' : '' }}>Verified</option>
-                        <option value="0" {{ request('is_verified') == '0' ? 'selected' : '' }}>Unverified</option>
-                    </select>
-                </div>
+                
                 <div class="filter-group">
                     <label for="date_from">Joined From</label>
                     <input type="date" name="date_from" id="date_from" class="filter-input" value="{{ request('date_from') }}">
@@ -114,7 +107,7 @@
                             <tr>
                                 <th>User</th>
                                 <th>Role</th>
-                                <th>Email Status</th>
+                                
                                 <th>Joined</th>
                                 <th>Actions</th>
                             </tr>
@@ -145,17 +138,7 @@
                                         </span>
                                     @endif
                                 </td>
-                                <td>
-                                    @if($user->is_verified)
-                                        <span class="status-badge status-active">
-                                            <i class="fas fa-check-circle"></i> Verified
-                                        </span>
-                                    @else
-                                        <span class="status-badge status-warning">
-                                            <i class="fas fa-exclamation-circle"></i> Unverified
-                                        </span>
-                                    @endif
-                                </td>
+                                
                                 <td>
                                     <div style="color: #374151;">
                                         {{ \Carbon\Carbon::parse($user->created_at)->format('M d, Y') }}
@@ -260,23 +243,7 @@ function updateStatus(id, status) {
     }
 }
 
-function resendVerification(id) {
-    if (confirm('Resend email verification to this user?')) {
-        // Create and submit form to resend verification
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = `/admin/users/${id}/resend-verification`;
-        
-        const csrfToken = document.createElement('input');
-        csrfToken.type = 'hidden';
-        csrfToken.name = '_token';
-        csrfToken.value = '{{ csrf_token() }}';
-        
-        form.appendChild(csrfToken);
-        document.body.appendChild(form);
-        form.submit();
-    }
-}
+// email verification resend removed
 
 // Search functionality
 document.addEventListener('DOMContentLoaded', function() {

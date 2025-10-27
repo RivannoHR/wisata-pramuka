@@ -18,7 +18,6 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\TouristAttractionImageController;
-use App\Http\Controllers\OTPVerificationController;
 use App\Http\Controllers\AboutController;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
@@ -59,13 +58,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/logout', [LoginController::class, 'adminLogout'])->name('admin.logout');
 });
 
-// OTP Verification Routes
-Route::middleware('auth')->group(function () {
-    Route::get('/verify-email', [OTPVerificationController::class, 'showVerifyForm'])->name('verify.email');
-    Route::post('/send-otp', [OTPVerificationController::class, 'sendOTP'])->name('send.otp');
-    Route::post('/verify-otp', [OTPVerificationController::class, 'verifyOTP'])->name('verify.otp');
-    Route::post('/resend-otp', [OTPVerificationController::class, 'resendOTP'])->name('resend.otp');
-});
+// Email verification feature removed
 
 // Profile Routes (Authenticated Users)
 Route::middleware('auth')->group(function () {

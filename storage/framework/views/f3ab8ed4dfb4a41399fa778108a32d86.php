@@ -1,8 +1,6 @@
-@extends('app')
+<?php $__env->startSection('title', $attraction->name . ' - Tourist Attractions'); ?>
 
-@section('title', $attraction->name . ' - Tourist Attractions')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <style>
     .attraction-detail-container {
         max-width: 1200px;
@@ -516,37 +514,39 @@
 </style>
 
 <div class="attraction-detail-container">
-    <a href="{{ route('tourist-attractions.index') }}" class="back-button">
+    <a href="<?php echo e(route('tourist-attractions.index')); ?>" class="back-button">
         <i class="fas fa-arrow-left"></i>
         Back to Tourist Attractions
     </a>
 
     <!-- Attraction Header -->
     <div class="attraction-header">
-        <div class="attraction-image-main" style="background-image: url('{{ $attraction->main_image }}')">
+        <div class="attraction-image-main" style="background-image: url('<?php echo e($attraction->main_image); ?>')">
             <div class="attraction-overlay">
-                <h1 class="attraction-title">{{ $attraction->name }}</h1>
+                <h1 class="attraction-title"><?php echo e($attraction->name); ?></h1>
                 <div class="attraction-meta">
                     <div class="meta-item">
                         <i class="fas fa-map-marker-alt"></i>
-                        {{ $attraction->location }}
+                        <?php echo e($attraction->location); ?>
+
                     </div>
                     <div class="meta-item">
-                        <span class="type-badge {{ $attraction->type }}">
-                            {{ ucwords(str_replace('_', ' ', $attraction->type)) }}
+                        <span class="type-badge <?php echo e($attraction->type); ?>">
+                            <?php echo e(ucwords(str_replace('_', ' ', $attraction->type))); ?>
+
                         </span>
                     </div>
-                    @if($attraction->average_rating)
+                    <?php if($attraction->average_rating): ?>
                     <div class="meta-item rating-display">
                         <div class="stars">
-                            @for($i = 1; $i <= 5; $i++)
-                                <i class="fas fa-star star {{ $i <= $attraction->average_rating ? '' : 'empty' }}"></i>
-                            @endfor
+                            <?php for($i = 1; $i <= 5; $i++): ?>
+                                <i class="fas fa-star star <?php echo e($i <= $attraction->average_rating ? '' : 'empty'); ?>"></i>
+                            <?php endfor; ?>
                         </div>
-                        <span>{{ number_format($attraction->average_rating, 1) }}</span>
-                        <span>({{ $attraction->rating_count }} {{ Str::plural('review', $attraction->rating_count) }})</span>
+                        <span><?php echo e(number_format($attraction->average_rating, 1)); ?></span>
+                        <span>(<?php echo e($attraction->rating_count); ?> <?php echo e(Str::plural('review', $attraction->rating_count)); ?>)</span>
                     </div>
-                    @endif
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -561,7 +561,7 @@
             </button>
             <button class="tab-button" data-tab="reviews">
                 <i class="fas fa-star"></i>
-                Reviews ({{ $reviews->count() }})
+                Reviews (<?php echo e($reviews->count()); ?>)
             </button>
         </nav>
 
@@ -573,10 +573,10 @@
                         <i class="fas fa-align-left"></i>
                         About This Place
                     </h2>
-                    <p class="description-text">{{ $attraction->description }}</p>
+                    <p class="description-text"><?php echo e($attraction->description); ?></p>
                 </div>
 
-                @if($attraction->operating_hours)
+                <?php if($attraction->operating_hours): ?>
                 <div class="content-section">
                     <h2 class="section-title">
                         <i class="fas fa-clock"></i>
@@ -584,16 +584,16 @@
                     </h2>
                     <div class="operating-hours">
                         <ul class="hours-list">
-                            @foreach($attraction->operating_hours as $day => $hours)
+                            <?php $__currentLoopData = $attraction->operating_hours; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $day => $hours): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <li>
-                                <strong>{{ ucfirst($day) }}</strong>
-                                <span>{{ $hours }}</span>
+                                <strong><?php echo e(ucfirst($day)); ?></strong>
+                                <span><?php echo e($hours); ?></span>
                             </li>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </ul>
                     </div>
                 </div>
-                @endif
+                <?php endif; ?>
 
                 <div class="content-section">
                     <h2 class="section-title">
@@ -605,25 +605,25 @@
                             <i class="fas fa-map-marker-alt info-icon"></i>
                             <div class="info-content">
                                 <h4>Location</h4>
-                                <p>{{ $attraction->location }}</p>
+                                <p><?php echo e($attraction->location); ?></p>
                             </div>
                         </div>
                         <div class="info-item">
                             <i class="fas fa-tag info-icon"></i>
                             <div class="info-content">
                                 <h4>Type</h4>
-                                <p>{{ ucwords(str_replace('_', ' ', $attraction->type)) }}</p>
+                                <p><?php echo e(ucwords(str_replace('_', ' ', $attraction->type))); ?></p>
                             </div>
                         </div>
-                        @if($attraction->average_rating)
+                        <?php if($attraction->average_rating): ?>
                         <div class="info-item">
                             <i class="fas fa-star info-icon"></i>
                             <div class="info-content">
                                 <h4>Rating</h4>
-                                <p>{{ number_format($attraction->average_rating, 1) }}/5 ({{ $attraction->rating_count }} {{ Str::plural('review', $attraction->rating_count) }})</p>
+                                <p><?php echo e(number_format($attraction->average_rating, 1)); ?>/5 (<?php echo e($attraction->rating_count); ?> <?php echo e(Str::plural('review', $attraction->rating_count)); ?>)</p>
                             </div>
                         </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -636,45 +636,52 @@
                             <i class="fas fa-star"></i>
                             Reviews
                         </h2>
-                        @if($reviews->count() > 0)
+                        <?php if($reviews->count() > 0): ?>
                         <div class="reviews-summary">
                             <div class="rating-overview">
-                                <div class="rating-score">{{ number_format($attraction->average_rating, 1) }}</div>
+                                <div class="rating-score"><?php echo e(number_format($attraction->average_rating, 1)); ?></div>
                                 <div class="rating-stars">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        <i class="fas fa-star {{ $i <= $attraction->average_rating ? '' : 'far' }}"></i>
-                                    @endfor
+                                    <?php for($i = 1; $i <= 5; $i++): ?>
+                                        <i class="fas fa-star <?php echo e($i <= $attraction->average_rating ? '' : 'far'); ?>"></i>
+                                    <?php endfor; ?>
                                 </div>
-                                <div class="rating-count">{{ $attraction->rating_count }} {{ Str::plural('review', $attraction->rating_count) }}</div>
+                                <div class="rating-count"><?php echo e($attraction->rating_count); ?> <?php echo e(Str::plural('review', $attraction->rating_count)); ?></div>
                             </div>
                         </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
 
-                    @auth
+                    <?php if(auth()->guard()->check()): ?>
                     <!-- Review Form -->
                     <div class="review-form">
                         <h3 style="margin-bottom: 20px;">
-                            @if($attraction->ratings()->where('user_id', Auth::id())->exists())
+                            <?php if($attraction->ratings()->where('user_id', Auth::id())->exists()): ?>
                                 Update Your Review
-                            @else
+                            <?php else: ?>
                                 Write a Review
-                            @endif
+                            <?php endif; ?>
                         </h3>
                         
-                        <form action="{{ route('tourist-attractions.review.store', $attraction->id) }}" method="POST">
-                            @csrf
+                        <form action="<?php echo e(route('tourist-attractions.review.store', $attraction->id)); ?>" method="POST">
+                            <?php echo csrf_field(); ?>
                             <div class="form-group">
                                 <label class="form-label">Rating</label>
                                 <div class="rating-input">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        <i class="fas fa-star rating-star" data-rating="{{ $i }}"></i>
-                                    @endfor
+                                    <?php for($i = 1; $i <= 5; $i++): ?>
+                                        <i class="fas fa-star rating-star" data-rating="<?php echo e($i); ?>"></i>
+                                    <?php endfor; ?>
                                 </div>
-                                <input type="hidden" name="rating" id="rating-value" value="{{ old('rating', $attraction->ratings()->where('user_id', Auth::id())->first()->rating ?? '') }}" required>
-                                @error('rating')
-                                    <span style="color: red; font-size: 0.9rem;">{{ $message }}</span>
-                                @enderror
+                                <input type="hidden" name="rating" id="rating-value" value="<?php echo e(old('rating', $attraction->ratings()->where('user_id', Auth::id())->first()->rating ?? '')); ?>" required>
+                                <?php $__errorArgs = ['rating'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <span style="color: red; font-size: 0.9rem;"><?php echo e($message); ?></span>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
 
                             <div class="form-group">
@@ -685,60 +692,68 @@
                                     class="form-textarea" 
                                     placeholder="Share your experience about this place..."
                                     required
-                                >{{ old('comment', $attraction->ratings()->where('user_id', Auth::id())->first()->comment ?? '') }}</textarea>
-                                @error('comment')
-                                    <span style="color: red; font-size: 0.9rem;">{{ $message }}</span>
-                                @enderror
+                                ><?php echo e(old('comment', $attraction->ratings()->where('user_id', Auth::id())->first()->comment ?? '')); ?></textarea>
+                                <?php $__errorArgs = ['comment'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <span style="color: red; font-size: 0.9rem;"><?php echo e($message); ?></span>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
 
                             <button type="submit" class="submit-btn">
-                                @if($attraction->ratings()->where('user_id', Auth::id())->exists())
+                                <?php if($attraction->ratings()->where('user_id', Auth::id())->exists()): ?>
                                     Update Review
-                                @else
+                                <?php else: ?>
                                     Post Review
-                                @endif
+                                <?php endif; ?>
                             </button>
                         </form>
                     </div>
-                    @else
+                    <?php else: ?>
                     <div class="auth-message">
-                        <p>Please <a href="{{ route('login') }}">login</a> to post a review.</p>
+                        <p>Please <a href="<?php echo e(route('login')); ?>">login</a> to post a review.</p>
                     </div>
-                    @endauth
+                    <?php endif; ?>
 
                     <!-- Reviews List -->
-                    @if($reviews->count() > 0)
+                    <?php if($reviews->count() > 0): ?>
                     <div class="reviews-list">
-                        @foreach($reviews as $review)
+                        <?php $__currentLoopData = $reviews; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $review): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <div class="review-card">
                             <div class="review-header">
                                 <div class="reviewer-avatar">
-                                    {{ strtoupper(substr($review->user->name, 0, 1)) }}
+                                    <?php echo e(strtoupper(substr($review->user->name, 0, 1))); ?>
+
                                 </div>
                                 <div class="review-info">
-                                    <h4>{{ $review->user->name }}</h4>
+                                    <h4><?php echo e($review->user->name); ?></h4>
                                     <div class="review-meta">
                                         <span class="review-rating">
-                                            @for($i = 1; $i <= 5; $i++)
-                                                <i class="fas fa-star {{ $i <= $review->rating ? '' : 'far' }}"></i>
-                                            @endfor
+                                            <?php for($i = 1; $i <= 5; $i++): ?>
+                                                <i class="fas fa-star <?php echo e($i <= $review->rating ? '' : 'far'); ?>"></i>
+                                            <?php endfor; ?>
                                         </span>
                                         <span>•</span>
-                                        <span>{{ $review->created_at->diffForHumans() }}</span>
+                                        <span><?php echo e($review->created_at->diffForHumans()); ?></span>
                                     </div>
                                 </div>
                             </div>
-                            <p class="review-text">{{ $review->comment }}</p>
+                            <p class="review-text"><?php echo e($review->comment); ?></p>
                         </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
-                    @else
+                    <?php else: ?>
                     <div class="no-reviews">
                         <i class="fas fa-comment-slash"></i>
                         <h3>No reviews yet</h3>
                         <p>Be the first to share your experience!</p>
                     </div>
-                    @endif
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -817,11 +832,13 @@
     });
 </script>
 
-@if(session('success'))
+<?php if(session('success')): ?>
 <script>
     // Show success message
-    alert('{{ session('success') }}');
+    alert('<?php echo e(session('success')); ?>');
 </script>
-@endif
+<?php endif; ?>
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Users/nathanaelss/Downloads/wisata-pramuka-minimal/resources/views/tourist-attractions/show.blade.php ENDPATH**/ ?>
