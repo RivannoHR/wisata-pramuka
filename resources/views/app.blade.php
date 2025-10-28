@@ -970,11 +970,14 @@
     /* MOBILE Footer (768px and below) - Current Design */
         @media (max-width: 768px) {
             .footer-mobile-only { display: block; }
+            /* Make footer span full viewport width on mobile instead of a narrow card */
             .footer-container {
-                max-width: 400px;
-                margin: 0 auto;
-                padding: 30px 20px;
+                max-width: none;        /* remove the 400px cap */
+                width: 100%;            /* take full width */
+                margin: 0;              /* no auto-centering gutter */
+                padding: 24px 16px;     /* tighter, mobile-friendly padding */
                 text-align: center;
+                box-sizing: border-box; /* include padding in width */
             }
 
             .footer-logo-section {
@@ -1008,10 +1011,11 @@
             }
 
             .footer-separator {
-                width: 80%;
+                width: 100%;            /* line spans edge-to-edge within container */
+                max-width: 640px;       /* but don’t get too long on larger phones */
                 height: 1px;
                 background-color: #444;
-                margin: 0 auto 20px auto;
+                margin: 0 auto 16px auto;
             }
 
             .footer-social-icons {
@@ -1173,6 +1177,13 @@
             .hero-section-wrapper {
                 min-height: 300px;
                 padding: 20px;
+                /* Make hero background truly edge-to-edge on mobile even when
+                   nested inside a centered container. This avoids the narrow
+                   "card" look by breaking out to the viewport width safely. */
+                width: 100vw;
+                margin-left: calc(50% - 50vw);
+                margin-right: calc(50% - 50vw);
+                border-radius: 0;
             }
 
             .hero-content h1 {
