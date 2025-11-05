@@ -94,11 +94,13 @@
            vertical scrollbar track everywhere else (covers Safari, older browsers). */
         html {
             scrollbar-gutter: stable both-edges; /* supported in Chromium/Firefox */
+            overflow-x: hidden; /* iOS Safari sometimes ignores body-only rule */
         }
         /* Always reserve a vertical scrollbar to avoid "page jump" in browsers
            that don't honor scrollbar-gutter consistently (notably Safari). */
         body {
             overflow-y: scroll;
+            overflow-x: hidden; /* avoid tiny left/right overflow from full-bleed sections */
         }
         /* Horizontal Scroll Styles for Products */
         .horizontal-scroll-container {
@@ -331,8 +333,8 @@
 
         /* Header Base Styles */
         header {
-            background-color: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            background-color: #ffffff; /* solid white header on all devices */
+            /* removed backdrop blur/transparency for crisp white */
             padding: 15px 0;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             position: fixed;
@@ -340,7 +342,8 @@
             left: 0;
             right: 0;
             width: 100%;
-            z-index: 1000;
+            /* Ensure header stays above any side panels/overlays */
+            z-index: 3000;
             order: -1;
         }
 
@@ -460,12 +463,29 @@
 
         /* DESKTOP Header (769px and above) */
         @media (min-width: 769px) {
+            /* Keep items spaced evenly with a consistent gap */
+            .header-container {
+                gap: 24px;
+            }
+
+            /* Make nav size to its content and remove auto-centering behavior */
+            .desktop-nav {
+                flex: 0 0 auto;
+                margin: 0; /* gap drives spacing */
+                display: block !important;
+                justify-content: initial !important;
+            }
+
+            /* Ensure logo doesn't add extra margin */
+            .header-logo { margin-right: 0; }
+
             .mobile-menu-toggle {
                 display: none !important;
             }
 
             .desktop-nav {
                 display: block !important;
+                margin-left: 0; /* ensure no extra shift beyond logo spacing */
             }
 
             .desktop-nav ul {
@@ -491,6 +511,15 @@
         @media (max-width: 768px) {
             body {
                 padding-top: 80px; /* Mobile header padding */
+            }
+            /* Ensure main content aligns with header/footer edges on mobile */
+            main.content-area {
+                padding-left: 16px;
+                padding-right: 16px;
+                margin-left: auto;
+                margin-right: auto;
+                width: 100%
+                box-sizing: border-box;
             }
 
             /* Use 3-column grid so logo stays perfectly centered */
@@ -580,16 +609,18 @@
             .mobile-nav {
                 display: block;
                 position: fixed;
-                top: 0;
+                /* Start below the fixed header */
+                top: 60px;
                 left: -280px;
                 width: 280px;
-                height: 100vh;
+                height: calc(100vh - 60px);
                 background-color: #fff;
                 box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
                 transition: left 0.3s ease;
-                z-index: 1000;
+                /* Keep below the header but above the overlay */
+                z-index: 2000;
                 overflow-y: auto;
-                padding-top: 80px;
+                padding-top: 20px;
             }
 
             .mobile-nav.active {
@@ -631,14 +662,16 @@
             /* Sidebar overlay */
             .sidebar-overlay {
                 position: fixed;
-                top: 0;
+                /* Do not cover the fixed header */
+                top: 60px;
                 left: 0;
                 /* Use percentage width to avoid including the scrollbar width
                    on platforms where 100vw causes a tiny horizontal shift */
                 width: 100%;
-                height: 100vh;
+                height: calc(100vh - 60px);
                 background-color: rgba(0, 0, 0, 0.5);
-                z-index: 999;
+                /* Below the header so header stays visible and interactive */
+                z-index: 1990;
                 opacity: 0;
                 visibility: hidden;
                 transition: all 0.3s ease;
@@ -701,6 +734,27 @@
                 background-color: #555;
                 text-decoration: none;
                 color: #fff;
+            }
+
+            /* When sidebar is open, prevent header buttons from interacting/highlighting */
+            body.menu-open .header-right .header-auth-button,
+            body.menu-open .header-right .header-auth-button:hover,
+            body.menu-open .header-right .header-auth-button:focus,
+            body.menu-open .header-right .header-auth-button:active {
+                /* Allow header interactions even when menu is open */
+                pointer-events: auto;
+                transform: none !important;
+                box-shadow: none !important;
+                filter: none !important;
+            }
+
+            /* Explicitly ensure the entire header remains interactive above overlay */
+            body.menu-open header,
+            body.menu-open .header-container,
+            body.menu-open .mobile-menu-toggle,
+            body.menu-open .header-right,
+            body.menu-open .header-right * {
+                pointer-events: auto !important;
             }
         }
 
@@ -829,8 +883,10 @@
             /* Takes up remaining space, pushing footer down */
             display: flex;
             flex-direction: column;
+            align-items: stretch; /* ensure children expand full width */
             order: 0;
             /* Ensure content comes after header */
+            overflow-x: hidden; /* guard against any child horizontal bleed */
         }
 
         /* Main Content Area */
@@ -975,7 +1031,7 @@
                 max-width: none;        /* remove the 400px cap */
                 width: 100%;            /* take full width */
                 margin: 0;              /* no auto-centering gutter */
-                padding: 24px 16px;     /* tighter, mobile-friendly padding */
+                padding: 24px 12px;     /* match header side padding */
                 text-align: center;
                 box-sizing: border-box; /* include padding in width */
             }
@@ -1069,6 +1125,16 @@
         /* Responsive adjustments (basic) */
         @media (max-width: 768px) {
 
+            /* Center page content to align with header/footer edges */
+            main.content-area {
+                padding-left: 12px;
+                padding-right: 12px;
+                box-sizing: border-box;
+                width: 100%;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
             /* Keep footer tweaks only; do not alter header layout */
             .footer-container {
                 text-align: center;
@@ -1131,6 +1197,17 @@
 
         }
 
+        /* Utility: force an element to span the full viewport width even
+           when nested inside a centered container. */
+        /* Make sections span the full page width without using 100vw
+           (avoids scrollbar-width overflow on some browsers). */
+        .full-bleed {
+            width: 100%;
+            margin-left: 0;
+            margin-right: 0;
+            max-width: none;
+        }
+
         .hero-section-wrapper {
             min-height: 400px;
             display: flex;
@@ -1174,15 +1251,12 @@
 
         /* Responsive adjustments for Hero section */
         @media (max-width: 768px) {
+            /* Avoid 1-2px horizontal overflow on some mobile browsers */
+            html, body { overflow-x: hidden; }
             .hero-section-wrapper {
                 min-height: 300px;
                 padding: 20px;
-                /* Make hero background truly edge-to-edge on mobile even when
-                   nested inside a centered container. This avoids the narrow
-                   "card" look by breaking out to the viewport width safely. */
-                width: 100vw;
-                margin-left: calc(50% - 50vw);
-                margin-right: calc(50% - 50vw);
+                /* Apply robust full-bleed breakout on mobile */
                 border-radius: 0;
             }
 
@@ -2878,7 +2952,7 @@
 
     <div class="page-content">
         @hasSection('hero_content')
-        <div class="hero-section-wrapper">
+        <div class="hero-section-wrapper full-bleed">
             @yield('hero_content')
         </div>
         @endif
@@ -2971,8 +3045,10 @@
             // Prevent body scroll when sidebar is open
             if (nav.classList.contains('active')) {
                 document.body.style.overflow = 'hidden';
+                document.body.classList.add('menu-open');
             } else {
                 document.body.style.overflow = '';
+                document.body.classList.remove('menu-open');
             }
         }
 
@@ -2985,6 +3061,7 @@
             overlay.classList.remove('active');
             toggle.classList.remove('active');
             document.body.style.overflow = '';
+            document.body.classList.remove('menu-open');
         }
 
         // Close sidebar when pressing Escape key

@@ -101,7 +101,8 @@ class LoginController extends Controller
                     'user_agent' => $request->userAgent(),
                 ]);
 
-                return redirect()->intended('/admin/dashboard')->with('success', 'Welcome back, ' . Auth::user()->name . '!');
+                // Send admins to the main admin dashboard route (/admin)
+                return redirect()->intended('/admin')->with('success', 'Welcome back, ' . Auth::user()->name . '!');
             } else {
                 // This shouldn't happen, but just in case
                 Auth::logout();

@@ -258,7 +258,7 @@
 
     /* Reviews Section */
     .reviews-section {
-        max-width: 800px;
+        max-width: 100%; /* keep reviews panel same width as details on desktop */
     }
 
     .reviews-header {

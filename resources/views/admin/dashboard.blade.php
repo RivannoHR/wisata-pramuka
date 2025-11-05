@@ -32,7 +32,8 @@
             margin-top: 20px;
             margin-left: 20px;
             margin-right: 20px;
-            width: calc(100%-40px);
+            /* Fix calc spacing so width computes correctly */
+            width: calc(100% - 40px);
             max-height: 200px;
         }
 
@@ -100,12 +101,17 @@
         .content-box {
             width: 100%;
             /* The box fills 100% of the padded parent area */
-            height: 100%;
-            /* Ensures it takes up at least the full height of the parent */
+            /* Allow the box to grow with content so the page can scroll */
+            height: auto;
+            min-height: 100%;
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             box-sizing: border-box;
+            /* Clip inner shadows so cards don’t appear to spill outside the rounded box */
+            overflow: hidden;
+            /* Optional: subtle border to define the container edge */
+            border: 1px solid #e5e7eb;
             display: flex;
             flex-direction: column;
         }

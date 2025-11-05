@@ -24,8 +24,9 @@ body {
     background: linear-gradient(135deg, #059669 0%, #065f46 100%);
     color: white;
     padding: 2rem;
-    border-radius: 0;
-    margin-bottom: 0;
+    /* Match the Articles page rounded look across all sections */
+    border-radius: 16px;
+    margin-bottom: 2rem;
     box-shadow: 0 4px 25px rgba(5, 150, 105, 0.15);
 }
 
@@ -43,15 +44,16 @@ body {
 /* Main Content Container */
 .admin-container {
     max-width: 100%;
-    margin: -3% -3% 0 -3%;
-    padding: 0;
+    /* Use internal padding like Articles page and remove negative margins */
+    margin: 0;
+    padding: 1.5rem;
     min-height: calc(100vh - 3rem);
 }
 
 /* Card Styles */
 .admin-card {
     background: white;
-    border-radius: 0;
+    border-radius: 16px; /* match Articles */
     box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
     border: 1px solid #e2e8f0;
     overflow: hidden;

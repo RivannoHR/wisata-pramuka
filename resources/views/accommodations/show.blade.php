@@ -243,6 +243,35 @@
         color: #e5e7eb;
     }
 
+    /* Tourist-attraction style reviews (unified) */
+    .reviews-section { max-width: 100%; }
+    .reviews-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    .reviews-summary { display: flex; align-items: center; gap: 15px; }
+    .rating-overview { text-align: center; }
+    .rating-score { font-size: 2.5rem; font-weight: 700; color: black; line-height: 1; }
+    .rating-stars { color: #ffc107; margin: 5px 0; }
+    .rating-count { color: #666; font-size: 0.9rem; }
+    .auth-message {
+        background: #e7f3ff; border: 1px solid #b3d9ff; color: #0066cc;
+        padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;
+    }
+    .auth-message a { color: #0066cc; font-weight: 500; text-decoration: none; }
+    .auth-message a:hover { text-decoration: underline; }
+    .reviews-list { display: flex; flex-direction: column; gap: 20px; }
+    .review-card { background: white; padding: 25px; border-radius: 12px; border: 1px solid #f0f0f0; }
+    .review-card .review-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+    .reviewer-avatar { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 1.2rem; }
+    .review-info h4 { margin: 0 0 5px 0; font-weight: 600; color: #333; }
+    .review-meta { display: flex; align-items: center; gap: 10px; color: #666; font-size: 0.9rem; }
+    .review-text { line-height: 1.6; color: #555; }
+
     .content-section {
         margin-bottom: 30px;
     }
@@ -604,7 +633,7 @@
                     </div>
                     @endif
                     @if($accommodation->capacity)
-                    <div class="meta-item">ß
+                    <div class="meta-item">
                         <i class="fas fa-users"></i>
                         Up to {{ $accommodation->capacity }} guests
                     </div>
@@ -832,47 +861,66 @@
         </div>
         </div>
 
-        <!-- Reviews Tab Content -->
+        <!-- Reviews Tab Content (unified with Tourist Attractions style) -->
         <div id="reviews-tab" class="tab-content">
-            <div class="content-section">
-                @if($reviews->count() > 0)
+            <div class="reviews-section">
+                <div class="reviews-header">
                     <h2 class="section-title">
                         <i class="fas fa-star"></i>
-                        Customer Reviews ({{ $reviews->count() }})
+                        Reviews
                     </h2>
-                    
-                    <!-- Individual Reviews -->
-                    @foreach($reviews as $review)
-                    <div class="review-item">
-                        <div class="review-header">
-                            <div class="review-user">
-                                <div class="review-avatar">
-                                    {{ strtoupper(substr($review->user->name, 0, 1)) }}
-                                </div>
-                                <div class="review-user-info">
-                                    <h4>{{ $review->user->name }}</h4>
-                                    <div class="review-date">{{ $review->created_at->format('F j, Y') }}</div>
-                                </div>
-                            </div>
-                            <div class="review-rating">
+                    @if($reviews->count() > 0)
+                    <div class="reviews-summary">
+                        <div class="rating-overview">
+                            <div class="rating-score">{{ number_format($accommodation->average_rating, 1) }}</div>
+                            <div class="rating-stars">
                                 @for($i = 1; $i <= 5; $i++)
-                                    <span class="star {{ $i <= $review->rating ? '' : 'empty' }}">★</span>
+                                    <i class="fas fa-star star {{ $i <= $accommodation->average_rating ? '' : 'empty' }}"></i>
                                 @endfor
+                            </div>
+                            <div class="rating-count">{{ $accommodation->rating_count }} {{ Str::plural('review', $accommodation->rating_count) }}</div>
+                        </div>
+                    </div>
+                    @endif
+                </div>
+
+                @guest
+                <div class="auth-message">
+                    <p>Please <a href="{{ route('login') }}">login</a> to post a review.</p>
+                </div>
+                @endguest
+
+                @if($reviews->count() > 0)
+                <div class="reviews-list">
+                    @foreach($reviews as $review)
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-avatar">{{ strtoupper(substr($review->user->name, 0, 1)) }}</div>
+                            <div class="review-info">
+                                <h4>{{ $review->user->name }}</h4>
+                                <div class="review-meta">
+                                    <span class="review-rating">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <i class="fas fa-star star {{ $i <= $review->rating ? '' : 'empty' }}"></i>
+                                        @endfor
+                                    </span>
+                                    <span>•</span>
+                                    <span>{{ $review->created_at->diffForHumans() }}</span>
+                                </div>
                             </div>
                         </div>
                         @if($review->comment)
-                        <div class="review-comment">
-                            {{ $review->comment }}
-                        </div>
+                        <p class="review-text">{{ $review->comment }}</p>
                         @endif
                     </div>
                     @endforeach
+                </div>
                 @else
-                    <div class="no-reviews">
-                        <i class="fas fa-comment-slash"></i>
-                        <h3>No Reviews Yet</h3>
-                        <p>Be the first to share your experience with this accommodation!</p>
-                    </div>
+                <div class="no-reviews">
+                    <i class="fas fa-comment-slash"></i>
+                    <h3>No reviews yet</h3>
+                    <p>Be the first to share your experience!</p>
+                </div>
                 @endif
             </div>
         </div>
